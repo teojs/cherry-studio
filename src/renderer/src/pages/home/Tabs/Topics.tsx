@@ -1,11 +1,19 @@
-import { CloseOutlined, DeleteOutlined, EditOutlined, FolderOutlined, UploadOutlined } from '@ant-design/icons'
+import {
+  ClearOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FolderOutlined,
+  UploadOutlined
+} from '@ant-design/icons'
 import DragableList from '@renderer/components/DragableList'
 import PromptPopup from '@renderer/components/Popups/PromptPopup'
 import { useAssistant, useAssistants } from '@renderer/hooks/useAssistant'
 import { TopicManager } from '@renderer/hooks/useTopic'
 import { fetchMessagesSummary } from '@renderer/services/api'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/event'
-import { useAppSelector } from '@renderer/store'
+import store, { useAppSelector } from '@renderer/store'
+import { setGenerating } from '@renderer/store/runtime'
 import { Assistant, Topic } from '@renderer/types'
 import { Dropdown, MenuProps } from 'antd'
 import { findIndex } from 'lodash'
@@ -31,11 +39,9 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
         window.message.warning({ content: t('message.switch.disabled'), key: 'generating' })
         return
       }
-      if (assistant.topics.length > 1) {
-        const index = findIndex(assistant.topics, (t) => t.id === topic.id)
-        setActiveTopic(assistant.topics[index + 1 === assistant.topics.length ? 0 : index + 1])
-        removeTopic(topic)
-      }
+      const index = findIndex(assistant.topics, (t) => t.id === topic.id)
+      setActiveTopic(assistant.topics[index + 1 === assistant.topics.length ? 0 : index + 1])
+      removeTopic(topic)
     },
     [assistant.topics, generating, removeTopic, setActiveTopic, t]
   )
@@ -63,6 +69,12 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
     },
     [generating, setActiveTopic, t]
   )
+
+  const onClearMessages = useCallback(() => {
+    window.keyv.set(EVENT_NAMES.CHAT_COMPLETION_PAUSED, true)
+    store.dispatch(setGenerating(false))
+    EventEmitter.emit(EVENT_NAMES.CLEAR_MESSAGES)
+  }, [])
 
   const getTopicMenuItems = useCallback(
     (topic: Topic) => {
@@ -94,6 +106,18 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
             if (name && topic?.name !== name) {
               updateTopic({ ...topic, name })
             }
+          }
+        },
+        {
+          label: t('chat.topics.clear.title'),
+          key: 'clear-messages',
+          icon: <ClearOutlined />,
+          async onClick() {
+            window.modal.confirm({
+              title: t('chat.input.clear.content'),
+              centered: true,
+              onOk: onClearMessages
+            })
           }
         },
         {
@@ -138,7 +162,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
 
       return menus
     },
-    [assistant, assistants, onDeleteTopic, onMoveTopic, t, updateTopic]
+    [assistant, assistants, onClearMessages, onDeleteTopic, onMoveTopic, t, updateTopic]
   )
 
   return (
@@ -150,11 +174,14 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
             <Dropdown menu={{ items: getTopicMenuItems(topic) }} trigger={['contextMenu']} key={topic.id}>
               <TopicListItem className={isActive ? 'active' : ''} onClick={() => onSwitchTopic(topic)}>
                 <TopicName className="name">{topic.name.replace('`', '')}</TopicName>
-                {assistant.topics.length > 1 && isActive && (
+                {isActive && (
                   <MenuButton
                     className="menu"
                     onClick={(e) => {
                       e.stopPropagation()
+                      if (assistant.topics.length === 1) {
+                        return onClearMessages()
+                      }
                       onDeleteTopic(topic)
                     }}>
                     <CloseOutlined />
