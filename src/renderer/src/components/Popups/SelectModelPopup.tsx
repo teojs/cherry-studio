@@ -100,7 +100,7 @@ const PopupContainer: React.FC<PopupContainerProps> = ({ model, resolve }) => {
           size="middle"
         />
       </HStack>
-      <Divider style={{ margin: 0 }} />
+      <Divider style={{ margin: 0, borderBlockStartWidth: 0.5 }} />
       <Container>
         {filteredItems.length > 0 ? (
           <StyledMenu
@@ -123,9 +123,6 @@ const Container = styled.div`
   height: 50vh;
   margin-top: 10px;
   overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `
 
 const StyledMenu = styled(Menu)`
@@ -133,7 +130,6 @@ const StyledMenu = styled(Menu)`
   padding: 5px;
   margin-top: -10px;
   max-height: calc(60vh - 50px);
-  overflow-y: auto;
 
   .ant-menu-item-group-title {
     padding: 5px 10px 0;

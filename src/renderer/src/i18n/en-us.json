@@ -72,6 +72,7 @@
       "topics.auto_rename": "Auto Rename",
       "topics.edit.title": "Edit Name",
       "topics.edit.placeholder": "Enter new name",
+      "topics.clear.title": "Clear Messages",
       "topics.delete.all.title": "Delete all topics",
       "topics.delete.all.content": "Are you sure you want to delete all topics?",
       "topics.move_to": "Move to",
@@ -106,7 +107,9 @@
       "add.assistant.title": "Add Assistant",
       "message.new.context": "New Context",
       "message.new.branch": "New Branch",
-      "assistant.search.placeholder": "Search"
+      "assistant.search.placeholder": "Search",
+      "artifacts.button.preview": "Preview",
+      "artifacts.button.download": "Download"
     },
     "assistants": {
       "title": "Assistants",
@@ -169,7 +172,7 @@
       "groq": "Groq",
       "ollama": "Ollama",
       "baichuan": "Baichuan",
-      "dashscope": "DashScope",
+      "dashscope": "Alibaba Cloud",
       "anthropic": "Anthropic",
       "aihubmix": "AiHubMix",
       "stepfun": "StepFun",

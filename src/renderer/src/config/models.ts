@@ -695,7 +695,7 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
       group: 'Baichuan3'
     }
   ],
-  dashscope: [
+  bailian: [
     {
       id: 'qwen-turbo',
       provider: 'dashscope',
