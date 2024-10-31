@@ -104,18 +104,18 @@
 
   p code,
   li code {
-    background: var(--color-background-soft);
+    background: var(--color-background-mute);
     padding: 3px 5px;
     border-radius: 5px;
     word-break: keep-all;
-    white-space: nowrap !important;
+    white-space: pre;
   }
 
   pre {
     border-radius: 5px;
     overflow-x: auto;
     font-family: 'Fira Code', 'Courier New', Courier, monospace;
-    background-color: var(--color-background-soft);
+    background-color: var(--color-background-mute);
     &:not(pre pre) {
       > code:not(pre pre > code) {
         padding: 15px;

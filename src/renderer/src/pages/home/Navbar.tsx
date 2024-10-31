@@ -24,7 +24,6 @@ interface Props {
 const HeaderNavbar: FC<Props> = ({ activeAssistant }) => {
   const { assistant } = useAssistant(activeAssistant.id)
   const { showAssistants, toggleShowAssistants } = useShowAssistants()
-  const { theme, toggleTheme } = useTheme()
   const { topicPosition } = useSettings()
   const { showTopics, toggleShowTopics } = useShowTopics()
 
@@ -63,12 +62,6 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant }) => {
           <SelectModelButton assistant={assistant} />
         </HStack>
         <HStack alignItems="center">
-          <ThemeSwitch
-            checkedChildren={<i className="iconfont icon-theme icon-dark1" />}
-            unCheckedChildren={<i className="iconfont icon-theme icon-theme-light" />}
-            checked={theme === 'dark'}
-            onChange={toggleTheme}
-          />
           {topicPosition === 'right' && (
             <NewButton onClick={toggleShowTopics}>
               <i className={`iconfont icon-${showTopics ? 'show' : 'hide'}-sidebar`} />
