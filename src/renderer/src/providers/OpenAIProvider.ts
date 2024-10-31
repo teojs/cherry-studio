@@ -1,11 +1,11 @@
-import { isLocalAi } from '@renderer/config/env'
 import { isSupportedModel, isVisionModel } from '@renderer/config/models'
+import { SUMMARIZE_PROMPT } from '@renderer/config/prompts'
 import { getAssistantSettings, getDefaultModel, getTopNamingModel } from '@renderer/services/assistant'
 import { EVENT_NAMES } from '@renderer/services/event'
 import { filterContextMessages } from '@renderer/services/messages'
 import { Assistant, FileTypes, Message, Model, Provider, Suggestion } from '@renderer/types'
 import { removeQuotes } from '@renderer/utils'
-import { first, takeRight } from 'lodash'
+import { takeRight } from 'lodash'
 import OpenAI, { AzureOpenAI } from 'openai'
 import {
   ChatCompletionContentPart,
@@ -45,7 +45,7 @@ export default class OpenAIProvider extends BaseProvider {
   }
 
   private get isNotSupportFiles() {
-    const providers = ['deepseek', 'baichuan', 'minimax', 'yi', 'doubao']
+    const providers = ['deepseek', 'baichuan', 'minimax', 'doubao']
     return providers.includes(this.provider.id)
   }
 
@@ -138,16 +138,21 @@ export default class OpenAIProvider extends BaseProvider {
     const isSupportStreamOutput = streamOutput && this.isSupportStreamOutput(model.id)
 
     // @ts-ignore key is not typed
-    const stream = await this.sdk.chat.completions.create({
-      model: model.id,
-      messages: [isOpenAIo1 ? undefined : systemMessage, ...userMessages].filter(
-        Boolean
-      ) as ChatCompletionMessageParam[],
-      temperature: isOpenAIo1 ? 1 : assistant?.settings?.temperature,
-      max_tokens: maxTokens,
-      keep_alive: this.keepAliveTime,
-      stream: isSupportStreamOutput
-    })
+    const stream = await this.sdk.chat.completions.create(
+      {
+        model: model.id,
+        messages: [isOpenAIo1 ? undefined : systemMessage, ...userMessages].filter(
+          Boolean
+        ) as ChatCompletionMessageParam[],
+        temperature: isOpenAIo1 ? 1 : assistant?.settings?.temperature,
+        max_tokens: maxTokens,
+        keep_alive: this.keepAliveTime,
+        stream: isSupportStreamOutput
+      },
+      {
+        headers: this.getHeaders()
+      }
+    )
 
     if (!isSupportStreamOutput) {
       return onChunk({
@@ -177,12 +182,17 @@ export default class OpenAIProvider extends BaseProvider {
     ]
 
     // @ts-ignore key is not typed
-    const response = await this.sdk.chat.completions.create({
-      model: model.id,
-      messages: messages as ChatCompletionMessageParam[],
-      stream: false,
-      keep_alive: this.keepAliveTime
-    })
+    const response = await this.sdk.chat.completions.create(
+      {
+        model: model.id,
+        messages: messages as ChatCompletionMessageParam[],
+        stream: false,
+        keep_alive: this.keepAliveTime
+      },
+      {
+        headers: this.getHeaders()
+      }
+    )
 
     return response.choices[0].message?.content || ''
   }
@@ -190,24 +200,41 @@ export default class OpenAIProvider extends BaseProvider {
   public async summaries(messages: Message[], assistant: Assistant): Promise<string> {
     const model = getTopNamingModel() || assistant.model || getDefaultModel()
 
-    const userMessages = takeRight(messages, 5).map((message) => ({
-      role: message.role,
-      content: message.content
-    }))
+    const userMessages = takeRight(messages, 5)
+      .filter((message) => !message.isPreset)
+      .map((message) => ({
+        role: message.role,
+        content: message.content
+      }))
+
+    const userMessageContent = userMessages.reduce((prev, curr) => {
+      const content = curr.role === 'user' ? `User: ${curr.content}` : `Assistant: ${curr.content}`
+      return prev + (prev ? '\n' : '') + content
+    }, '')
 
     const systemMessage = {
       role: 'system',
-      content: '你是一名擅长会话的助理，你需要将用户的会话总结为 10 个字以内的标题，不要使用标点符号和其他特殊符号。'
+      content: SUMMARIZE_PROMPT
+    }
+
+    const userMessage = {
+      role: 'user',
+      content: userMessageContent
     }
 
     // @ts-ignore key is not typed
-    const response = await this.sdk.chat.completions.create({
-      model: model.id,
-      messages: [systemMessage, ...(isLocalAi ? [first(userMessages)] : userMessages)] as ChatCompletionMessageParam[],
-      stream: false,
-      max_tokens: 50,
-      keep_alive: this.keepAliveTime
-    })
+    const response = await this.sdk.chat.completions.create(
+      {
+        model: model.id,
+        messages: [systemMessage, userMessage] as ChatCompletionMessageParam[],
+        stream: false,
+        keep_alive: this.keepAliveTime,
+        max_tokens: 1000
+      },
+      {
+        headers: this.getHeaders()
+      }
+    )
 
     return removeQuotes(response.choices[0].message?.content?.substring(0, 50) || '')
   }
@@ -215,14 +242,19 @@ export default class OpenAIProvider extends BaseProvider {
   public async generateText({ prompt, content }: { prompt: string; content: string }): Promise<string> {
     const model = getDefaultModel()
 
-    const response = await this.sdk.chat.completions.create({
-      model: model.id,
-      stream: false,
-      messages: [
-        { role: 'user', content },
-        { role: 'system', content: prompt }
-      ]
-    })
+    const response = await this.sdk.chat.completions.create(
+      {
+        model: model.id,
+        stream: false,
+        messages: [
+          { role: 'system', content: prompt },
+          { role: 'user', content }
+        ]
+      },
+      {
+        headers: this.getHeaders()
+      }
+    )
 
     return response.choices[0].message?.content || ''
   }
@@ -237,6 +269,7 @@ export default class OpenAIProvider extends BaseProvider {
     const response: any = await this.sdk.request({
       method: 'post',
       path: '/advice_questions',
+      headers: this.getHeaders(),
       body: {
         messages: messages.filter((m) => m.role === 'user').map((m) => ({ role: m.role, content: m.content })),
         model: model.id,
@@ -260,7 +293,9 @@ export default class OpenAIProvider extends BaseProvider {
     }
 
     try {
-      const response = await this.sdk.chat.completions.create(body as ChatCompletionCreateParamsNonStreaming)
+      const response = await this.sdk.chat.completions.create(body as ChatCompletionCreateParamsNonStreaming, {
+        headers: this.getHeaders()
+      })
 
       return {
         valid: Boolean(response?.choices[0].message),
@@ -282,7 +317,7 @@ export default class OpenAIProvider extends BaseProvider {
         query.type = 'text'
       }
 
-      const response = await this.sdk.models.list({ query })
+      const response = await this.sdk.models.list({ query, headers: this.getHeaders() })
 
       if (this.provider.id === 'github') {
         // @ts-ignore key is not typed

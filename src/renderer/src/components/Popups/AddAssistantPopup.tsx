@@ -3,15 +3,18 @@ import { TopView } from '@renderer/components/TopView'
 import systemAgents from '@renderer/config/agents.json'
 import { useAgents } from '@renderer/hooks/useAgents'
 import { useAssistants, useDefaultAssistant } from '@renderer/hooks/useAssistant'
-import { covertAgentToAssistant } from '@renderer/services/assistant'
+import { createAssistantFromAgent } from '@renderer/services/assistant'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/event'
 import { Agent, Assistant } from '@renderer/types'
+import { uuid } from '@renderer/utils'
 import { Divider, Input, InputRef, Modal, Tag } from 'antd'
+import { take } from 'lodash'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { HStack } from '../Layout'
+import Scrollbar from '../Scrollbar'
 
 interface Props {
   resolve: (value: Assistant | undefined) => void
@@ -26,35 +29,24 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
   const { assistants, addAssistant } = useAssistants()
   const inputRef = useRef<InputRef>(null)
 
-  const defaultAgent: Agent = useMemo(
-    () => ({
-      id: defaultAssistant.id,
-      name: defaultAssistant.name,
-      emoji: defaultAssistant.emoji || '',
-      prompt: defaultAssistant.prompt,
-      group: 'system'
-    }),
-    [defaultAssistant.emoji, defaultAssistant.id, defaultAssistant.name, defaultAssistant.prompt]
-  )
-
   const agents = useMemo(() => {
     const allAgents = [...userAgents, ...systemAgents] as Agent[]
-    const list = [defaultAgent, ...allAgents.filter((agent) => !assistants.map((a) => a.id).includes(agent.id))]
+    const list = [defaultAssistant, ...allAgents.filter((agent) => !assistants.map((a) => a.id).includes(agent.id))]
     return searchText
       ? list.filter((agent) => agent.name.toLowerCase().includes(searchText.trim().toLocaleLowerCase()))
       : list
-  }, [assistants, defaultAgent, searchText, userAgents])
+  }, [assistants, defaultAssistant, searchText, userAgents])
 
-  const onCreateAssistant = (agent: Agent) => {
-    if (agent.id !== 'default') {
-      if (assistants.map((a) => a.id).includes(String(agent.id))) {
-        return
-      }
+  const onCreateAssistant = async (agent: Agent) => {
+    let assistant: Assistant
+
+    if (agent.id === 'default') {
+      assistant = { ...agent, id: uuid() }
+      addAssistant(assistant)
+    } else {
+      assistant = await createAssistantFromAgent(agent)
     }
 
-    const assistant = covertAgentToAssistant(agent)
-
-    addAssistant(assistant)
     setTimeout(() => EventEmitter.emit(EVENT_NAMES.SHOW_ASSISTANTS), 0)
     resolve(assistant)
     setOpen(false)
@@ -79,8 +71,7 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
       open={open}
       onCancel={onCancel}
       afterClose={onClose}
-      transitionName="ant-move-down"
-      maskTransitionName="ant-fade"
+      transitionName="ant-move-up"
       styles={{ content: { borderRadius: 20, padding: 0, overflow: 'hidden', paddingBottom: 20 } }}
       closeIcon={null}
       footer={null}>
@@ -104,7 +95,7 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
       </HStack>
       <Divider style={{ margin: 0, borderBlockStartWidth: 0.5 }} />
       <Container>
-        {agents.map((agent) => (
+        {take(agents, 100).map((agent) => (
           <AgentItem
             key={agent.id}
             onClick={() => onCreateAssistant(agent)}
@@ -112,8 +103,8 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
             <HStack alignItems="center" gap={5}>
               {agent.emoji} {agent.name}
             </HStack>
-            {agent.group === 'system' && <Tag color="green">{t('agents.tag.system')}</Tag>}
-            {agent.group === 'user' && <Tag color="orange">{t('agents.tag.user')}</Tag>}
+            {agent.id === 'default' && <Tag color="green">{t('agents.tag.system')}</Tag>}
+            {agent.type === 'agent' && <Tag color="orange">{t('agents.tag.agent')}</Tag>}
           </AgentItem>
         ))}
       </Container>
@@ -121,14 +112,10 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
   )
 }
 
-const Container = styled.div`
+const Container = styled(Scrollbar)`
   padding: 0 12px;
   height: 50vh;
   margin-top: 10px;
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `
 
 const AgentItem = styled.div`

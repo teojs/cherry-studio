@@ -1,6 +1,8 @@
 import { SYSTEM_MODELS } from '@renderer/config/models'
+import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import { Assistant } from '@renderer/types'
+import { runAsyncFunction, uuid } from '@renderer/utils'
 import { isEmpty } from 'lodash'
 import { createMigrate } from 'redux-persist'
 
@@ -478,6 +480,15 @@ const migrateConfig = {
             enabled: false
           },
           {
+            id: 'hunyuan',
+            name: 'hunyuan',
+            apiKey: '',
+            apiHost: 'https://api.hunyuan.cloud.tencent.com',
+            models: SYSTEM_MODELS.hunyuan,
+            isSystem: true,
+            enabled: false
+          },
+          {
             id: 'nvidia',
             name: 'Nvidia',
             apiKey: '',
@@ -539,6 +550,70 @@ const migrateConfig = {
         })
       }
     }
+  },
+  '32': (state: RootState) => {
+    return {
+      ...state,
+      llm: {
+        ...state.llm,
+        providers: [
+          ...state.llm.providers,
+          {
+            id: 'hunyuan',
+            name: 'Hunyuan',
+            apiKey: '',
+            apiHost: 'https://api.hunyuan.cloud.tencent.com',
+            models: SYSTEM_MODELS.hunyuan,
+            isSystem: true,
+            enabled: false
+          }
+        ]
+      }
+    }
+  },
+  '33': (state: RootState) => {
+    state.assistants.defaultAssistant.type = 'assistant'
+
+    state.agents.agents.forEach((agent) => {
+      agent.type = 'agent'
+      // @ts-ignore eslint-disable-next-line
+      delete agent.group
+    })
+
+    return {
+      ...state,
+      assistants: {
+        ...state.assistants,
+        assistants: [...state.assistants.assistants].map((assistant) => {
+          // @ts-ignore eslint-disable-next-line
+          delete assistant.group
+          return {
+            ...assistant,
+            id: assistant.id.length === 36 ? assistant.id : uuid(),
+            type: assistant.type === 'system' ? assistant.type : 'assistant'
+          }
+        })
+      }
+    }
+  },
+  '34': (state: RootState) => {
+    state.assistants.assistants.forEach((assistant) => {
+      assistant.topics.forEach((topic) => {
+        topic.assistantId = assistant.id
+        runAsyncFunction(async () => {
+          const _topic = await db.topics.get(topic.id)
+          if (_topic) {
+            const messages = (_topic?.messages || []).map((message) => ({ ...message, assistantId: assistant.id }))
+            db.topics.put({ ..._topic, messages }, topic.id)
+          }
+        })
+      })
+    })
+    return state
+  },
+  '35': (state: RootState) => {
+    state.settings.mathEngine = 'KaTeX'
+    return state
   }
 }
 

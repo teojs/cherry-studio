@@ -17,10 +17,13 @@ export interface SettingsState {
   windowStyle: 'transparent' | 'opaque'
   fontSize: number
   topicPosition: 'left' | 'right'
+  showTopicTime: boolean
   pasteLongTextAsFile: boolean
   clickAssistantToShowTopic: boolean
   manualUpdateCheck: boolean
   renderInputMessageAsMarkdown: boolean
+  codeShowLineNumbers: boolean
+  mathEngine: 'MathJax' | 'KaTeX'
   // webdav 配置 host, user, pass, path
   webdavHost: string
   webdavUser: string
@@ -38,14 +41,17 @@ const initialState: SettingsState = {
   showMessageDivider: false,
   messageFont: 'system',
   showInputEstimatedTokens: false,
-  theme: ThemeMode.light,
+  theme: ThemeMode.auto,
   windowStyle: 'transparent',
   fontSize: 14,
   topicPosition: 'right',
-  pasteLongTextAsFile: true,
+  showTopicTime: false,
+  pasteLongTextAsFile: false,
   clickAssistantToShowTopic: false,
   manualUpdateCheck: false,
   renderInputMessageAsMarkdown: true,
+  codeShowLineNumbers: false,
+  mathEngine: 'MathJax',
   webdavHost: '',
   webdavUser: '',
   webdavPass: '',
@@ -102,6 +108,9 @@ const settingsSlice = createSlice({
     setTopicPosition: (state, action: PayloadAction<'left' | 'right'>) => {
       state.topicPosition = action.payload
     },
+    setShowTopicTime: (state, action: PayloadAction<boolean>) => {
+      state.showTopicTime = action.payload
+    },
     setPasteLongTextAsFile: (state, action: PayloadAction<boolean>) => {
       state.pasteLongTextAsFile = action.payload
     },
@@ -125,6 +134,12 @@ const settingsSlice = createSlice({
     },
     setRenderInputMessageAsMarkdown: (state, action: PayloadAction<boolean>) => {
       state.renderInputMessageAsMarkdown = action.payload
+    },
+    setCodeShowLineNumbers: (state, action: PayloadAction<boolean>) => {
+      state.codeShowLineNumbers = action.payload
+    },
+    setMathEngine: (state, action: PayloadAction<'MathJax' | 'KaTeX'>) => {
+      state.mathEngine = action.payload
     }
   }
 })
@@ -145,6 +160,7 @@ export const {
   setFontSize,
   setWindowStyle,
   setTopicPosition,
+  setShowTopicTime,
   setPasteLongTextAsFile,
   setRenderInputMessageAsMarkdown,
   setClickAssistantToShowTopic,
@@ -152,7 +168,9 @@ export const {
   setWebdavHost,
   setWebdavUser,
   setWebdavPass,
-  setWebdavPath
+  setWebdavPath,
+  setCodeShowLineNumbers,
+  setMathEngine
 } = settingsSlice.actions
 
 export default settingsSlice.reducer

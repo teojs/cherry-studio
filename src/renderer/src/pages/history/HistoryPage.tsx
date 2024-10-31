@@ -82,10 +82,15 @@ const TopicsPage: FC = () => {
           />
         </Header>
         <Divider style={{ margin: 0 }} />
-        <TopicsHistory keywords={search} onClick={onTopicClick as any} style={{ display: isShow('topics') }} />
+        <TopicsHistory
+          keywords={search}
+          onClick={onTopicClick as any}
+          onSearch={onSearch}
+          style={{ display: isShow('topics') }}
+        />
         <TopicMessages topic={topic} style={{ display: isShow('topic') }} />
         <SearchResults
-          keywords={search}
+          keywords={isShow('search') ? search : ''}
           onMessageClick={onMessageClick}
           onTopicClick={onTopicClick}
           style={{ display: isShow('search') }}
@@ -118,6 +123,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: center;
   padding: 8px 20px;
+  padding-top: 10px;
   width: 100%;
   position: relative;
 `

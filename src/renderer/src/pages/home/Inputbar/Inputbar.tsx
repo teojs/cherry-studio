@@ -11,9 +11,10 @@ import { documentExts, imageExts, textExts } from '@renderer/config/constant'
 import { isVisionModel } from '@renderer/config/models'
 import db from '@renderer/databases'
 import { useAssistant } from '@renderer/hooks/useAssistant'
+import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
-import { useRuntime, useShowTopics } from '@renderer/hooks/useStore'
-import { getDefaultTopic } from '@renderer/services/assistant'
+import { useShowTopics } from '@renderer/hooks/useStore'
+import { addAssistantMessagesToTopic, getDefaultTopic } from '@renderer/services/assistant'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/event'
 import FileManager from '@renderer/services/file'
 import { estimateTextTokens as estimateTxtTokens } from '@renderer/services/tokens'
@@ -45,7 +46,7 @@ let _files: FileType[] = []
 const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
   const [text, setText] = useState(_text)
   const [inputFocus, setInputFocus] = useState(false)
-  const { addTopic, model } = useAssistant(assistant.id)
+  const { addTopic, model, setModel } = useAssistant(assistant.id)
   const { sendMessageShortcut, fontSize, pasteLongTextAsFile, showInputEstimatedTokens } = useSettings()
   const [expended, setExpend] = useState(false)
   const [estimateTokenCount, setEstimateTokenCount] = useState(0)
@@ -83,10 +84,11 @@ const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
     const message: Message = {
       id: uuid(),
       role: 'user',
-      content: text.replace(/\n/g, '  \n'),
+      content: text,
       assistantId: assistant.id,
       topicId: assistant.topics[0].id || uuid(),
       createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      type: 'text',
       status: 'success'
     }
 
@@ -127,12 +129,20 @@ const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
     }
   }
 
-  const addNewTopic = useCallback(() => {
+  const addNewTopic = useCallback(async () => {
     const topic = getDefaultTopic(assistant.id)
+
+    await db.topics.add({ id: topic.id, messages: [] })
+    await addAssistantMessagesToTopic({ assistant, topic })
+
+    // Reset to assistant default model
+    if (assistant.settings?.autoResetModel) {
+      assistant.defaultModel && setModel(assistant.defaultModel)
+    }
+
     addTopic(topic)
     setActiveTopic(topic)
-    db.topics.add({ id: topic.id, messages: [] })
-  }, [addTopic, assistant.id, setActiveTopic])
+  }, [addTopic, assistant, setActiveTopic, setModel])
 
   const clearTopic = async () => {
     if (generating) {
@@ -222,6 +232,25 @@ const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
     [pasteLongTextAsFile, supportExts, text]
   )
 
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const files = Array.from(e.dataTransfer.files)
+
+    files.forEach(async (file) => {
+      if (supportExts.includes(getFileExtension(file.path))) {
+        const selectedFile = await window.api.file.get(file.path)
+        selectedFile && setFiles((prevFiles) => [...prevFiles, selectedFile])
+      }
+    })
+  }
+
   // Command or Ctrl + N create new topic
   useEffect(() => {
     const onKeydown = (e) => {
@@ -249,9 +278,7 @@ const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
         _setEstimateTokenCount(tokensCount)
         setContextCount(contextCount)
       }),
-      EventEmitter.on(EVENT_NAMES.ADD_NEW_TOPIC, () => {
-        addNewTopic()
-      })
+      EventEmitter.on(EVENT_NAMES.ADD_NEW_TOPIC, addNewTopic)
     ]
     return () => unsubscribes.forEach((unsub) => unsub())
   }, [addNewTopic])
@@ -261,7 +288,7 @@ const Inputbar: FC<Props> = ({ assistant, setActiveTopic }) => {
   }, [assistant])
 
   return (
-    <Container>
+    <Container onDragOver={handleDragOver} onDrop={handleDrop}>
       <AttachmentPreview files={files} setFiles={setFiles} />
       <InputBarContainer id="inputbar" className={inputFocus ? 'focus' : ''} ref={containerRef}>
         <Textarea
@@ -370,6 +397,9 @@ const Textarea = styled(TextArea)`
   overflow: auto;
   width: 100%;
   box-sizing: border-box;
+  &.ant-input {
+    line-height: 1.4;
+  }
 `
 
 const Toolbar = styled.div`

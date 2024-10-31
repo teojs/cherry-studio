@@ -1,8 +1,9 @@
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
-import { VStack } from '@renderer/components/Layout'
+import Scrollbar from '@renderer/components/Scrollbar'
 import db from '@renderer/databases'
 import FileManager from '@renderer/services/file'
 import { FileType, FileTypes } from '@renderer/types'
+import { formatFileSize } from '@renderer/utils'
 import { Image, Table } from 'antd'
 import dayjs from 'dayjs'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -12,16 +13,17 @@ import styled from 'styled-components'
 
 const FilesPage: FC = () => {
   const { t } = useTranslation()
-  const files = useLiveQuery<FileType[]>(() => db.files.orderBy('ext').reverse().toArray())
+  const files = useLiveQuery<FileType[]>(() => db.files.orderBy('count').reverse().toArray())
 
   const dataSource = files?.map((file) => {
     const isImage = file.type === FileTypes.IMAGE
-    const ImageView = <Image src={'file://' + file.path} preview={false} style={{ maxHeight: '40px' }} />
+    const ImageView = <Image src={FileManager.getFileUrl(file)} preview={false} style={{ maxHeight: '40px' }} />
+    console.log(FileManager.getFileUrl(file))
     return {
       key: file.id,
       file: isImage ? ImageView : <FileNameText className="text-nowrap">{file.origin_name}</FileNameText>,
       name: <a href={'file://' + FileManager.getSafePath(file)}>{file.origin_name}</a>,
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+      size: formatFileSize(file),
       count: file.count,
       created_at: dayjs(file.created_at).format('MM-DD HH:mm')
     }
@@ -65,15 +67,15 @@ const FilesPage: FC = () => {
         <NavbarCenter style={{ borderRight: 'none' }}>{t('files.title')}</NavbarCenter>
       </Navbar>
       <ContentContainer id="content-container">
-        <VStack style={{ width: '100%' }}>
+        <TableContainer right>
           <Table
             dataSource={dataSource}
             columns={columns}
-            style={{ width: '100%', marginBottom: 20 }}
+            style={{ width: '100%' }}
             size="small"
-            pagination={{ pageSize: 15 }}
+            pagination={{ pageSize: 100 }}
           />
-        </VStack>
+        </TableContainer>
       </ContentContainer>
     </Container>
   )
@@ -83,7 +85,7 @@ const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - var(--navbar-height));
 `
 
 const ContentContainer = styled.div`
@@ -92,8 +94,14 @@ const ContentContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   height: 100%;
-  overflow-y: scroll;
+  padding: 0 2px;
+`
+
+const TableContainer = styled(Scrollbar)`
   padding: 15px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
 `
 
 const FileNameText = styled.div`

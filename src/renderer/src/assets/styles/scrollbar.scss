@@ -1,7 +1,21 @@
+:root {
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --color-scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+  --color-scrollbar-thumb-right: rgba(255, 255, 255, 0.25);
+  --color-scrollbar-thumb-right-hover: rgba(255, 255, 255, 0.35);
+}
+
+body[theme-mode='light'] {
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --color-scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+  --color-scrollbar-thumb-right: rgba(0, 0, 0, 0.25);
+  --color-scrollbar-thumb-right-hover: rgba(0, 0, 0, 0.35);
+}
+
 /* 全局初始化滚动条样式 */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 2px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -9,9 +23,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
   background: var(--color-scrollbar-thumb);
-  border-radius: 4px;
   &:hover {
     background: var(--color-scrollbar-thumb-hover);
+  }
+}
+
+pre::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.08);
+  &:hover {
+    background: rgba(0, 0, 0, 0.15);
   }
 }

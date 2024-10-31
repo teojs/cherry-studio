@@ -1,11 +1,15 @@
 import { FONT_FAMILY } from '@renderer/config/constant'
+import db from '@renderer/databases'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useModel } from '@renderer/hooks/useModel'
 import { useSettings } from '@renderer/hooks/useSettings'
+import { fetchChatCompletion } from '@renderer/services/api'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/event'
-import { Message } from '@renderer/types'
+import { estimateMessageUsage } from '@renderer/services/tokens'
+import { Message, Topic } from '@renderer/types'
+import { runAsyncFunction } from '@renderer/utils'
 import { Divider } from 'antd'
-import { FC, memo, useEffect, useMemo, useRef } from 'react'
+import { Dispatch, FC, memo, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -16,23 +20,34 @@ import MessageTokens from './MessageTokens'
 
 interface Props {
   message: Message
+  topic?: Topic
   index?: number
   total?: number
-  lastMessage?: boolean
-  showMenu?: boolean
-  onEditMessage?: (message: Message) => void
+  hidePresetMessages?: boolean
+  onGetMessages?: () => Message[]
+  onSetMessages?: Dispatch<SetStateAction<Message[]>>
   onDeleteMessage?: (message: Message) => void
 }
 
-const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, onEditMessage, onDeleteMessage }) => {
+const MessageItem: FC<Props> = ({
+  message: _message,
+  topic,
+  index,
+  hidePresetMessages,
+  onDeleteMessage,
+  onSetMessages,
+  onGetMessages
+}) => {
+  const [message, setMessage] = useState(_message)
   const { t } = useTranslation()
   const { assistant, setModel } = useAssistant(message.assistantId)
   const model = useModel(message.modelId)
   const { showMessageDivider, messageFont, fontSize } = useSettings()
-  const messageRef = useRef<HTMLDivElement>(null)
+  const messageContainerRef = useRef<HTMLDivElement>(null)
 
-  const isLastMessage = lastMessage || index === 0
+  const isLastMessage = index === 0
   const isAssistantMessage = message.role === 'assistant'
+  const showMenubar = !message.status.includes('ing')
 
   const fontFamily = useMemo(() => {
     return messageFont === 'serif' ? FONT_FAMILY.replace('sans-serif', 'serif').replace('Ubuntu, ', '') : FONT_FAMILY
@@ -40,17 +55,26 @@ const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, 
 
   const messageBorder = showMessageDivider ? undefined : 'none'
 
+  const onEditMessage = useCallback(
+    (msg: Message) => {
+      setMessage(msg)
+      const messages = onGetMessages?.().map((m) => (m.id === message.id ? message : m))
+      messages && onSetMessages?.(messages)
+      topic && db.topics.update(topic.id, { messages })
+    },
+    [message, onGetMessages, onSetMessages, topic]
+  )
+
   useEffect(() => {
     const unsubscribes = [
       EventEmitter.on(EVENT_NAMES.LOCATE_MESSAGE + ':' + message.id, (highlight: boolean = true) => {
-        if (messageRef.current) {
-          messageRef.current.scrollIntoView({ behavior: 'smooth' })
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollIntoView({ behavior: 'smooth' })
           if (highlight) {
             setTimeout(() => {
-              messageRef.current?.classList.add('message-highlight')
-              setTimeout(() => {
-                messageRef.current?.classList.remove('message-highlight')
-              }, 2500)
+              const classList = messageContainerRef.current?.classList
+              classList?.add('message-highlight')
+              setTimeout(() => classList?.remove('message-highlight'), 2500)
             }, 500)
           }
         }
@@ -58,6 +82,45 @@ const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, 
     ]
     return () => unsubscribes.forEach((unsub) => unsub())
   }, [message])
+
+  useEffect(() => {
+    if (message.role === 'user' && !message.usage) {
+      runAsyncFunction(async () => {
+        const usage = await estimateMessageUsage(message)
+        setMessage({ ...message, usage })
+        const topic = await db.topics.get({ id: message.topicId })
+        const messages = topic?.messages.map((m) => (m.id === message.id ? { ...m, usage } : m))
+        db.topics.update(message.topicId, { messages })
+      })
+    }
+  }, [message])
+
+  useEffect(() => {
+    if (topic && onGetMessages && onSetMessages) {
+      if (message.status === 'sending' && index === 0) {
+        const messages = onGetMessages()
+        fetchChatCompletion({
+          message,
+          messages: messages.filter((m) => !m.status.includes('ing')),
+          assistant,
+          topic,
+          onResponse: (msg) => {
+            setMessage(msg)
+            if (msg.status !== 'pending') {
+              const _messages = messages.map((m) => (m.id === msg.id ? msg : m))
+              onSetMessages(_messages)
+              db.topics.update(topic.id, { messages: _messages })
+            }
+          }
+        })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (hidePresetMessages && message.isPreset) {
+    return null
+  }
 
   if (message.type === 'clear') {
     return (
@@ -71,7 +134,7 @@ const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, 
     <MessageContainer
       key={message.id}
       className="message"
-      ref={messageRef}
+      ref={messageContainerRef}
       style={{
         alignItems: isAssistantMessage ? 'start' : 'end'
       }}>
@@ -83,7 +146,7 @@ const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, 
           background: isAssistantMessage ? 'var(--chat-background-assistant)' : 'var(--chat-background-user)'
         }}>
         <MessageContent message={message} model={model} />
-        {!lastMessage && showMenu && (
+        {showMenubar && (
           <MessageFooter style={{ border: messageBorder }}>
             <MessageMenubar
               message={message}
@@ -95,7 +158,7 @@ const MessageItem: FC<Props> = ({ message, index, lastMessage, showMenu = true, 
               onEditMessage={onEditMessage}
               onDeleteMessage={onDeleteMessage}
             />
-            <MessageTokens message={message} />
+            <MessageTokens message={message} isLastMessage={isLastMessage} />
           </MessageFooter>
         )}
       </MessageContentContainer>
@@ -134,7 +197,7 @@ const MessageContentContainer = styled.div`
   justify-content: space-between;
   margin: 5px 0;
   border-radius: 8px;
-  padding: 15px 15px 0 15px;
+  padding: 10px 15px 0 15px;
 `
 
 const MessageFooter = styled.div`

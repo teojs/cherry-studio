@@ -5,10 +5,18 @@ export type Assistant = {
   name: string
   prompt: string
   topics: Topic[]
+  type: string
   emoji?: string
   description?: string
   model?: Model
-  settings?: AssistantSettings
+  defaultModel?: Model
+  settings?: Partial<AssistantSettings>
+  messages?: AssistantMessage[]
+}
+
+export type AssistantMessage = {
+  role: 'user' | 'assistant'
+  content: string
 }
 
 export type AssistantSettings = {
@@ -17,7 +25,11 @@ export type AssistantSettings = {
   maxTokens: number | undefined
   enableMaxTokens: boolean
   streamOutput: boolean
+  hideMessages: boolean
+  autoResetModel: boolean
 }
+
+export type Agent = Omit<Assistant, 'model'>
 
 export type Message = {
   id: string
@@ -31,7 +43,8 @@ export type Message = {
   files?: FileType[]
   images?: string[]
   usage?: OpenAI.Completions.CompletionUsage
-  type?: 'text' | '@' | 'clear'
+  type: 'text' | '@' | 'clear'
+  isPreset?: boolean
 }
 
 export type Topic = {
@@ -68,15 +81,6 @@ export type Model = {
   group: string
   owned_by?: string
   description?: string
-}
-
-export type Agent = {
-  id: string
-  name: string
-  emoji: string
-  description?: string
-  prompt: string
-  group: string
 }
 
 export type Suggestion = {

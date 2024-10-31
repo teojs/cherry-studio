@@ -3,8 +3,14 @@ import { app, BrowserWindow } from 'electron'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 
 import { registerIpc } from './ipc'
+import { registerZoomShortcut } from './shortcut'
 import { updateUserDataPath } from './utils/upgrade'
 import { createMainWindow } from './window'
+
+// Check for single instance lock
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -30,12 +36,23 @@ app.whenReady().then(async () => {
 
   const mainWindow = createMainWindow()
 
+  registerZoomShortcut(mainWindow)
+
   registerIpc(mainWindow, app)
 
   if (process.env.NODE_ENV === 'development') {
     installExtension(REDUX_DEVTOOLS)
       .then((name) => console.log(`Added Extension:  ${name}`))
       .catch((err) => console.log('An error occurred: ', err))
+  }
+})
+
+// Listen for second instance
+app.on('second-instance', () => {
+  const mainWindow = BrowserWindow.getAllWindows()[0]
+  if (mainWindow) {
+    mainWindow.isMinimized() && mainWindow.restore()
+    mainWindow.focus()
   }
 })
 

@@ -15,7 +15,9 @@ const AgentCard: React.FC<Props> = ({ agent, onClick }) => {
         <AgentHeader>
           <AgentName style={{ marginBottom: 0 }}>{agent.name}</AgentName>
         </AgentHeader>
-        <AgentCardPrompt>{agent.prompt}</AgentCardPrompt>
+        <AgentCardPrompt className="text-nowrap">
+          {(agent.description || agent.prompt).substring(0, 20)}
+        </AgentCardPrompt>
       </Col>
     </Container>
   )
@@ -32,7 +34,8 @@ const Container = styled.div`
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
-    background-color: var(--color-background-mute);
+    border: 0.5px solid var(--color-primary);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   }
 `
 const EmojiHeader = styled.div`
@@ -42,7 +45,7 @@ const EmojiHeader = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 5px;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 20px;
 `
 
@@ -65,11 +68,8 @@ const AgentName = styled.div`
 const AgentCardPrompt = styled.div`
   color: #666;
   margin-top: 6px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   font-size: 12px;
+  max-width: auto;
 `
 
 export default AgentCard

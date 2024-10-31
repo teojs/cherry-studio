@@ -3,8 +3,11 @@ import { FileProtectOutlined, GlobalOutlined, MailOutlined, SoundOutlined } from
 import { HStack } from '@renderer/components/Layout'
 import MinApp from '@renderer/components/MinApp'
 import { APP_NAME, AppLogo } from '@renderer/config/env'
+import { useSettings } from '@renderer/hooks/useSettings'
+import { useAppDispatch } from '@renderer/store'
+import { setManualUpdateCheck } from '@renderer/store/settings'
 import { runAsyncFunction } from '@renderer/utils'
-import { Avatar, Button, Progress, Row, Tag } from 'antd'
+import { Avatar, Button, Progress, Row, Switch, Tag } from 'antd'
 import { ProgressInfo } from 'electron-updater'
 import { debounce } from 'lodash'
 import { FC, useEffect, useState } from 'react'
@@ -20,6 +23,8 @@ const AboutSettings: FC = () => {
   const [percent, setPercent] = useState(0)
   const [checkUpdateLoading, setCheckUpdateLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const { manualUpdateCheck } = useSettings()
+  const dispatch = useAppDispatch()
 
   const onCheckUpdate = debounce(
     async () => {
@@ -29,7 +34,7 @@ const AboutSettings: FC = () => {
       try {
         await window.api.checkForUpdate()
       } catch (error) {
-        setCheckUpdateLoading(false)
+        window.message.error(t('settings.about.updateError'))
       }
 
       setCheckUpdateLoading(false)
@@ -51,10 +56,11 @@ const AboutSettings: FC = () => {
     onOpenWebsite(url)
   }
 
-  const showLicense = () => {
+  const showLicense = async () => {
+    const { appPath } = await window.api.getAppInfo()
     MinApp.start({
-      name: t('settings.about.releases.title'),
-      url: 'https://raw.githubusercontent.com/kangfenmao/cherry-studio/main/LICENSE',
+      name: t('settings.about.license.title'),
+      url: `file://${appPath}/resources/cherry-studio/license.html`,
       logo: AppLogo
     })
   }
@@ -138,6 +144,11 @@ const AboutSettings: FC = () => {
           {downloading ? t('settings.about.downloading') : t('settings.about.checkUpdate')}
         </CheckUpdateButton>
       </AboutHeader>
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>{t('settings.general.manually_check_update.title')}</SettingRowTitle>
+        <Switch value={manualUpdateCheck} onChange={(v) => dispatch(setManualUpdateCheck(v))} />
+      </SettingRow>
       <SettingDivider />
       <SettingRow>
         <SettingRowTitle>

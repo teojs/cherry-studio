@@ -1,4 +1,4 @@
-import { Model } from '@renderer/types'
+import { FileType, Model } from '@renderer/types'
 import imageCompression from 'browser-image-compression'
 import html2canvas from 'html2canvas'
 // @ts-ignore next-line`
@@ -304,4 +304,40 @@ export const captureScrollableDiv = async (divRef: React.RefObject<HTMLDivElemen
   }
 
   return Promise.resolve(undefined)
+}
+
+export function hasPath(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url)
+    return parsedUrl.pathname !== '/' && parsedUrl.pathname !== ''
+  } catch (error) {
+    console.error('Invalid URL:', error)
+    return false
+  }
+}
+
+export function formatFileSize(file: FileType) {
+  const size = file.size
+
+  if (size > 1024 * 1024) {
+    return (size / 1024 / 1024).toFixed(1) + ' MB'
+  }
+
+  if (size > 1024) {
+    return (size / 1024).toFixed(0) + ' KB'
+  }
+
+  return (size / 1024).toFixed(2) + ' KB'
+}
+
+export function classNames(...classes: Array<string | boolean | undefined | null>) {
+  return classes.filter(Boolean).join(' ')
+}
+
+export function sortByEnglishFirst(a: string, b: string) {
+  const isAEnglish = /^[a-zA-Z]/.test(a)
+  const isBEnglish = /^[a-zA-Z]/.test(b)
+  if (isAEnglish && !isBEnglish) return -1
+  if (!isAEnglish && isBEnglish) return 1
+  return a.localeCompare(b)
 }

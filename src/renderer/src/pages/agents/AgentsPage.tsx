@@ -1,85 +1,158 @@
-import { UnorderedListOutlined } from '@ant-design/icons'
+import { SearchOutlined } from '@ant-design/icons'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
-import { HStack } from '@renderer/components/Layout'
-import Agents from '@renderer/config/agents.json'
-import { useAgents } from '@renderer/hooks/useAgents'
-import { useAssistants } from '@renderer/hooks/useAssistant'
-import { covertAgentToAssistant } from '@renderer/services/assistant'
+import Scrollbar from '@renderer/components/Scrollbar'
+import SystemAgents from '@renderer/config/agents.json'
+import { createAssistantFromAgent } from '@renderer/services/assistant'
 import { Agent } from '@renderer/types'
-import { Col, Row, Typography } from 'antd'
-import { find, groupBy } from 'lodash'
-import { FC } from 'react'
+import { uuid } from '@renderer/utils'
+import { Col, Empty, Input, Row, Tabs as TabsAntd, Typography } from 'antd'
+import { groupBy, omit } from 'lodash'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactMarkdown from 'react-markdown'
 import styled from 'styled-components'
 
+import Agents from './Agents'
 import AgentCard from './components/AgentCard'
-import ManageAgentsPopup from './components/ManageAgentsPopup'
-import UserAgents from './components/UserAgents'
 
 const { Title } = Typography
 
-const AppsPage: FC = () => {
-  const { assistants, addAssistant } = useAssistants()
-  const { agents } = useAgents()
-  const agentGroups = groupBy(Agents, 'group')
+const getAgentsFromSystemAgents = () => {
+  const agents: Agent[] = []
+  for (let i = 0; i < SystemAgents.length; i++) {
+    for (let j = 0; j < SystemAgents[i].group.length; j++) {
+      const agent = { ...SystemAgents[i], group: SystemAgents[i].group[j], topics: [], type: 'agent' } as Agent
+      agents.push(agent)
+    }
+  }
+  return agents
+}
+
+let _agentGroups: Record<string, Agent[]> = {}
+
+const AgentsPage: FC = () => {
+  const [search, setSearch] = useState('')
+
+  const agentGroups = useMemo(() => {
+    if (Object.keys(_agentGroups).length === 0) {
+      _agentGroups = groupBy(getAgentsFromSystemAgents(), 'group')
+    }
+    return _agentGroups
+  }, [])
+
   const { t } = useTranslation()
 
-  const onAddAgentConfirm = (agent: Agent) => {
-    const added = find(assistants, { id: agent.id })
+  const filteredAgentGroups = useMemo(() => {
+    if (!search.trim()) return agentGroups
 
-    window.modal.confirm({
-      title: agent.emoji + ' ' + agent.name,
-      content: (agent.description || agent.prompt).substring(0, 1000) + '...',
-      icon: null,
-      closable: true,
-      maskClosable: true,
-      centered: true,
-      okButtonProps: { type: 'primary', disabled: Boolean(added) },
-      okText: added ? t('button.added') : t('button.add'),
-      onOk: () => onAddAgent(agent)
+    const filtered = {}
+    Object.entries(agentGroups).forEach(([group, agents]) => {
+      const filteredAgents = agents.filter(
+        (agent) =>
+          agent.name.toLowerCase().includes(search.toLowerCase()) ||
+          agent.description?.toLowerCase().includes(search.toLowerCase())
+      )
+      if (filteredAgents.length > 0) {
+        filtered[group] = filteredAgents
+      }
     })
+    return filtered
+  }, [agentGroups, search])
+
+  const getAgentName = (agent: Agent) => {
+    return agent.emoji ? agent.emoji + ' ' + agent.name : agent.name
   }
 
-  const onAddAgent = (agent: Agent) => {
-    addAssistant(covertAgentToAssistant(agent))
-    window.message.success({
-      content: t('message.assistant.added.content'),
-      key: 'agent-added',
-      style: { marginTop: '5vh' }
-    })
+  const onAddAgentConfirm = useCallback(
+    (agent: Agent) => {
+      window.modal.confirm({
+        title: getAgentName(agent),
+        content: (
+          <AgentPrompt>
+            <ReactMarkdown className="markdown">{agent.description || agent.prompt}</ReactMarkdown>
+          </AgentPrompt>
+        ),
+        width: 600,
+        icon: null,
+        closable: true,
+        maskClosable: true,
+        centered: true,
+        okButtonProps: { type: 'primary' },
+        okText: t('agents.add.button'),
+        onOk: () => createAssistantFromAgent(agent)
+      })
+    },
+    [t]
+  )
+
+  const getAgentFromSystemAgent = (agent: (typeof SystemAgents)[number]) => {
+    return {
+      ...omit(agent, 'group'),
+      name: agent.name,
+      id: uuid(),
+      topics: [],
+      type: 'agent'
+    }
   }
+
+  const tabItems = useMemo(() => {
+    let groups = Object.keys(filteredAgentGroups)
+    groups = groups.includes('办公') ? ['办公', ...groups.filter((g) => g !== '办公')] : groups
+    return groups.map((group, i) => {
+      const id = String(i + 1)
+      return {
+        label: group,
+        key: id,
+        children: (
+          <TabContent key={group}>
+            <Title level={5} key={group} style={{ marginBottom: 16 }}>
+              {group}
+            </Title>
+            <Row gutter={16}>
+              {filteredAgentGroups[group].map((agent, index) => {
+                return (
+                  <Col span={8} key={group + index}>
+                    <AgentCard onClick={() => onAddAgentConfirm(getAgentFromSystemAgent(agent))} agent={agent as any} />
+                  </Col>
+                )
+              })}
+            </Row>
+          </TabContent>
+        )
+      }
+    })
+  }, [filteredAgentGroups, onAddAgentConfirm])
 
   return (
     <Container>
       <Navbar>
-        <NavbarCenter style={{ borderRight: 'none' }}>{t('agents.title')}</NavbarCenter>
+        <NavbarCenter style={{ borderRight: 'none', justifyContent: 'space-between' }}>
+          {t('agents.title')}
+          <Input
+            placeholder={t('common.search')}
+            className="nodrag"
+            style={{ width: '30%', height: 28 }}
+            size="small"
+            variant="filled"
+            allowClear
+            suffix={<SearchOutlined />}
+            value={search}
+            maxLength={50}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <div style={{ width: 80 }} />
+        </NavbarCenter>
       </Navbar>
       <ContentContainer id="content-container">
         <AssistantsContainer>
-          <HStack alignItems="center" style={{ marginBottom: 16 }}>
-            <Title level={4}>{t('agents.my_agents')}</Title>
-            {agents.length > 0 && <ManageIcon onClick={ManageAgentsPopup.show} />}
-          </HStack>
-          <UserAgents onAdd={onAddAgentConfirm} />
-          {Object.keys(agentGroups)
-            .reverse()
-            .map((group) => (
-              <div key={group}>
-                <Title level={4} key={group} style={{ marginBottom: 16 }}>
-                  {group}
-                </Title>
-                <Row gutter={16}>
-                  {agentGroups[group].map((agent, index) => {
-                    return (
-                      <Col span={8} key={group + index}>
-                        <AgentCard onClick={() => onAddAgentConfirm(agent)} agent={agent as any} />
-                      </Col>
-                    )
-                  })}
-                </Row>
-              </div>
-            ))}
-          <div style={{ minHeight: 20 }} />
+          <Agents onClick={onAddAgentConfirm} />
+          {tabItems.length > 0 ? (
+            <Tabs tabPosition="left" animated items={tabItems} />
+          ) : (
+            <EmptyView>
+              <Empty description={t('agents.search.no_results')} />
+            </EmptyView>
+          )}
         </AssistantsContainer>
       </ContentContainer>
     </Container>
@@ -99,24 +172,80 @@ const ContentContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   height: 100%;
-  overflow-y: scroll;
 `
 
 const AssistantsContainer = styled.div`
   display: flex;
   flex: 1;
-  flex-direction: column;
+  flex-direction: row;
   height: calc(100vh - var(--navbar-height));
-  padding: 20px;
-  max-width: 1000px;
 `
 
-const ManageIcon = styled(UnorderedListOutlined)`
-  font-size: 18px;
-  color: var(--color-icon);
-  cursor: pointer;
-  margin-bottom: 0.5em;
-  margin-left: 0.5em;
+const TabContent = styled(Scrollbar)`
+  height: calc(100vh - var(--navbar-height));
+  padding: 10px 10px 10px 15px;
+  margin-right: 4px;
 `
 
-export default AppsPage
+const AgentPrompt = styled.div`
+  max-height: 60vh;
+  overflow-y: scroll;
+  max-width: 560px;
+`
+
+const EmptyView = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  border-left: 0.5px solid var(--color-border);
+`
+
+const Tabs = styled(TabsAntd)`
+  display: flex;
+  flex: 1;
+  flex-direction: row-reverse;
+  .ant-tabs-tabpane {
+    padding-left: 0 !important;
+  }
+  .ant-tabs-nav-list {
+    padding: 10px 8px;
+  }
+  .ant-tabs-nav-operations {
+    display: none !important;
+  }
+  .ant-tabs-tab {
+    margin: 0 !important;
+    border-radius: 20px;
+    margin-bottom: 5px !important;
+    font-size: 14px;
+    justify-content: center;
+    &:hover {
+      color: var(--color-text) !important;
+      background-color: var(--color-background-soft);
+    }
+  }
+  .ant-tabs-tab-active {
+    background-color: var(--color-background-mute);
+    border-right: none;
+  }
+  .ant-tabs-content-holder {
+    border-left: 0.5px solid var(--color-border);
+    border-right: 0.5px solid var(--color-border);
+  }
+  .ant-tabs-ink-bar {
+    display: none;
+  }
+  .ant-tabs-tab-btn:active {
+    color: var(--color-text) !important;
+  }
+  .ant-tabs-tab-active {
+    .ant-tabs-tab-btn {
+      color: var(--color-text) !important;
+    }
+  }
+`
+
+export default AgentsPage

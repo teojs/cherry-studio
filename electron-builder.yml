@@ -9,9 +9,8 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!src'
-  - '!local'
   - '!scripts'
-  - '!resources'
+  - '!local'
 asarUnpack:
   - resources/**
 win:
@@ -64,13 +63,10 @@ electronDownload:
 afterSign: scripts/notarize.js
 releaseInfo:
   releaseNotes: |
-    本次更新：
-      增加 Artifacts 网页预览功能
-      内置助理新增网页生成助理
-      DashScope 服务商修改为阿里云百炼
-      修复粘贴长文本后不能自动清除的问题
-      话题右键菜单增加删除消息功能
-      修复选择模型弹窗滚动条消失问题
-    近期更新：
-      支持 PDF, DOC等办公文件格式
-      支持图片的预览和下载
+    增加300个智能体 by @cawabj
+    增加快捷键设置界面
+    支持快捷键缩放整体界面大小
+    修复 WebDAV 备份文件大小限制
+    修复跨平台备份回复后文件路径错误问题
+    请求头增加 X-Api-Key
+    修复消息滚动跳跃问题

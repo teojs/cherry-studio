@@ -1,12 +1,15 @@
 import { CheckOutlined, QuestionCircleOutlined, ReloadOutlined } from '@ant-design/icons'
 import { HStack } from '@renderer/components/Layout'
+import Scrollbar from '@renderer/components/Scrollbar'
 import { DEFAULT_CONEXTCOUNT, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE } from '@renderer/config/constant'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { SettingDivider, SettingRow, SettingRowTitle, SettingSubtitle } from '@renderer/pages/settings'
 import { useAppDispatch } from '@renderer/store'
 import {
+  setCodeShowLineNumbers,
   setFontSize,
+  setMathEngine,
   setMessageFont,
   setPasteLongTextAsFile,
   setRenderInputMessageAsMarkdown,
@@ -43,17 +46,13 @@ const SettingsTab: FC<Props> = (props) => {
     sendMessageShortcut,
     setSendMessageShortcut,
     pasteLongTextAsFile,
-    renderInputMessageAsMarkdown
+    renderInputMessageAsMarkdown,
+    codeShowLineNumbers,
+    mathEngine
   } = useSettings()
 
   const onUpdateAssistantSettings = (settings: Partial<AssistantSettings>) => {
-    updateAssistantSettings({
-      temperature: settings.temperature ?? temperature,
-      contextCount: settings.contextCount ?? contextCount,
-      enableMaxTokens: settings.enableMaxTokens ?? enableMaxTokens,
-      maxTokens: settings.maxTokens ?? maxTokens,
-      streamOutput: settings.streamOutput ?? streamOutput
-    })
+    updateAssistantSettings(settings)
   }
 
   const onTemperatureChange = (value) => {
@@ -85,7 +84,9 @@ const SettingsTab: FC<Props> = (props) => {
         contextCount: DEFAULT_CONEXTCOUNT,
         enableMaxTokens: false,
         maxTokens: DEFAULT_MAX_TOKENS,
-        streamOutput: true
+        streamOutput: true,
+        hideMessages: false,
+        autoResetModel: false
       }
     })
   }
@@ -205,6 +206,27 @@ const SettingsTab: FC<Props> = (props) => {
       </SettingRow>
       <SettingDivider />
       <SettingRow>
+        <SettingRowTitleSmall>{t('chat.settings.show_line_numbers')}</SettingRowTitleSmall>
+        <Switch
+          size="small"
+          checked={codeShowLineNumbers}
+          onChange={(checked) => dispatch(setCodeShowLineNumbers(checked))}
+        />
+      </SettingRow>
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitleSmall>{t('settings.messages.math_engine')}</SettingRowTitleSmall>
+        <Select
+          value={mathEngine}
+          onChange={(value) => dispatch(setMathEngine(value))}
+          style={{ width: 100 }}
+          size="small">
+          <Select.Option value="KaTeX">KaTeX</Select.Option>
+          <Select.Option value="MathJax">MathJax</Select.Option>
+        </Select>
+      </SettingRow>
+      <SettingDivider />
+      <SettingRow>
         <SettingRowTitleSmall>{t('settings.font_size.title')}</SettingRowTitleSmall>
       </SettingRow>
       <Row align="middle" gutter={10}>
@@ -255,28 +277,29 @@ const SettingsTab: FC<Props> = (props) => {
       <SettingDivider />
       <SettingRow>
         <SettingRowTitleSmall>{t('settings.messages.input.send_shortcuts')}</SettingRowTitleSmall>
+        <Select
+          size="small"
+          value={sendMessageShortcut}
+          menuItemSelectedIcon={<CheckOutlined />}
+          options={[
+            { value: 'Enter', label: 'Enter' },
+            { value: 'Shift+Enter', label: `Shift + Enter` }
+          ]}
+          onChange={(value) => setSendMessageShortcut(value)}
+          style={{ width: 100 }}
+        />
       </SettingRow>
-      <Select
-        value={sendMessageShortcut}
-        menuItemSelectedIcon={<CheckOutlined />}
-        options={[
-          { value: 'Enter', label: `Enter ${t('chat.input.send')}` },
-          { value: 'Shift+Enter', label: `Shift + Enter ${t('chat.input.send')}` }
-        ]}
-        onChange={(value) => setSendMessageShortcut(value)}
-        style={{ width: '100%', marginTop: 10 }}
-      />
     </Container>
   )
 }
 
-const Container = styled.div`
+const Container = styled(Scrollbar)`
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow: hidden;
   padding-bottom: 10px;
   padding: 10px 15px;
+  margin-bottom: 10px;
 `
 
 const Label = styled.p`

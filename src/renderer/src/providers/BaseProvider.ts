@@ -1,5 +1,6 @@
 import { getOllamaKeepAliveTime } from '@renderer/hooks/useOllama'
 import { Assistant, Message, Provider, Suggestion } from '@renderer/types'
+import { delay } from '@renderer/utils'
 import OpenAI from 'openai'
 
 export default abstract class BaseProvider {
@@ -16,8 +17,21 @@ export default abstract class BaseProvider {
     return host.endsWith('/') ? host : `${host}/v1/`
   }
 
+  public getHeaders() {
+    return {
+      'X-Api-Key': this.provider.apiKey
+    }
+  }
+
   public get keepAliveTime() {
     return this.provider.id === 'ollama' ? getOllamaKeepAliveTime() : undefined
+  }
+
+  public async fakeCompletions({ onChunk }: CompletionsParams) {
+    for (let i = 0; i < 100; i++) {
+      await delay(0.01)
+      onChunk({ text: i + '\n', usage: { completion_tokens: 0, prompt_tokens: 0, total_tokens: 0 } })
+    }
   }
 
   abstract completions({ messages, assistant, onChunk, onFilterMessages }: CompletionsParams): Promise<void>

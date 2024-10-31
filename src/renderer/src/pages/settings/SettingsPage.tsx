@@ -1,4 +1,11 @@
-import { CloudOutlined, InfoCircleOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons'
+import {
+  CloudOutlined,
+  InfoCircleOutlined,
+  MacCommandOutlined,
+  MessageOutlined,
+  SaveOutlined,
+  SettingOutlined
+} from '@ant-design/icons'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import { isLocalAi } from '@renderer/config/env'
 import { FC } from 'react'
@@ -8,9 +15,11 @@ import styled from 'styled-components'
 
 import AboutSettings from './AboutSettings'
 import AssistantSettings from './AssistantSettings'
-import GeneralSettings from './GeneralSettings/GeneralSettings'
+import DataSettings from './DataSettings/DataSettings'
+import GeneralSettings from './GeneralSettings'
 import ModelSettings from './ModelSettings'
 import ProvidersList from './ProviderSettings'
+import ShortcutSettings from './ShortcutSettings'
 
 const SettingsPage: FC = () => {
   const { pathname } = useLocation()
@@ -53,6 +62,18 @@ const SettingsPage: FC = () => {
               {t('settings.general')}
             </MenuItem>
           </MenuItemLink>
+          <MenuItemLink to="/settings/shortcut">
+            <MenuItem className={isRoute('/settings/shortcut')}>
+              <MacCommandOutlined />
+              {t('settings.shortcuts.title')}
+            </MenuItem>
+          </MenuItemLink>
+          <MenuItemLink to="/settings/data">
+            <MenuItem className={isRoute('/settings/data')}>
+              <SaveOutlined />
+              {t('settings.data')}
+            </MenuItem>
+          </MenuItemLink>
           <MenuItemLink to="/settings/about">
             <MenuItem className={isRoute('/settings/about')}>
               <InfoCircleOutlined />
@@ -66,6 +87,8 @@ const SettingsPage: FC = () => {
             <Route path="model" element={<ModelSettings />} />
             <Route path="assistant" element={<AssistantSettings />} />
             <Route path="general/*" element={<GeneralSettings />} />
+            <Route path="data/*" element={<DataSettings />} />
+            <Route path="shortcut" element={<ShortcutSettings />} />
             <Route path="about" element={<AboutSettings />} />
           </Routes>
         </SettingContent>
