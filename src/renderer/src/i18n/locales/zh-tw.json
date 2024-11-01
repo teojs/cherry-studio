@@ -29,7 +29,8 @@
       "back": "返回",
       "chat": "聊天",
       "close": "關閉",
-      "cancel": "取消"
+      "cancel": "取消",
+      "download": "下載"
     },
     "button": {
       "add": "添加",
@@ -137,13 +138,38 @@
       "stream_output": "串流輸出",
       "search": "搜尋模型..."
     },
+    "images": {
+      "title": "繪圖",
+      "image.size": "影像尺寸",
+      "button.new.image": "新繪圖",
+      "button.delete.image": "刪除繪圖",
+      "button.delete.image.confirm": "確定要刪除此繪圖嗎?",
+      "number_images": "生成數量",
+      "number_images_tip": "一次生成的圖片數量 (1-4)",
+      "seed": "隨機種子",
+      "seed_tip": "相同的種子和提示詞可以生成相似的圖片",
+      "inference_steps": "推理步數",
+      "inference_steps_tip": "要執行的推理步數。步數越多，質量越高但耗時越長",
+      "guidance_scale": "引導比例",
+      "guidance_scale_tip": "無分類器指導。控制模型在尋找相關圖像時對提示詞的遵循程度",
+      "negative_prompt": "反向提示詞",
+      "negative_prompt_tip": "描述你不想在圖片中出現的內容",
+      "prompt_placeholder": "描述你想創建的圖片，例如：一個寧靜的湖泊，夕陽西下，遠處是群山",
+      "regenerate.confirm": "這將覆蓋已生成的圖片，是否繼續？"
+    },
     "files": {
       "title": "檔案",
       "file": "檔案",
       "name": "名稱",
       "size": "大小",
       "count": "數量",
-      "created_at": "建立時間"
+      "created_at": "建立時間",
+      "image": "圖片",
+      "text": "文本",
+      "document": "文檔",
+      "actions": "操作",
+      "open": "打開",
+      "all": "所有檔案"
     },
     "agents": {
       "title": "智能體",
@@ -170,7 +196,8 @@
       "edit.message.empty.content": "會話輸入內容不能為空",
       "edit.model.select.title": "選擇模型",
       "edit.settings.hide_preset_messages": "隱藏預設消息",
-      "search.no_results": "沒有找到相關智能體"
+      "search.no_results": "沒有找到相關智能體",
+      "sorting.title": "排序"
     },
     "minapp": {
       "title": "小程序"
@@ -326,7 +353,8 @@
       "button.translate": "翻譯",
       "error.not_configured": "翻譯模型未配置",
       "input.placeholder": "輸入文字進行翻譯",
-      "output.placeholder": "翻譯"
+      "output.placeholder": "翻譯",
+      "confirm": "原文已複製到剪貼簿，是否用翻譯後的文字替換？"
     },
     "languages": {
       "english": "英文",
@@ -349,7 +377,9 @@
     },
     "error": {
       "chat.response": "出現錯誤。如果尚未配置 API 密鑰，請前往設定 > 模型提供者中配置密鑰",
-      "backup.file_format": "備份文件格式錯誤"
+      "backup.file_format": "備份文件格式錯誤",
+      "provider_disabled": "模型提供商未啟用",
+      "no_api_key": "API 密鑰未配置"
     },
     "words": {
       "knowledgeGraph": "知識圖譜",

@@ -29,7 +29,8 @@
       "back": "返回",
       "chat": "聊天",
       "close": "关闭",
-      "cancel": "取消"
+      "cancel": "取消",
+      "download": "下载"
     },
     "button": {
       "add": "添加",
@@ -60,7 +61,7 @@
       "reset.double.confirm.title": "数据丢失！！！",
       "reset.double.confirm.content": "你的全部数据都会丢失，如果没有备份数据，将无法恢复，确定要继续吗？",
       "upgrade.success.title": "升级成功",
-      "upgrade.success.content": "重启应用以完成升级",
+      "upgrade.success.content": "重启用以完成升级",
       "upgrade.success.button": "重启",
       "topic.added": "话题添加成功",
       "save.success.title": "保存成功"
@@ -137,13 +138,38 @@
       "stream_output": "流式输出",
       "search": "搜索模型..."
     },
+    "images": {
+      "title": "图片",
+      "image.size": "图片尺寸",
+      "button.new.image": "新建图片",
+      "button.delete.image": "删除图片",
+      "button.delete.image.confirm": "确定要删除此图片吗?",
+      "number_images": "生成数量",
+      "number_images_tip": "一次生成的图片数量 (1-4)",
+      "seed": "随机种子",
+      "seed_tip": "相同的种子和提示词可以生成相似的图片",
+      "inference_steps": "推理步数",
+      "inference_steps_tip": "要执行的推理步数。步数越多，质量越高但耗时越长",
+      "guidance_scale": "引导比例",
+      "guidance_scale_tip": "无分类器指导。控制模型在寻找相关图像时对提示词的遵循程度",
+      "negative_prompt": "反向提示词",
+      "negative_prompt_tip": "描述你不想在图片中出现的内容",
+      "prompt_placeholder": "描述你想创建的图片，例如：一个宁静的湖泊，夕阳西下，远处是群山",
+      "regenerate.confirm": "这将覆盖已生成的图片，是否继续？"
+    },
     "files": {
       "title": "文件",
       "file": "文件",
       "name": "文件名",
       "size": "大小",
       "count": "文件数",
-      "created_at": "创建时间"
+      "created_at": "创建时间",
+      "image": "图片",
+      "text": "文本",
+      "document": "文档",
+      "actions": "操作",
+      "open": "打开",
+      "all": "所有文件"
     },
     "agents": {
       "title": "智能体",
@@ -170,7 +196,8 @@
       "edit.message.empty.content": "会话输入内容不能为空",
       "edit.model.select.title": "选择模型",
       "edit.settings.hide_preset_messages": "隐藏预设消息",
-      "search.no_results": "没有找到相关智能体"
+      "search.no_results": "没有找到相关智能体",
+      "sorting.title": "排序"
     },
     "minapp": {
       "title": "小程序"
@@ -260,7 +287,7 @@
       "provider.search_placeholder": "搜索模型 ID 或名称",
       "provider.api.url.reset": "重置",
       "provider.api.url.preview": "预览: {{url}}",
-      "provider.api.url.tip": "/结尾忽略v1版本，#结尾强制使用输入地址",
+      "provider.api.url.tip": "/结尾忽略v1版本，#结尾制使用输入地址",
       "models.default_assistant_model": "默认助手模型",
       "models.topic_naming_model": "话题命名模型",
       "models.translate_model": "翻译模型",
@@ -317,7 +344,7 @@
         "new_topic": "新建话题",
         "zoom_in": "放大界面",
         "zoom_out": "缩小界面",
-        "zoom_reset": "重置缩放"
+        "zoom_reset": "置缩放"
       }
     },
     "translate": {
@@ -326,7 +353,8 @@
       "button.translate": "翻译",
       "error.not_configured": "翻译模型未配置",
       "input.placeholder": "输入文本进行翻译",
-      "output.placeholder": "翻译"
+      "output.placeholder": "翻译",
+      "confirm": "原文已复制到剪贴板，是否用翻译后的文本替换？"
     },
     "languages": {
       "english": "英文",
@@ -349,7 +377,9 @@
     },
     "error": {
       "chat.response": "出错了，如果没有配置 API 密钥，请前往设置 > 模型提供商中配置密钥",
-      "backup.file_format": "备份文件格式错误"
+      "backup.file_format": "备份文件格式错误",
+      "provider_disabled": "模型提供商未启用",
+      "no_api_key": "API 密钥未配置"
     },
     "words": {
       "knowledgeGraph": "知识图谱",

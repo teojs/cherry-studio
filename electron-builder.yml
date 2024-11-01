@@ -63,10 +63,7 @@ electronDownload:
 afterSign: scripts/notarize.js
 releaseInfo:
   releaseNotes: |
-    增加300个智能体 by @cawabj
-    增加快捷键设置界面
-    支持快捷键缩放整体界面大小
-    修复 WebDAV 备份文件大小限制
-    修复跨平台备份回复后文件路径错误问题
-    请求头增加 X-Api-Key
-    修复消息滚动跳跃问题
+    全新的对话气泡界面 by @teojs
+    将主题切换按钮移到左下角菜单栏中 by @teojs
+    智能体界面使用更加紧凑布局
+    会话面板默认移动到左侧

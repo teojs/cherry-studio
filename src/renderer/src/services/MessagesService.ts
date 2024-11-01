@@ -5,9 +5,9 @@ import { uuid } from '@renderer/utils'
 import { isEmpty, takeRight } from 'lodash'
 import { NavigateFunction } from 'react-router'
 
-import { getAssistantById, getDefaultModel } from './assistant'
-import { EVENT_NAMES, EventEmitter } from './event'
-import FileManager from './file'
+import { getAssistantById, getDefaultModel } from './AssistantService'
+import { EVENT_NAMES, EventEmitter } from './EventService'
+import FileManager from './FileManager'
 
 export const filterMessages = (messages: Message[]) => {
   return messages
@@ -39,7 +39,7 @@ export function getContextCount(assistant: Assistant, messages: Message[]) {
 }
 
 export function deleteMessageFiles(message: Message) {
-  message.files && FileManager.deleteFiles(message.files.map((f) => f.id))
+  message.files && FileManager.deleteFiles(message.files)
 }
 
 export async function locateToMessage(navigate: NavigateFunction, message: Message) {

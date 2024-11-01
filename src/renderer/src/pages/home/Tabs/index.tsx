@@ -3,7 +3,7 @@ import AddAssistantPopup from '@renderer/components/Popups/AddAssistantPopup'
 import { useAssistants, useDefaultAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useShowTopics } from '@renderer/hooks/useStore'
-import { EVENT_NAMES, EventEmitter } from '@renderer/services/event'
+import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { Assistant, Topic } from '@renderer/types'
 import { uuid } from '@renderer/utils'
 import { Segmented, SegmentedProps } from 'antd'
@@ -150,6 +150,7 @@ const Container = styled.div`
   max-width: var(--assistants-width);
   min-width: var(--assistants-width);
   height: calc(100vh - var(--navbar-height));
+  background-color: var(--color-background);
   overflow: hidden;
   .collapsed {
     width: 0;

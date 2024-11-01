@@ -1,8 +1,8 @@
 import { isSupportedModel, isVisionModel } from '@renderer/config/models'
 import { SUMMARIZE_PROMPT } from '@renderer/config/prompts'
-import { getAssistantSettings, getDefaultModel, getTopNamingModel } from '@renderer/services/assistant'
-import { EVENT_NAMES } from '@renderer/services/event'
-import { filterContextMessages } from '@renderer/services/messages'
+import { getAssistantSettings, getDefaultModel, getTopNamingModel } from '@renderer/services/AssistantService'
+import { EVENT_NAMES } from '@renderer/services/EventService'
+import { filterContextMessages } from '@renderer/services/MessagesService'
 import { Assistant, FileTypes, Message, Model, Provider, Suggestion } from '@renderer/types'
 import { removeQuotes } from '@renderer/utils'
 import { takeRight } from 'lodash'
@@ -349,5 +349,44 @@ export default class OpenAIProvider extends BaseProvider {
     } catch (error) {
       return []
     }
+  }
+
+  public async generateImage({
+    prompt,
+    negativePrompt,
+    imageSize,
+    batchSize,
+    seed,
+    numInferenceSteps,
+    guidanceScale,
+    signal
+  }: {
+    prompt: string
+    negativePrompt?: string
+    imageSize: string
+    batchSize: number
+    seed?: string
+    numInferenceSteps: number
+    guidanceScale: number
+    signal?: AbortSignal
+  }): Promise<string[]> {
+    const response = (await this.sdk.request({
+      method: 'post',
+      path: '/images/generations',
+      headers: this.getHeaders(),
+      signal,
+      body: {
+        model: 'stabilityai/stable-diffusion-3-5-large',
+        prompt,
+        negative_prompt: negativePrompt,
+        image_size: imageSize,
+        batch_size: batchSize,
+        seed: seed ? parseInt(seed) : undefined,
+        num_inference_steps: numInferenceSteps,
+        guidance_scale: guidanceScale
+      }
+    })) as { data: Array<{ url: string }> }
+
+    return response.data.map((item) => item.url)
   }
 }

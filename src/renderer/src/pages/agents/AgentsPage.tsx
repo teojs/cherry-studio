@@ -2,7 +2,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import Scrollbar from '@renderer/components/Scrollbar'
 import SystemAgents from '@renderer/config/agents.json'
-import { createAssistantFromAgent } from '@renderer/services/assistant'
+import { createAssistantFromAgent } from '@renderer/services/AssistantService'
 import { Agent } from '@renderer/types'
 import { uuid } from '@renderer/utils'
 import { Col, Empty, Input, Row, Tabs as TabsAntd, Typography } from 'antd'
@@ -12,8 +12,9 @@ import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import styled from 'styled-components'
 
-import Agents from './Agents'
+import { groupTranslations } from './agentGroupTranslations'
 import AgentCard from './components/AgentCard'
+import MyAgents from './components/MyAgents'
 
 const { Title } = Typography
 
@@ -40,12 +41,18 @@ const AgentsPage: FC = () => {
     return _agentGroups
   }, [])
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const filteredAgentGroups = useMemo(() => {
-    if (!search.trim()) return agentGroups
+    const groups = { 我的: [] }
 
-    const filtered = {}
+    if (!search.trim()) {
+      Object.entries(agentGroups).forEach(([group, agents]) => {
+        groups[group] = agents
+      })
+      return groups
+    }
+
     Object.entries(agentGroups).forEach(([group, agents]) => {
       const filteredAgents = agents.filter(
         (agent) =>
@@ -53,10 +60,10 @@ const AgentsPage: FC = () => {
           agent.description?.toLowerCase().includes(search.toLowerCase())
       )
       if (filteredAgents.length > 0) {
-        filtered[group] = filteredAgents
+        groups[group] = filteredAgents
       }
     })
-    return filtered
+    return groups
   }, [agentGroups, search])
 
   const getAgentName = (agent: Agent) => {
@@ -95,33 +102,47 @@ const AgentsPage: FC = () => {
     }
   }
 
+  const getLocalizedGroupName = useCallback(
+    (group: string) => {
+      const currentLang = i18n.language
+      return groupTranslations[group]?.[currentLang] || group
+    },
+    [i18n.language]
+  )
+
   const tabItems = useMemo(() => {
     let groups = Object.keys(filteredAgentGroups)
-    groups = groups.includes('办公') ? ['办公', ...groups.filter((g) => g !== '办公')] : groups
+
+    groups = groups.includes('办公') ? [groups[0], '办公', ...groups.slice(1)] : groups
+
     return groups.map((group, i) => {
       const id = String(i + 1)
+      const localizedGroupName = getLocalizedGroupName(group)
+
       return {
-        label: group,
+        label: localizedGroupName,
         key: id,
         children: (
           <TabContent key={group}>
             <Title level={5} key={group} style={{ marginBottom: 16 }}>
-              {group}
+              {localizedGroupName}
             </Title>
-            <Row gutter={16}>
-              {filteredAgentGroups[group].map((agent, index) => {
-                return (
-                  <Col span={8} key={group + index}>
+            <Row gutter={[20, 20]}>
+              {group === '我的' ? (
+                <MyAgents onClick={onAddAgentConfirm} search={search} />
+              ) : (
+                filteredAgentGroups[group]?.map((agent, index) => (
+                  <Col span={6} key={group + index}>
                     <AgentCard onClick={() => onAddAgentConfirm(getAgentFromSystemAgent(agent))} agent={agent as any} />
                   </Col>
-                )
-              })}
+                ))
+              )}
             </Row>
           </TabContent>
         )
       }
     })
-  }, [filteredAgentGroups, onAddAgentConfirm])
+  }, [filteredAgentGroups, getLocalizedGroupName, onAddAgentConfirm, search])
 
   return (
     <Container>
@@ -145,9 +166,8 @@ const AgentsPage: FC = () => {
       </Navbar>
       <ContentContainer id="content-container">
         <AssistantsContainer>
-          <Agents onClick={onAddAgentConfirm} />
           {tabItems.length > 0 ? (
-            <Tabs tabPosition="left" animated items={tabItems} />
+            <Tabs tabPosition="right" animated items={tabItems} />
           ) : (
             <EmptyView>
               <Empty description={t('agents.search.no_results')} />
@@ -172,6 +192,8 @@ const ContentContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   height: 100%;
+  padding: 0 10px;
+  padding-left: 0;
 `
 
 const AssistantsContainer = styled.div`
@@ -184,7 +206,9 @@ const AssistantsContainer = styled.div`
 const TabContent = styled(Scrollbar)`
   height: calc(100vh - var(--navbar-height));
   padding: 10px 10px 10px 15px;
-  margin-right: 4px;
+  margin-right: -4px;
+  padding-bottom: 20px !important;
+  overflow-x: hidden;
 `
 
 const AgentPrompt = styled.div`
@@ -200,7 +224,6 @@ const EmptyView = styled.div`
   align-items: center;
   font-size: 16px;
   color: var(--color-text-secondary);
-  border-left: 0.5px solid var(--color-border);
 `
 
 const Tabs = styled(TabsAntd)`
@@ -208,7 +231,11 @@ const Tabs = styled(TabsAntd)`
   flex: 1;
   flex-direction: row-reverse;
   .ant-tabs-tabpane {
-    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .ant-tabs-nav {
+    min-width: 140px;
+    max-width: 140px;
   }
   .ant-tabs-nav-list {
     padding: 10px 8px;
@@ -220,8 +247,9 @@ const Tabs = styled(TabsAntd)`
     margin: 0 !important;
     border-radius: 20px;
     margin-bottom: 5px !important;
-    font-size: 14px;
-    justify-content: center;
+    font-size: 13px;
+    justify-content: left;
+    padding: 7px 12px !important;
     &:hover {
       color: var(--color-text) !important;
       background-color: var(--color-background-soft);
@@ -233,7 +261,7 @@ const Tabs = styled(TabsAntd)`
   }
   .ant-tabs-content-holder {
     border-left: 0.5px solid var(--color-border);
-    border-right: 0.5px solid var(--color-border);
+    border-right: none;
   }
   .ant-tabs-ink-bar {
     display: none;

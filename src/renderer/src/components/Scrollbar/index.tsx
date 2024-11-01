@@ -39,8 +39,6 @@ const Scrollbar: FC<Props> = forwardRef<HTMLDivElement, Props>((props, ref) => {
   )
 })
 
-Scrollbar.displayName = 'Scrollbar'
-
 const Container = styled.div<{ isScrolling: boolean; right?: boolean }>`
   overflow-y: auto;
   &::-webkit-scrollbar-thumb {
@@ -53,5 +51,7 @@ const Container = styled.div<{ isScrolling: boolean; right?: boolean }>`
     }
   }
 `
+
+Scrollbar.displayName = 'Scrollbar'
 
 export default Scrollbar

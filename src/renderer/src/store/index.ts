@@ -7,14 +7,16 @@ import agents from './agents'
 import assistants from './assistants'
 import llm from './llm'
 import migrate from './migrate'
+import paintings from './paintings'
 import runtime from './runtime'
 import settings from './settings'
 
 const rootReducer = combineReducers({
   assistants,
-  settings,
-  llm,
   agents,
+  paintings,
+  llm,
+  settings,
   runtime
 })
 
@@ -22,7 +24,7 @@ const persistedReducer = persistReducer(
   {
     key: 'cherry-studio',
     storage,
-    version: 35,
+    version: 36,
     blacklist: ['runtime'],
     migrate
   },

@@ -6,7 +6,7 @@ import { addAssistant } from '@renderer/store/assistants'
 import { Agent, Assistant, AssistantSettings, Message, Model, Provider, Topic } from '@renderer/types'
 import { uuid } from '@renderer/utils'
 
-import { estimateMessageUsage } from './tokens'
+import { estimateMessageUsage } from './TokenService'
 
 export function getDefaultAssistant(): Assistant {
   return {
@@ -17,6 +17,14 @@ export function getDefaultAssistant(): Assistant {
     messages: [],
     type: 'assistant'
   }
+}
+
+export function getDefaultTranslateAssistant(targetLanguage: string, text: string): Assistant {
+  const translateModel = getTranslateModel()
+  const assistant: Assistant = getDefaultAssistant()
+  assistant.model = translateModel
+  assistant.prompt = `Translate from input language to ${targetLanguage}, provide the translation result directly without any explanation, keep original format. If the target language is the same as the source language, do not translate. The text to be translated is as follows:\n\n ${text}`
+  return assistant
 }
 
 export function getDefaultAssistantSettings() {
