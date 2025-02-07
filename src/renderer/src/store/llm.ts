@@ -19,9 +19,9 @@ export interface LlmState {
 }
 
 const initialState: LlmState = {
-  defaultModel: SYSTEM_MODELS.silicon[0],
-  topicNamingModel: SYSTEM_MODELS.silicon[0],
-  translateModel: SYSTEM_MODELS.silicon[0],
+  defaultModel: SYSTEM_MODELS.silicon[1],
+  topicNamingModel: SYSTEM_MODELS.silicon[2],
+  translateModel: SYSTEM_MODELS.silicon[3],
   providers: [
     {
       id: 'silicon',
@@ -40,6 +40,16 @@ const initialState: LlmState = {
       apiKey: '',
       apiHost: 'https://aihubmix.com',
       models: SYSTEM_MODELS.aihubmix,
+      isSystem: true,
+      enabled: false
+    },
+    {
+      id: 'deepseek',
+      name: 'deepseek',
+      type: 'openai',
+      apiKey: '',
+      apiHost: 'https://api.deepseek.com',
+      models: SYSTEM_MODELS.deepseek,
       isSystem: true,
       enabled: false
     },
@@ -91,16 +101,6 @@ const initialState: LlmState = {
       apiKey: '',
       apiHost: 'https://generativelanguage.googleapis.com',
       models: SYSTEM_MODELS.gemini,
-      isSystem: true,
-      enabled: false
-    },
-    {
-      id: 'deepseek',
-      name: 'deepseek',
-      type: 'openai',
-      apiKey: '',
-      apiHost: 'https://api.deepseek.com',
-      models: SYSTEM_MODELS.deepseek,
       isSystem: true,
       enabled: false
     },

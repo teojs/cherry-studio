@@ -244,6 +244,7 @@
       "error.enter.api.host": "APIホストを入力してください",
       "error.enter.api.key": "APIキーを入力してください",
       "error.enter.model": "モデルを選択してください",
+      "error.chunk_overlap_too_large": "チャンクの重なりは、チャンクサイズを超えることはできません",
       "error.invalid.proxy.url": "無効なプロキシURL",
       "error.invalid.webdav": "無効なWebDAV設定",
       "message.code_style": "コードスタイル",
@@ -268,7 +269,10 @@
       "upgrade.success.title": "アップグレードに成功しました",
       "regenerate.confirm": "再生成すると現在のメッセージが置き換えられます",
       "copy.success": "コピーしました！",
-      "error.get_embedding_dimensions": "埋込み次元を取得できませんでした"
+      "error.get_embedding_dimensions": "埋込み次元を取得できませんでした",
+      "group.delete.title": "分組メッセージを削除",
+      "group.delete.content": "分組メッセージを削除するとユーザーの質問と助け手の回答がすべて削除されます",
+      "mention.title": "モデルを切り替える"
     },
     "minapp": {
       "title": "ミニアプリ",
@@ -607,7 +611,11 @@
       "model_info": "モデル情報",
       "not_support": "ナレッジベースデータベースエンジンが更新されました。このナレッジベースはもうサポートされていません。新しいナレッジベースを作成してください",
       "no_provider": "ナレッジベースモデルプロバイダーが設定されていません。ナレッジベースはもうサポートされていません。新しいナレッジベースを作成してください",
-      "source": "ソース"
+      "source": "ソース",
+      "chunk_size": "チャンクサイズ",
+      "chunk_overlap": "チャンクの重なり",
+      "not_set": "未設定",
+      "settings": "ナレッジベース設定"
     },
     "models": {
       "pinned": "固定済み",
@@ -617,14 +625,16 @@
         "select": "モデルタイプを選択",
         "text": "テキスト",
         "vision": "画像",
-        "embedding": "埋め込み"
+        "embedding": "埋め込み",
+        "reasoning": "推論"
       },
       "all": "すべて",
-      "vision": "画像モデル",
-      "websearch": "ウェブ検索モデル",
-      "free": "無料モデル",
-      "embedding": "埋め込みモデル",
-      "embedding_model": "埋め込みモデル",
+      "vision": "画像",
+      "websearch": "ウェブ検索",
+      "free": "無料",
+      "reasoning": "推論",
+      "embedding": "埋め込み",
+      "embedding_model": "埋め込み模型",
       "embedding_model_tooltip": "設定->モデルサービス->管理で追加",
       "dimensions": "{{dimensions}} 次元",
       "custom_parameters": "カスタムパラメータ",
@@ -664,6 +674,12 @@
         "esc_back": "戻る",
         "copy_last_message": "C キーを押してコピー"
       }
+    },
+    "auth": {
+      "oauth_button": "{{provider}}で認証",
+      "get_key": "取得",
+      "get_key_success": "APIキーの自動取得に成功しました",
+      "login": "認証"
     }
   }
 }

@@ -40,6 +40,11 @@
       "save.success": "Saved successfully",
       "save.title": "Save to agent",
       "search": "Search assistants...",
+      "settings.reasoning_effort": "Reasoning effort",
+      "settings.reasoning_effort.tip": "Only supports reasoning models",
+      "settings.reasoning_effort.low": "low",
+      "settings.reasoning_effort.medium": "medium",
+      "settings.reasoning_effort.high": "high",
       "settings.auto_reset_model": "Auto Reset Model",
       "settings.auto_reset_model.tip": "Automatically reset the model when a new topic is created.",
       "settings.default_model": "Default Model",
@@ -245,6 +250,7 @@
       "error.enter.api.key": "Please enter your API key first",
       "error.enter.model": "Please select a model first",
       "error.enter.name": "Please enter the name of the knowledge base",
+      "error.chunk_overlap_too_large": "Chunk overlap cannot be greater than chunk size",
       "error.invalid.proxy.url": "Invalid proxy URL",
       "error.invalid.webdav": "Invalid WebDAV settings",
       "message.code_style": "Code style",
@@ -269,7 +275,10 @@
       "upgrade.success.title": "Upgrade successfully",
       "regenerate.confirm": "Regenerating will replace current message",
       "copy.success": "Copied!",
-      "error.get_embedding_dimensions": "Failed to get embedding dimensions"
+      "error.get_embedding_dimensions": "Failed to get embedding dimensions",
+      "group.delete.title": "Delete Group Message",
+      "group.delete.content": "Deleting a group message will delete the user's question and all assistant's answers",
+      "mention.title": "Switch model answer"
     },
     "minapp": {
       "title": "MinApp",
@@ -505,7 +514,6 @@
       "provider.check": "Check",
       "provider.docs_check": "Check",
       "provider.docs_more_details": "for more details",
-      "provider.get_api_key": "Get API Key",
       "provider.search_placeholder": "Search model id or name",
       "proxy": {
         "mode": {
@@ -623,7 +631,11 @@
       "model_info": "Model Info",
       "not_support": "Knowledge base database engine updated, the knowledge base will no longer be supported, please create a new knowledge base",
       "no_provider": "Knowledge base model provider is not set, the knowledge base will no longer be supported, please create a new knowledge base",
-      "source": "Source"
+      "source": "Source",
+      "chunk_size": "Chunk Size",
+      "chunk_overlap": "Chunk Overlap",
+      "not_set": "Not Set",
+      "settings": "Knowledge Base Settings"
     },
     "models": {
       "pinned": "Pinned",
@@ -633,12 +645,14 @@
         "select": "Select Model Types",
         "text": "Text",
         "vision": "Vision",
-        "embedding": "Embedding"
+        "embedding": "Embedding",
+        "reasoning": "Reasoning"
       },
       "all": "All",
       "vision": "Vision",
       "websearch": "WebSearch",
       "free": "Free",
+      "reasoning": "Reasoning",
       "embedding": "Embedding",
       "embedding_model": "Embedding Model",
       "embedding_model_tooltip": "Add in Settings->Model Provider->Manage",
@@ -680,6 +694,12 @@
         "esc_back": "back",
         "copy_last_message": "Press C to copy"
       }
+    },
+    "auth": {
+      "oauth_button": "Auth with {{provider}}",
+      "get_key": "Get",
+      "get_key_success": "API key automatically obtained successfully",
+      "login": "Login"
     }
   }
 }

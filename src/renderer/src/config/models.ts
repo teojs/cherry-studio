@@ -123,7 +123,7 @@ import WenxinModelLogoDark from '@renderer/assets/images/models/wenxin_dark.png'
 import YiModelLogo from '@renderer/assets/images/models/yi.png'
 import YiModelLogoDark from '@renderer/assets/images/models/yi_dark.png'
 import { getProviderByModel } from '@renderer/services/AssistantService'
-import { Model } from '@renderer/types'
+import { Assistant, Model } from '@renderer/types'
 import OpenAI from 'openai'
 
 import { getWebSearchTools } from './tools'
@@ -144,7 +144,9 @@ const visionAllowedModels = [
   'pixtral',
   'gpt-4(?:-[\\w-]+)',
   'gpt-4o(?:-[\\w-]+)?',
-  'chatgpt-4o(?:-[\\w-]+)?'
+  'chatgpt-4o(?:-[\\w-]+)?',
+  'o1(?:-[\\w-]+)?',
+  'deepseek-vl(?:[\\w-]+)?'
 ]
 
 const visionExcludedModels = ['gpt-4-\\d+-preview', 'gpt-4-turbo-preview', 'gpt-4-32k', 'gpt-4-\\d+']
@@ -154,7 +156,9 @@ export const VISION_REGEX = new RegExp(
   'i'
 )
 
-export const TEXT_TO_IMAGE_REGEX = /flux|diffusion|stabilityai|sd-|dall|cogview/i
+export const TEXT_TO_IMAGE_REGEX = /flux|diffusion|stabilityai|sd-|dall|cogview|janus/i
+export const REASONING_REGEX = /^(o\d+(?:-[\w-]+)?|.*\breasoner\b.*|.*-[rR]\d+.*)$/i
+
 export const EMBEDDING_REGEX = /(?:^text-|embed|rerank|davinci|babbage|bge-|e5-|LLM2Vec|retrieval|uae-|gte-|jina)/i
 export const NOT_SUPPORTED_REGEX = /(?:^tts|rerank|whisper|speech)/i
 
@@ -169,12 +173,15 @@ export function getModelLogo(modelId: string) {
     pixtral: isLight ? PixtralModelLogo : PixtralModelLogoDark,
     jina: isLight ? JinaModelLogo : JinaModelLogoDark,
     abab: isLight ? MinimaxModelLogo : MinimaxModelLogoDark,
+    o3: isLight ? ChatGPTo1ModelLogo : ChatGPTo1ModelLogoDark,
     o1: isLight ? ChatGPTo1ModelLogo : ChatGPTo1ModelLogoDark,
     'gpt-3': isLight ? ChatGPT35ModelLogo : ChatGPT35ModelLogoDark,
     'gpt-4': isLight ? ChatGPT4ModelLogo : ChatGPT4ModelLogoDark,
     gpts: isLight ? ChatGPT4ModelLogo : ChatGPT4ModelLogoDark,
     'text-moderation': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
     'babbage-': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
+    'sora-': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
+    'omni-': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
     'text-embedding': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
     'davinci-': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
     glm: isLight ? ChatGLMModelLogo : ChatGLMModelLogoDark,
@@ -190,7 +197,6 @@ export function getModelLogo(modelId: string) {
     baichuan: isLight ? BaichuanModelLogo : BaichuanModelLogoDark,
     claude: isLight ? ClaudeModelLogo : ClaudeModelLogoDark,
     gemini: isLight ? GeminiModelLogo : GeminiModelLogoDark,
-    embedding: isLight ? EmbeddingModelLogo : EmbeddingModelLogoDark,
     bison: isLight ? PalmModelLogo : PalmModelLogoDark,
     palm: isLight ? PalmModelLogo : PalmModelLogoDark,
     step: isLight ? StepModelLogo : StepModelLogoDark,
@@ -219,6 +225,7 @@ export function getModelLogo(modelId: string) {
     magic: isLight ? MagicModelLogo : MagicModelLogoDark,
     midjourney: isLight ? MidjourneyModelLogo : MidjourneyModelLogoDark,
     'mj-': isLight ? MidjourneyModelLogo : MidjourneyModelLogoDark,
+    'tao-': isLight ? WenxinModelLogo : WenxinModelLogoDark,
     'ernie-': isLight ? WenxinModelLogo : WenxinModelLogoDark,
     voice: isLight ? FlashaudioModelLogo : FlashaudioModelLogoDark,
     'tts-1': isLight ? ChatGptModelLogo : ChatGptModelLogoDakr,
@@ -253,6 +260,7 @@ export function getModelLogo(modelId: string) {
     ibm: isLight ? IbmModelLogo : IbmModelLogoDark,
     'google/': isLight ? GoogleModelLogo : GoogleModelLogoDark,
     hugging: isLight ? HuggingfaceModelLogo : HuggingfaceModelLogoDark,
+    embedding: isLight ? EmbeddingModelLogo : EmbeddingModelLogoDark,
     'bge-': BgeModelLogo
   }
 
@@ -357,8 +365,14 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
   ollama: [],
   silicon: [
     {
-      id: 'deepseek-ai/DeepSeek-V2.5',
-      name: 'deepseek-ai/DeepSeek-V2.5',
+      id: 'deepseek-ai/DeepSeek-R1',
+      name: 'deepseek-ai/DeepSeek-R1',
+      provider: 'silicon',
+      group: 'deepseek-ai'
+    },
+    {
+      id: 'deepseek-ai/DeepSeek-V3',
+      name: 'deepseek-ai/DeepSeek-V3',
       provider: 'silicon',
       group: 'deepseek-ai'
     },
@@ -373,6 +387,12 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
       name: 'meta-llama/Llama-3.3-70B-Instruct',
       provider: 'silicon',
       group: 'meta-llama'
+    },
+    {
+      id: 'BAAI/bge-m3',
+      name: 'BAAI/bge-m3',
+      provider: 'silicon',
+      group: 'BAAI'
     }
   ],
   openai: [
@@ -1026,27 +1046,51 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
 
 export const TEXT_TO_IMAGES_MODELS = [
   {
-    id: 'black-forest-labs/FLUX.1-dev',
+    id: 'black-forest-labs/FLUX.1-schnell',
     provider: 'silicon',
-    name: 'FLUX.1-dev',
+    name: 'FLUX.1 Schnell',
     group: 'FLUX'
   },
   {
-    id: 'black-forest-labs/FLUX.1-schnell',
+    id: 'black-forest-labs/FLUX.1-dev',
     provider: 'silicon',
-    name: 'FLUX.1-schnell',
+    name: 'FLUX.1 Dev',
+    group: 'FLUX'
+  },
+  {
+    id: 'black-forest-labs/FLUX.1-pro',
+    provider: 'silicon',
+    name: 'FLUX.1 Pro',
     group: 'FLUX'
   },
   {
     id: 'Pro/black-forest-labs/FLUX.1-schnell',
     provider: 'silicon',
-    name: 'FLUX.1-schnell Pro',
+    name: 'FLUX.1 Schnell Pro',
     group: 'FLUX'
+  },
+  {
+    id: 'LoRA/black-forest-labs/FLUX.1-dev',
+    provider: 'silicon',
+    name: 'FLUX.1 Dev LoRA',
+    group: 'FLUX'
+  },
+  {
+    id: 'deepseek-ai/Janus-Pro-7B',
+    provider: 'silicon',
+    name: 'Janus-Pro-7B',
+    group: 'deepseek-ai'
   },
   {
     id: 'stabilityai/stable-diffusion-3-5-large',
     provider: 'silicon',
     name: 'Stable Diffusion 3.5 Large',
+    group: 'Stable Diffusion'
+  },
+  {
+    id: 'stabilityai/stable-diffusion-3-5-large-turbo',
+    provider: 'silicon',
+    name: 'Stable Diffusion 3.5 Large Turbo',
     group: 'Stable Diffusion'
   },
   {
@@ -1098,6 +1142,14 @@ export function isVisionModel(model: Model): boolean {
   return VISION_REGEX.test(model.id) || model.type?.includes('vision') || false
 }
 
+export function isReasoningModel(model: Model): boolean {
+  if (!model) {
+    return false
+  }
+
+  return REASONING_REGEX.test(model.id) || model.type?.includes('reasoning') || false
+}
+
 export function isSupportedModel(model: OpenAI.Models.Model): boolean {
   if (!model) {
     return false
@@ -1142,16 +1194,22 @@ export function isWebSearchModel(model: Model): boolean {
   return false
 }
 
-export function getOpenAIWebSearchParams(model: Model): Record<string, any> {
+export function getOpenAIWebSearchParams(assistant: Assistant, model: Model): Record<string, any> {
   if (isWebSearchModel(model)) {
-    const webSearchTools = getWebSearchTools(model)
+    if (assistant.enableWebSearch) {
+      const webSearchTools = getWebSearchTools(model)
 
-    if (model.provider === 'hunyuan') {
-      return { enable_enhancement: true }
-    }
+      if (model.provider === 'hunyuan') {
+        return { enable_enhancement: true }
+      }
 
-    return {
-      tools: webSearchTools
+      return {
+        tools: webSearchTools
+      }
+    } else {
+      if (model.provider === 'hunyuan') {
+        return { enable_enhancement: false }
+      }
     }
   }
 

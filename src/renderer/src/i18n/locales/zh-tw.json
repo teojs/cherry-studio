@@ -40,6 +40,11 @@
       "save.success": "儲存成功",
       "save.title": "儲存到智能體",
       "search": "搜尋助手...",
+      "settings.reasoning_effort": "思維鏈長度",
+      "settings.reasoning_effort.tip": "該設置僅支持推理模型",
+      "settings.reasoning_effort.low": "短",
+      "settings.reasoning_effort.medium": "中",
+      "settings.reasoning_effort.high": "長",
       "settings.auto_reset_model": "自動重置模型",
       "settings.auto_reset_model.tip": "每次新的話題時自動重置模型",
       "settings.default_model": "預設模型",
@@ -245,6 +250,7 @@
       "error.enter.api.key": "請先輸入您的 API 密鑰",
       "error.enter.model": "請先選擇一個模型",
       "error.enter.name": "請先輸入知識庫名稱",
+      "error.chunk_overlap_too_large": "分段重疊不能大於分段大小",
       "error.invalid.proxy.url": "無效的代理 URL",
       "error.invalid.webdav": "無效的 WebDAV 設定",
       "message.code_style": "程式碼風格",
@@ -269,7 +275,10 @@
       "upgrade.success.title": "升級成功",
       "regenerate.confirm": "重新生成會覆蓋當前訊息",
       "copy.success": "複製成功",
-      "error.get_embedding_dimensions": "獲取嵌入維度失敗"
+      "error.get_embedding_dimensions": "獲取嵌入維度失敗",
+      "group.delete.title": "刪除分組消息",
+      "group.delete.content": "刪除分組消息會刪除用戶提問和所有助手的回答",
+      "mention.title": "切換模型回答"
     },
     "minapp": {
       "title": "小程序",
@@ -484,7 +493,7 @@
         "delete.title": "刪除提供者",
         "docs_check": "檢查",
         "docs_more_details": "查看更多細節",
-        "get_api_key": "獲取 API 密鑰",
+        "get_api_key": "點擊這裡獲取密鑰",
         "no_models": "請先添加模型再檢查 API 連接",
         "not_checked": "未檢查",
         "remove_duplicate_keys": "移除重複密鑰",
@@ -608,7 +617,11 @@
       "model_info": "模型信息",
       "not_support": "知識庫數據庫引擎已更新，該知識庫將不再支持，請重新創建知識庫",
       "no_provider": "知識庫模型提供商遺失，該知識庫將不再支持，請重新創建知識庫",
-      "source": "來源"
+      "source": "來源",
+      "chunk_size": "分段大小",
+      "chunk_overlap": "重疊大小",
+      "not_set": "未設置",
+      "settings": "知識庫設定"
     },
     "models": {
       "pinned": "已固定",
@@ -618,13 +631,15 @@
         "select": "選擇模型類型",
         "text": "文字",
         "vision": "圖像",
-        "embedding": "嵌入"
+        "embedding": "嵌入",
+        "reasoning": "推理"
       },
       "all": "全部",
-      "vision": "視覺模型",
-      "websearch": "網路搜索模型",
-      "free": "免費模型",
-      "embedding": "嵌入模型",
+      "vision": "視覺",
+      "websearch": "網路搜索",
+      "free": "免費",
+      "reasoning": "推理",
+      "embedding": "嵌入",
       "embedding_model": "嵌入模型",
       "embedding_model_tooltip": "在设置->模型服务中点击管理按钮添加",
       "dimensions": "{{dimensions}} 維",
@@ -665,6 +680,12 @@
         "esc_back": "返回",
         "copy_last_message": "按 C 鍵複製"
       }
+    },
+    "auth": {
+      "oauth_button": "使用{{provider}}登入",
+      "get_key": "獲取",
+      "get_key_success": "自動獲取密鑰成功",
+      "login": "登入"
     }
   }
 }
