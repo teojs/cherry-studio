@@ -1,6 +1,5 @@
 import {
   ClearOutlined,
-  ControlOutlined,
   FormOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
@@ -16,7 +15,6 @@ import { useAssistant } from '@renderer/hooks/useAssistant'
 import { modelGenerating, useRuntime } from '@renderer/hooks/useRuntime'
 import { useMessageStyle, useSettings } from '@renderer/hooks/useSettings'
 import { useShortcut, useShortcutDisplay } from '@renderer/hooks/useShortcuts'
-import { useShowTopics } from '@renderer/hooks/useStore'
 import { addAssistantMessagesToTopic, getDefaultTopic } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import FileManager from '@renderer/services/FileManager'
@@ -76,7 +74,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
   const [files, setFiles] = useState<FileType[]>(_files)
   const { t } = useTranslation()
   const containerRef = useRef(null)
-  const { showTopics, toggleShowTopics } = useShowTopics()
   const { searching } = useRuntime()
   const { isBubbleStyle } = useMessageStyle()
   const dispatch = useAppDispatch()
@@ -501,16 +498,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
                   </ToolbarButton>
                 </Popconfirm>
               </Tooltip>
-              <Tooltip placement="top" title={t('chat.input.settings')} arrow>
-                <ToolbarButton
-                  type="text"
-                  onClick={() => {
-                    !showTopics && toggleShowTopics()
-                    setTimeout(() => EventEmitter.emit(EVENT_NAMES.SHOW_CHAT_SETTINGS), 0)
-                  }}>
-                  <ControlOutlined />
-                </ToolbarButton>
-              </Tooltip>
               {showKnowledgeIcon && (
                 <KnowledgeBaseButton
                   selectedBase={selectedKnowledgeBase}
@@ -562,11 +549,16 @@ const Container = styled.div`
 `
 
 const InputBarContainer = styled.div`
-  border: 1px solid var(--color-border);
-  transition: all 0.3s ease;
+  background-color: var(--chat-input-background);
+  border: var(--border-soft);
+  border-width: 1px;
+  transition: all 0.2s ease-in-out;
   position: relative;
   margin: 0 20px 15px 20px;
-  border-radius: 10px;
+  border-radius: var(--border-radius-lg);
+  &:focus-within {
+    border-color: var(--color-primary-soft);
+  }
 `
 
 const TextareaStyle: CSSProperties = {

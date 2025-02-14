@@ -1,6 +1,6 @@
-import { Box, HStack } from '@renderer/components/Layout'
+import { Box } from '@renderer/components/Layout'
 import { Assistant, AssistantSettings } from '@renderer/types'
-import { Button, Input } from 'antd'
+import { Input } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +13,7 @@ interface Props {
   onOk: () => void
 }
 
-const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant, onOk }) => {
+const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant }) => {
   const [name, setName] = useState(assistant.name)
   const [prompt, setPrompt] = useState(assistant.prompt)
   const { t } = useTranslation()
@@ -46,11 +46,6 @@ const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant, 
         spellCheck={false}
         style={{ minHeight: 'calc(80vh - 200px)', maxHeight: 'calc(80vh - 150px)' }}
       />
-      <HStack width="100%" justifyContent="flex-end" mt="10px">
-        <Button type="primary" onClick={onOk}>
-          {t('common.close')}
-        </Button>
-      </HStack>
     </Container>
   )
 }

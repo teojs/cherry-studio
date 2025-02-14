@@ -140,7 +140,9 @@ const SettingsPage: FC<Props> = (props) => {
   return (
     <ContentContainer>
       <MenuContainer $isCollapsed={collapsed}>
-        <Title>{t('settings.title')}</Title>
+        <Title $isCollapsed={collapsed}>
+          <i className="iconfont icon-setting" /> {t('settings.title')}
+        </Title>
         <Menu
           mode="inline"
           onClick={(e) => props.onTabChange?.(e.key as SettingsTab)}
@@ -169,10 +171,12 @@ const ContentContainer = styled.div`
 `
 
 const MenuContainer = styled.div<{ $isCollapsed: boolean }>`
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '80px' : '160px')};
+  min-width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '150px')};
+  max-width: ${({ $isCollapsed }) => ($isCollapsed ? '80px' : '300px')};
   background-color: var(--color-background-mute);
-  transition: width 0.3s ease-in-out;
+  transition: all 0.2s;
   position: relative;
+  padding: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '0 8px')};
   .ant-menu-light {
     background-color: var(--color-background-mute);
   }
@@ -185,10 +189,19 @@ const CollapseButton = styled(Button)<{ $isCollapsed: boolean }>`
   }
 `
 
-const Title = styled.div`
-  font-size: 16px;
+const Title = styled.div<{ $isCollapsed: boolean }>`
+  font-size: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '16px')};
   font-weight: 600;
   padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  padding-left: ${({ $isCollapsed }) => ($isCollapsed ? '30px' : '24px')};
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  .iconfont {
+    font-size: 20px;
+  }
 `
 
 const SettingContent = styled.div`
@@ -198,7 +211,7 @@ const SettingContent = styled.div`
 
 const SettingHeader = styled.div`
   padding: 4px 8px;
-  border-bottom: 0.5px solid var(--color-border);
+  border-bottom: var(--border-soft);
   display: flex;
   align-items: center;
   gap: 8px;

@@ -31,33 +31,31 @@ export const NavbarRight: FC<Props> = ({ children, ...props }) => {
 }
 
 const NavbarContainer = styled.div`
-  min-width: 100%;
   display: flex;
   flex-direction: row;
   min-height: var(--navbar-height);
   max-height: var(--navbar-height);
-  margin-left: ${isMac ? 'calc(var(--sidebar-width) * -1)' : 0};
-  padding-left: ${isMac ? 'var(--sidebar-width)' : 0};
+  padding-right: ${isMac ? 0 : 'var(--sidebar-width)'};
   -webkit-app-region: drag;
+  border-bottom: var(--border-soft);
 `
 
 const NavbarLeftContainer = styled.div`
-  min-width: var(--assistants-width);
   padding: 0 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
   font-weight: bold;
-  color: var(--color-text-1);
+  color: var(--color-text-secondary);
 `
 
 const NavbarCenterContainer = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 0 ${isMac ? '20px' : 0};
+  padding: 0 ${isMac ? '16px' : 0};
   font-weight: bold;
-  color: var(--color-text-1);
+  color: var(--color-text-secondary);
 `
 
 const NavbarRightContainer = styled.div`

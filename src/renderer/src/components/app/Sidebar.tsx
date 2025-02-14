@@ -32,7 +32,7 @@ const Sidebar: FC = () => {
   const onEditUser = () => UserPopup.show()
 
   const macTransparentWindow = isMac && windowStyle === 'transparent'
-  const sidebarBgColor = macTransparentWindow ? 'transparent' : 'var(--navbar-background)'
+  const sidebarBgColor = macTransparentWindow ? 'transparent' : 'var(--sidebar-background)'
 
   const showPinnedApps = pinned.length > 0 && sidebarIcons.visible.includes('minapp')
 
@@ -41,7 +41,7 @@ const Sidebar: FC = () => {
       id="app-sidebar"
       style={{
         backgroundColor: sidebarBgColor,
-        zIndex: minappShow ? 10000 : 'initial'
+        zIndex: minappShow ? 10000 : '1'
       }}>
       <AvatarImg src={avatar || UserAvatar} draggable={false} className="nodrag" onClick={onEditUser} />
       <MainMenusContainer>
@@ -165,15 +165,17 @@ const Container = styled.div`
   padding-bottom: 12px;
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
-  height: ${isMac ? 'calc(100vh - var(--navbar-height))' : '100vh'};
+  height: 100vh;
   -webkit-app-region: drag !important;
-  margin-top: ${isMac ? 'var(--navbar-height)' : 0};
+  padding-top: ${isMac ? 'var(--navbar-height)' : 0};
+  background-color: var(--sidebar-background);
+  /* border-right: var(--border-mute); */
 `
 
 const AvatarImg = styled(Avatar)`
-  width: 31px;
-  height: 31px;
-  background-color: var(--color-background-soft);
+  width: 42px;
+  height: 42px;
+  background-color: var(--color-bg-muted);
   margin-bottom: ${isMac ? '12px' : '12px'};
   margin-top: ${isMac ? '0px' : '2px'};
   border: none;
@@ -194,17 +196,17 @@ const Menus = styled.div`
 `
 
 const Icon = styled.div`
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   -webkit-app-region: none;
-  border: 0.5px solid transparent;
+  transition: background-color 0.2s;
   .iconfont,
   .anticon {
-    color: var(--color-icon);
+    color: var(--color-text-2);
     font-size: 20px;
     text-decoration: none;
   }
@@ -212,19 +214,18 @@ const Icon = styled.div`
     font-size: 17px;
   }
   &:hover {
-    background-color: var(--color-hover);
+    background-color: var(--color-primary-mute);
     cursor: pointer;
     .iconfont,
     .anticon {
-      color: var(--color-icon-white);
+      color: var(--color-primary);
     }
   }
   &.active {
-    background-color: var(--color-active);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-primary-mute);
     .iconfont,
     .anticon {
-      color: var(--color-icon-white);
+      color: var(--color-primary);
     }
   }
 `
@@ -254,7 +255,7 @@ const AppsContainer = styled.div`
 const Divider = styled.div`
   width: 50%;
   margin: 8px 0;
-  border-bottom: 0.5px solid var(--color-border);
+  border-bottom: var(--border);
 `
 
 export default Sidebar

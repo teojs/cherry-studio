@@ -210,7 +210,7 @@ const IconList = styled.div`
   padding: 10px;
   background: var(--color-background-soft);
   border-radius: 8px;
-  border: 1px solid var(--color-border);
+  border: var(--border-soft);
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
@@ -223,7 +223,7 @@ const IconItem = styled.div`
   padding: 8px 12px;
   margin-bottom: 8px;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
+  border: var(--border-soft);
   border-radius: 4px;
   cursor: move;
 `

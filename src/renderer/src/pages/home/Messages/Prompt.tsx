@@ -28,13 +28,19 @@ const Container = styled.div`
   padding: 10px 20px;
   background-color: var(--color-background-soft);
   margin: 4px 20px 0 20px;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  border: 0.5px solid var(--color-border);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  color: var(--color-text-2);
+  &:hover {
+    color: var(--color-text-1);
+    background-color: var(--color-primary-mute);
+  }
 `
 
 const Text = styled.div`
-  color: var(--color-text-2);
   font-size: 12px;
   display: -webkit-box;
   -webkit-line-clamp: 2;

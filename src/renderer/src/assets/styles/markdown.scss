@@ -93,9 +93,8 @@
 
   hr {
     border: none;
-    border-top: 0.5px solid var(--color-border);
+    border-top: var(--border-soft);
     margin: 20px 0;
-    background-color: var(--color-border);
   }
 
   span {
@@ -104,9 +103,9 @@
 
   p code,
   li code {
-    background: var(--color-background-mute);
-    padding: 3px 5px;
-    border-radius: 5px;
+    background: var(--color-code-background);
+    padding: 2px 5px;
+    border-radius: 4px;
     word-break: keep-all;
     white-space: pre;
   }
@@ -116,10 +115,14 @@
   }
 
   pre {
-    border-radius: 5px;
+    border-radius: 8px;
     overflow-x: auto;
     font-family: 'Fira Code', 'Courier New', Courier, monospace;
-    background-color: var(--color-background-mute);
+    background-color: var(--color-code-background);
+    &.shiki {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
     &:has(> .mermaid) {
       background-color: transparent;
     }

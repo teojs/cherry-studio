@@ -4,44 +4,63 @@ import styled from 'styled-components'
 interface ListItemProps {
   active?: boolean
   icon?: ReactNode
-  title: string
+  title?: string
   subtitle?: string
+  children?: ReactNode
+  className?: string
+  style?: React.CSSProperties
   onClick?: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-const ListItem = ({ active, icon, title, subtitle, onClick }: ListItemProps) => {
+const ListItem = ({
+  active,
+  icon,
+  title,
+  subtitle,
+  children,
+  className = '',
+  style,
+  onClick,
+  onContextMenu
+}: ListItemProps) => {
   return (
-    <ListItemContainer className={active ? 'active' : ''} onClick={onClick}>
-      <ListItemContent>
-        {icon && <IconWrapper>{icon}</IconWrapper>}
-        <TextContainer>
-          <TitleText>{title}</TitleText>
-          {subtitle && <SubtitleText>{subtitle}</SubtitleText>}
-        </TextContainer>
-      </ListItemContent>
+    <ListItemContainer
+      className={`${active ? 'active' : ''} ${className}`}
+      style={style}
+      onClick={onClick}
+      onContextMenu={onContextMenu}>
+      {!children ? (
+        <ListItemContent>
+          {icon && <IconWrapper>{icon}</IconWrapper>}
+          <TextContainer>
+            <TitleText>{title}</TitleText>
+            {subtitle && <SubtitleText>{subtitle}</SubtitleText>}
+          </TextContainer>
+        </ListItemContent>
+      ) : (
+        children
+      )}
     </ListItemContainer>
   )
 }
 
 const ListItemContainer = styled.div`
-  padding: 7px 12px;
-  border-radius: var(--list-item-border-radius);
+  padding: 8px;
+  border-radius: var(--border-radius);
   font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   position: relative;
   font-family: Ubuntu;
   cursor: pointer;
-  border: 1px solid transparent;
+  user-select: none;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-primary-mute);
   }
 
   &.active {
-    background-color: var(--color-background-soft);
-    border: 1px solid var(--color-border-soft);
+    background-color: var(--color-primary-soft);
   }
 `
 
@@ -53,9 +72,7 @@ const ListItemContent = styled.div`
   font-size: 13px;
 `
 
-const IconWrapper = styled.span`
-  margin-right: 8px;
-`
+const IconWrapper = styled.span``
 
 const TextContainer = styled.div`
   display: flex;

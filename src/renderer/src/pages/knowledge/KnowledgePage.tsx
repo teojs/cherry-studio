@@ -200,7 +200,7 @@ const AddKnowledgeItem = styled.div`
   padding: 7px 12px;
   position: relative;
   font-family: Ubuntu;
-  border-radius: var(--list-item-border-radius);
+  border-radius: var(--border-radius);
   border: 0.5px solid transparent;
   cursor: pointer;
   &:hover {

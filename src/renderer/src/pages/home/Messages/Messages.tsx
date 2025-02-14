@@ -19,7 +19,7 @@ import { Assistant, Message, Topic } from '@renderer/types'
 import { captureScrollableDiv, runAsyncFunction } from '@renderer/utils'
 import { t } from 'i18next'
 import { flatten, last, take } from 'lodash'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import BeatLoader from 'react-spinners/BeatLoader'
 import styled from 'styled-components'
@@ -44,7 +44,7 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const messagesRef = useRef(messages)
   const { updateTopic, addTopic } = useAssistant(assistant.id)
-  const { showTopics, topicPosition, showAssistants, enableTopicNaming } = useSettings()
+  const { enableTopicNaming } = useSettings()
 
   const groupedMessages = getGroupedMessages(displayMessages)
 
@@ -52,13 +52,6 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
   const LOAD_MORE_COUNT = 20
 
   messagesRef.current = messages
-
-  const maxWidth = useMemo(() => {
-    const showRightTopics = showTopics && topicPosition === 'right'
-    const minusAssistantsWidth = showAssistants ? '- var(--assistants-width)' : ''
-    const minusRightTopicsWidth = showRightTopics ? '- var(--assistants-width)' : ''
-    return `calc(100vw - var(--sidebar-width) ${minusAssistantsWidth} ${minusRightTopicsWidth} - 5px)`
-  }, [showAssistants, showTopics, topicPosition])
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => containerRef.current?.scrollTo({ top: containerRef.current.scrollHeight, behavior: 'auto' }), 50)
@@ -282,12 +275,7 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
   })
 
   return (
-    <Container
-      id="messages"
-      style={{ maxWidth }}
-      key={assistant.id}
-      ref={containerRef}
-      $right={topicPosition === 'left'}>
+    <Container id="messages" key={assistant.id} ref={containerRef}>
       <NarrowLayout style={{ display: 'flex', flexDirection: 'column-reverse' }}>
         <Suggestions assistant={assistant} messages={messages} />
         <InfiniteScroll
@@ -342,17 +330,12 @@ const ScrollContainer = styled.div`
   padding: 0 20px;
 `
 
-interface ContainerProps {
-  $right?: boolean
-}
-
-const Container = styled(Scrollbar)<ContainerProps>`
+const Container = styled(Scrollbar)`
   display: flex;
   flex-direction: column-reverse;
   padding: 10px 0;
   padding-bottom: 20px;
   overflow-x: hidden;
-  background-color: var(--color-background);
 `
 
 export default Messages

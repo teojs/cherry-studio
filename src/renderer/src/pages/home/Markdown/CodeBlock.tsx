@@ -93,7 +93,6 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, className }) => {
         isShowLineNumbers={codeShowLineNumbers}
         dangerouslySetInnerHTML={{ __html: html }}
         style={{
-          border: '0.5px solid var(--color-code-background)',
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           marginTop: 0,
@@ -175,7 +174,9 @@ const DownloadButton = ({ language, data }: { language: string; data: string }) 
   )
 }
 
-const CodeBlockWrapper = styled.div``
+const CodeBlockWrapper = styled.div`
+  border-radius: 5px;
+`
 
 const CodeContent = styled.div<{ isShowLineNumbers: boolean }>`
   .shiki {

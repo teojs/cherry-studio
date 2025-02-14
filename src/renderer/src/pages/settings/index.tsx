@@ -44,7 +44,7 @@ export const SettingDescription = styled.div`
 
 export const SettingDivider = styled(Divider)`
   margin: 10px 0;
-  border-block-start: 0.5px solid var(--color-border);
+  border-block-start: var(--border-soft);
 `
 
 export const SettingRow = styled.div`
@@ -53,6 +53,7 @@ export const SettingRow = styled.div`
   justify-content: space-between;
   align-items: center;
   min-height: 24px;
+  gap: 8px;
 `
 
 export const SettingRowTitle = styled.div`
@@ -82,7 +83,7 @@ export const SettingHelpLink = styled(Link)`
 export const SettingGroup = styled.div<{ theme?: ThemeMode }>`
   margin-bottom: 20px;
   border-radius: 8px;
-  border: 0.5px solid var(--color-border);
+  border: var(--border-soft);
   padding: 16px;
   background: ${(props) => (props.theme === 'dark' ? '#00000010' : 'var(--color-background)')};
 `

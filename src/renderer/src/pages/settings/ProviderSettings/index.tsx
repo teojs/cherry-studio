@@ -165,7 +165,7 @@ const ProviderListContainer = styled.div`
   flex-direction: column;
   min-width: calc(var(--settings-width) + 10px);
   height: calc(75vh - var(--navbar-height));
-  border-right: 0.5px solid var(--color-border);
+  border-right: var(--border-soft);
 `
 
 const ProviderList = styled.div`
@@ -197,7 +197,7 @@ const ProviderListItem = styled.div`
 `
 
 const ProviderLogo = styled(Avatar)`
-  border: 0.5px solid var(--color-border);
+  border: var(--border-soft);
 `
 
 const ProviderItemName = styled.div`

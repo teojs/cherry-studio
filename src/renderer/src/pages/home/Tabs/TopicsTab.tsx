@@ -5,8 +5,10 @@ import {
   EditOutlined,
   FolderOutlined,
   PushpinOutlined,
-  UploadOutlined} from '@ant-design/icons'
+  UploadOutlined
+} from '@ant-design/icons'
 import DragableList from '@renderer/components/DragableList'
+import ListItem from '@renderer/components/ListItem'
 import PromptPopup from '@renderer/components/Popups/PromptPopup'
 import Scrollbar from '@renderer/components/Scrollbar'
 import { useAssistant, useAssistants } from '@renderer/hooks/useAssistant'
@@ -36,9 +38,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
   const { assistants } = useAssistants()
   const { assistant, removeTopic, moveTopic, updateTopic, updateTopics } = useAssistant(_assistant.id)
   const { t } = useTranslation()
-  const { showTopicTime, topicPosition } = useSettings()
-
-  const borderRadius = showTopicTime ? 12 : 'var(--list-item-border-radius)'
+  const { showTopicTime } = useSettings()
 
   const onPinTopic = useCallback(
     (topic: Topic) => {
@@ -149,7 +149,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
               key: 'markdown',
               onClick: () => exportTopicAsMarkdown(topic)
             },
-         
+
             {
               label: t('chat.topics.export.word'),
               key: 'word',
@@ -162,7 +162,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
               label: t('chat.topics.export.notion'),
               key: 'notion',
               onClick: () => exportTopicToNotion(topic)
-            },
+            }
           ]
         }
       ]
@@ -199,29 +199,35 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
   )
 
   return (
-    <Container right={topicPosition === 'right'} className="topics-tab">
+    <Container className="topics-tab">
+      <Header>
+        <Title>{assistant.name}</Title>
+      </Header>
       <DragableList list={assistant.topics} onUpdate={updateTopics}>
         {(topic) => {
           const isActive = topic.id === activeTopic?.id
           return (
             <Dropdown menu={{ items: getTopicMenuItems(topic) }} trigger={['contextMenu']} key={topic.id}>
-              <TopicListItem
-                className={isActive ? 'active' : ''}
-                onClick={() => onSwitchTopic(topic)}
-                style={{ borderRadius }}>
-                <TopicName className="name">{topic.name.replace('`', '')}</TopicName>
-                {showTopicTime && (
-                  <TopicTime className="time">{dayjs(topic.createdAt).format('MM/DD HH:mm')}</TopicTime>
+              <TopicListItem active={isActive} onClick={() => onSwitchTopic(topic)}>
+                <div>
+                  <TopicName className="name">{topic.name.replace('`', '')}</TopicName>
+                  {showTopicTime && (
+                    <TopicTime className="time">{dayjs(topic.createdAt).format('MM/DD HH:mm')}</TopicTime>
+                  )}
+                </div>
+                {topic.pinned && (
+                  <MenuButton className="pin">
+                    <PushpinOutlined />
+                  </MenuButton>
                 )}
-                <MenuButton className="pin">{topic.pinned && <PushpinOutlined />}</MenuButton>
                 {isActive && !topic.pinned && (
                   <MenuButton
                     className="menu"
                     onClick={(e) => {
                       e.stopPropagation()
-                          if (assistant.topics.length === 1) {
-                            return onClearMessages()
-                          }
+                      if (assistant.topics.length === 1) {
+                        return onClearMessages()
+                      }
                       onDeleteTopic(topic)
                     }}>
                     <CloseOutlined />
@@ -232,49 +238,59 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
           )
         }}
       </DragableList>
-      <div style={{ minHeight: '10px' }}></div>
     </Container>
   )
 }
 
 const Container = styled(Scrollbar)`
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 11px;
   user-select: none;
+  background-color: var(--list-background);
 `
 
-const TopicListItem = styled.div`
-  padding: 7px 12px;
-  margin-left: 10px;
-  margin-right: 4px;
-  border-radius: var(--list-item-border-radius);
+const Header = styled.div`
+  display: flex;
+  padding: 8px;
+`
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-3);
+  padding-left: 8px;
+`
+
+const TopicListItem = styled(ListItem)`
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: start;
+  padding: 8px 8px;
+  margin: 0 10px;
+  border-radius: var(--border-radius);
   font-family: Ubuntu;
   font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   position: relative;
   font-family: Ubuntu;
   cursor: pointer;
-  border: 0.5px solid transparent;
+  transition: background-color 0.2s;
   .menu {
     opacity: 0;
     color: var(--color-text-3);
   }
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-primary-soft);
     .name {
     }
   }
   &.active {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-primary-soft);
     .name {
     }
     .menu {
       opacity: 1;
-      background-color: var(--color-background-soft);
       &:hover {
         color: var(--color-text-2);
       }
@@ -302,9 +318,6 @@ const MenuButton = styled.div`
   align-items: center;
   min-width: 22px;
   min-height: 22px;
-  position: absolute;
-  right: 8px;
-  top: 6px;
   .anticon {
     font-size: 12px;
   }

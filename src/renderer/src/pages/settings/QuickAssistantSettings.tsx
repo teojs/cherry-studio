@@ -82,7 +82,7 @@ const AssistantContainer = styled.div`
   height: 460px;
   background-color: var(--color-background);
   border-radius: 10px;
-  border: 0.5px solid var(--color-border);
+  border: var(--border-soft);
   margin: 0 auto;
   overflow: hidden;
 `

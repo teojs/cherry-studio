@@ -1,7 +1,7 @@
 import SettingsPage, { SettingsTab } from '@renderer/pages/settings/SettingsPage'
 import { Modal } from 'antd'
 import { FC, useState } from 'react'
-import styled, { createGlobalStyle } from 'styled-components'
+import styled from 'styled-components'
 
 interface Props {
   actionButton?: React.ReactNode
@@ -26,7 +26,6 @@ const SettingsPopup: FC<Props> = (props) => {
   return (
     <>
       <div onClick={onOpen}>{props.actionButton}</div>
-      <GlobalStyle />
       <StyledModal
         transitionName="ant-move-down"
         width="80vw"
@@ -40,13 +39,6 @@ const SettingsPopup: FC<Props> = (props) => {
   )
 }
 
-const GlobalStyle = createGlobalStyle`
-  .ant-modal-mask {
-    backdrop-filter: blur(10px);
-    background-color: transparent !important;
-  }
-`
-
 const StyledModal = styled(Modal)`
   min-width: 900px;
   max-width: 1300px;
@@ -55,7 +47,8 @@ const StyledModal = styled(Modal)`
   .ant-modal-content {
     padding: 0;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: var(--border-radius-md);
+    border: var(--border);
   }
   .ant-modal-close {
     top: 4px;

@@ -422,12 +422,11 @@ const SettingsTab: FC<Props> = (props) => {
 
 const Container = styled(Scrollbar)`
   display: flex;
-  flex: 1;
+  flex-shrink: 0;
   flex-direction: column;
-  padding: 0 10px;
-  padding-right: 5px;
-  padding-top: 2px;
-  padding-bottom: 10px;
+  background-color: var(--list-background);
+  transition: max-width 0.2s ease-in-out;
+  box-sizing: border-box;
 `
 
 const Label = styled.p`
@@ -447,7 +446,7 @@ const SettingRowTitleSmall = styled(SettingRowTitle)`
 `
 
 export const SettingGroup = styled.div<{ theme?: ThemeMode }>`
-  padding: 0 5px;
+  padding: 0 8px;
   width: 100%;
   margin-top: 0;
   border-radius: 8px;

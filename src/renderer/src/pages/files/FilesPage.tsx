@@ -240,7 +240,7 @@ const SideNav = styled.div`
     line-height: 36px;
     margin: 4px 0;
     width: 100%;
-    border-radius: var(--list-item-border-radius);
+    border-radius: var(--border-radius);
     border: 0.5px solid transparent;
 
     &:hover {

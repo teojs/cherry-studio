@@ -67,6 +67,9 @@ export interface SettingsState {
   multiModelMessageStyle: MultiModelMessageStyle
   notionDatabaseID: string | null
   notionApiKey: string | null
+  assistantsSize: number
+  topicsSize: number
+  showChatSettings: boolean
 }
 
 export type MultiModelMessageStyle = 'horizontal' | 'vertical' | 'fold'
@@ -119,7 +122,10 @@ const initialState: SettingsState = {
   clickTrayToShowQuickAssistant: false,
   multiModelMessageStyle: 'fold',
   notionDatabaseID: '',
-  notionApiKey: ''
+  notionApiKey: '',
+  assistantsSize: 170,
+  topicsSize: 250,
+  showChatSettings: false
 }
 
 const settingsSlice = createSlice({
@@ -273,6 +279,15 @@ const settingsSlice = createSlice({
     },
     setNotionApiKey: (state, action: PayloadAction<string>) => {
       state.notionApiKey = action.payload
+    },
+    setAssistantsSize: (state, action: PayloadAction<number>) => {
+      state.assistantsSize = action.payload
+    },
+    setTopicsSize: (state, action: PayloadAction<number>) => {
+      state.topicsSize = action.payload
+    },
+    setShowChatSettings: (state, action: PayloadAction<boolean>) => {
+      state.showChatSettings = action.payload
     }
   }
 })
@@ -324,7 +339,10 @@ export const {
   setEnableQuickAssistant,
   setMultiModelMessageStyle,
   setNotionDatabaseID,
-  setNotionApiKey
+  setNotionApiKey,
+  setAssistantsSize,
+  setTopicsSize,
+  setShowChatSettings
 } = settingsSlice.actions
 
 export default settingsSlice.reducer

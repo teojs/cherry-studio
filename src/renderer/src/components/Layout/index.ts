@@ -1,3 +1,4 @@
+import { Splitter } from 'antd'
 import styled from 'styled-components'
 
 interface ContainerProps {
@@ -95,14 +96,14 @@ export const Box = styled.div<BoxProps>`
   box-sizing: border-box;
   border: ${(props) => props?.border || 'none'};
   gap: ${(p) => (p.gap ? getElementValue(p.gap) : 0)};
-  margin: ${(props) => (props.m || props.margin ? props.m ?? props.margin : 'none')};
+  margin: ${(props) => (props.m || props.margin ? (props.m ?? props.margin) : 'none')};
   margin-top: ${(props) => (props.mt || props.marginTop ? getElementValue(props.mt || props.marginTop) : 'default')};
   margin-bottom: ${(props) =>
     props.mb || props.marginBottom ? getElementValue(props.mb ?? props.marginBottom) : 'default'};
   margin-left: ${(props) => (props.ml || props.marginLeft ? getElementValue(props.ml ?? props.marginLeft) : 'default')};
   margin-right: ${(props) =>
     props.mr || props.marginRight ? getElementValue(props.mr ?? props.marginRight) : 'default'};
-  padding: ${(props) => (props.p || props.padding ? props.p ?? props.padding : 'none')};
+  padding: ${(props) => (props.p || props.padding ? (props.p ?? props.padding) : 'none')};
   padding-top: ${(props) => (props.pt || props.paddingTop ? getElementValue(props.pt ?? props.paddingTop) : 'auto')};
   padding-bottom: ${(props) =>
     props.pb || props.paddingBottom ? getElementValue(props.pb ?? props.paddingBottom) : 'auto'};
@@ -165,4 +166,28 @@ export const Container = styled.main<ContainerProps>`
   box-sizing: border-box;
   flex: 1;
   padding: ${(p) => p.padding ?? '0 18px'};
+`
+
+export const CustomSplitter = styled(Splitter)<{ $isResizing: boolean }>`
+  .ant-splitter-panel {
+    transition: flex-basis 0.2s ease-in-out;
+    ${({ $isResizing }) => $isResizing && 'transition: flex-basis 0s;'}
+  }
+  .ant-splitter-bar-dragger {
+    width: 14px !important;
+    &:before {
+      width: 0.5px !important;
+      left: 7px !important;
+      background: var(--color-border-soft) !important;
+    }
+    &::after {
+      display: none;
+    }
+    &:hover {
+      &:before {
+        width: 1px !important;
+        background: var(--color-border) !important;
+      }
+    }
+  }
 `

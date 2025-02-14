@@ -1,4 +1,4 @@
-import { HStack } from '@renderer/components/Layout'
+import Scrollbar from '@renderer/components/Scrollbar'
 import { TopView } from '@renderer/components/TopView'
 import { useAgent } from '@renderer/hooks/useAgents'
 import { useAssistant } from '@renderer/hooks/useAssistant'
@@ -73,109 +73,127 @@ const AssistantSettingPopupContainer: React.FC<Props> = ({ resolve, ...props }) 
       onCancel={onCancel}
       afterClose={afterClose}
       footer={null}
-      title={assistant.name}
+      title={null}
       transitionName="ant-move-down"
-      styles={{
-        content: {
-          padding: 0,
-          overflow: 'hidden',
-          background: 'var(--color-background)',
-          border: `1px solid var(--color-frame-border)`
-        },
-        header: { padding: '10px 15px', borderBottom: '0.5px solid var(--color-border)', margin: 0 }
-      }}
       width="70vw"
       height="80vh"
       centered>
-      <HStack>
-        <LeftMenu>
-          <Menu
-            style={{ width: 220, padding: 5, background: 'transparent' }}
-            defaultSelectedKeys={['prompt']}
-            mode="vertical"
-            items={items}
-            onSelect={({ key }) => setMenu(key as string)}
-          />
-        </LeftMenu>
+      <ContentContainer>
+        <MenuContainer>
+          <Title>
+            <i className="iconfont icon-setting" /> {assistant.name}
+          </Title>
+          <Menu mode="inline" onClick={(e) => setMenu(e.key as string)} selectedKeys={[menu]} items={items} />
+        </MenuContainer>
+
         <Settings>
-          {menu === 'prompt' && (
-            <AssistantPromptSettings
-              assistant={assistant}
-              updateAssistant={updateAssistant}
-              updateAssistantSettings={updateAssistantSettings}
-              onOk={onOk}
-            />
-          )}
-          {menu === 'model' && (
-            <AssistantModelSettings
-              assistant={assistant}
-              updateAssistant={updateAssistant}
-              updateAssistantSettings={updateAssistantSettings}
-            />
-          )}
-          {menu === 'messages' && (
-            <AssistantMessagesSettings
-              assistant={assistant}
-              updateAssistant={updateAssistant}
-              updateAssistantSettings={updateAssistantSettings}
-            />
-          )}
-          {menu === 'knowledge_base' && (
-            <AssistantKnowledgeBaseSettings
-              assistant={assistant}
-              updateAssistant={updateAssistant}
-              updateAssistantSettings={updateAssistantSettings}
-            />
-          )}
+          <SettingHeader>{items.find((item) => item.key === menu)?.label}</SettingHeader>
+          <SettingContent>
+            {menu === 'prompt' && (
+              <AssistantPromptSettings
+                assistant={assistant}
+                updateAssistant={updateAssistant}
+                updateAssistantSettings={updateAssistantSettings}
+                onOk={onOk}
+              />
+            )}
+            {menu === 'model' && (
+              <AssistantModelSettings
+                assistant={assistant}
+                updateAssistant={updateAssistant}
+                updateAssistantSettings={updateAssistantSettings}
+              />
+            )}
+            {menu === 'messages' && (
+              <AssistantMessagesSettings
+                assistant={assistant}
+                updateAssistant={updateAssistant}
+                updateAssistantSettings={updateAssistantSettings}
+              />
+            )}
+            {menu === 'knowledge_base' && (
+              <AssistantKnowledgeBaseSettings
+                assistant={assistant}
+                updateAssistant={updateAssistant}
+                updateAssistantSettings={updateAssistantSettings}
+              />
+            )}
+          </SettingContent>
         </Settings>
-      </HStack>
+      </ContentContainer>
     </StyledModal>
   )
 }
 
-const LeftMenu = styled.div`
-  background-color: var(--color-background);
-  height: calc(80vh - 20px);
-  border-right: 0.5px solid var(--color-border);
-`
-
-const Settings = styled.div`
-  flex: 1;
-  padding: 10px 20px;
-  height: calc(80vh - 20px);
-  overflow-y: scroll;
-`
-
 const StyledModal = styled(Modal)`
-  .ant-modal-title {
-    font-size: 14px;
+  padding-bottom: 0;
+
+  .ant-modal-content {
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--border-radius-md);
+    border: var(--border);
   }
   .ant-modal-close {
     top: 4px;
+    right: 4px;
   }
-  .ant-menu-item {
-    height: 36px;
-    color: var(--color-text-2);
-    display: flex;
-    align-items: center;
-    border: 0.5px solid transparent;
-    border-radius: 6px;
-    .ant-menu-title-content {
-      line-height: 36px;
-    }
+`
+
+const ContentContainer = styled.div`
+  height: 80vh;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+`
+
+const MenuContainer = styled.div`
+  max-width: 300px;
+  background-color: var(--color-background-mute);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  padding: 0 8px;
+  .ant-menu-light {
+    background-color: var(--color-background-mute);
   }
-  .ant-menu-item-active {
-    background-color: var(--color-background-soft) !important;
-    transition: none;
+`
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  .iconfont {
+    font-size: 20px;
   }
-  .ant-menu-item-selected {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
-    .ant-menu-title-content {
-      color: var(--color-text-1);
-      font-weight: 500;
-    }
-  }
+`
+
+const Settings = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* height: 100%; */
+  flex: 1;
+  overflow-y: auto;
+`
+
+const SettingHeader = styled.div`
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: var(--border-soft);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`
+
+const SettingContent = styled(Scrollbar)`
+  padding: 16px;
 `
 
 export default class AssistantSettingsPopup {

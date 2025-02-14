@@ -1,7 +1,9 @@
 import { DeleteOutlined, EditOutlined, MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
 import DragableList from '@renderer/components/DragableList'
 import CopyIcon from '@renderer/components/Icons/CopyIcon'
+import ListItem from '@renderer/components/ListItem'
 import Scrollbar from '@renderer/components/Scrollbar'
+import { getModelLogo } from '@renderer/config/models'
 import { useAgents } from '@renderer/hooks/useAgents'
 import { useAssistant, useAssistants } from '@renderer/hooks/useAssistant'
 import { modelGenerating } from '@renderer/hooks/useRuntime'
@@ -11,7 +13,7 @@ import { getDefaultTopic } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { Assistant } from '@renderer/types'
 import { uuid } from '@renderer/utils'
-import { Dropdown } from 'antd'
+import { Avatar, Button, Dropdown } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import { last, omit } from 'lodash'
 import { FC, useCallback, useState } from 'react'
@@ -130,6 +132,9 @@ const Assistants: FC<Props> = ({
 
   return (
     <Container className="assistants-tab">
+      <Header>
+        <Title>{t('assistants.title')}</Title>
+      </Header>
       <DragableList
         list={assistants}
         onUpdate={updateAssistants}
@@ -140,98 +145,48 @@ const Assistants: FC<Props> = ({
           const isCurrent = assistant.id === activeAssistant?.id
           return (
             <Dropdown key={assistant.id} menu={{ items: getMenuItems(assistant) }} trigger={['contextMenu']}>
-              <AssistantItem onClick={() => onSwitchAssistant(assistant)} className={isCurrent ? 'active' : ''}>
-                <AssistantName className="name">{assistant.name || t('chat.default.name')}</AssistantName>
-                {isCurrent && (
-                  <MenuButton onClick={() => EventEmitter.emit(EVENT_NAMES.SWITCH_TOPIC_SIDEBAR)}>
-                    <TopicCount className="topics-count">{assistant.topics.length}</TopicCount>
-                  </MenuButton>
-                )}
-              </AssistantItem>
+              <ListItem
+                active={isCurrent}
+                style={{ margin: '0 8px' }}
+                onClick={() => onSwitchAssistant(assistant)}
+                icon={
+                  <Avatar size={30} src={getModelLogo(assistant.defaultModel?.id)} style={{ flexShrink: 0 }}>
+                    {assistant.emoji || t('chat.default.emoji')}
+                  </Avatar>
+                }
+                title={assistant.name || t('chat.default.name')}
+              />
             </Dropdown>
           )
         }}
       </DragableList>
       {!dragging && (
-        <AssistantItem onClick={onCreateAssistant}>
-          <AssistantName>
-            <PlusOutlined style={{ color: 'var(--color-text-2)', marginRight: 4 }} />
-            {t('chat.add.assistant.title')}
-          </AssistantName>
-        </AssistantItem>
+        <Button type="dashed" onClick={onCreateAssistant} icon={<PlusOutlined />} style={{ margin: '0 10px' }}>
+          {t('chat.add.assistant.title')}
+        </Button>
       )}
-      <div style={{ minHeight: 10 }}></div>
     </Container>
   )
 }
 
 const Container = styled(Scrollbar)`
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 11px;
   user-select: none;
+  background-color: var(--list-background);
 `
 
-const AssistantItem = styled.div`
+const Header = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 7px 12px;
-  position: relative;
-  margin: 0 10px;
-  padding-right: 35px;
-  font-family: Ubuntu;
-  border-radius: var(--list-item-border-radius);
-  border: 0.5px solid transparent;
-  cursor: pointer;
-  .iconfont {
-    opacity: 0;
-    color: var(--color-text-3);
-  }
-  &:hover {
-    background-color: var(--color-background-soft);
-  }
-  &.active {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
-    .name {
-    }
-  }
+  padding: 8px;
 `
 
-const AssistantName = styled.div`
-  color: var(--color-text);
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 13px;
-`
-
-const MenuButton = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  min-width: 22px;
-  height: 22px;
-  min-width: 22px;
-  min-height: 22px;
-  border-radius: 11px;
-  position: absolute;
-  background-color: var(--color-background);
-  right: 9px;
-  top: 6px;
-`
-
-const TopicCount = styled.div`
-  color: var(--color-text);
-  font-size: 10px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-3);
+  padding-left: 8px;
 `
 
 export default Assistants

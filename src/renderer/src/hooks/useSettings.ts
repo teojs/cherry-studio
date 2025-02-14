@@ -1,12 +1,15 @@
 import store, { useAppDispatch, useAppSelector } from '@renderer/store'
 import {
   SendMessageShortcut,
+  setAssistantsSize,
   setSendMessageShortcut as _setSendMessageShortcut,
+  setShowChatSettings,
   setSidebarIcons,
   setTargetLanguage,
   setTheme,
   SettingsState,
   setTopicPosition,
+  setTopicsSize,
   setTray,
   setWindowStyle
 } from '@renderer/store/settings'
@@ -45,6 +48,15 @@ export function useSettings() {
     },
     updateSidebarDisabledIcons(icons: SidebarIcon[]) {
       dispatch(setSidebarIcons({ disabled: icons }))
+    },
+    setAssistantsSize(size: number) {
+      dispatch(setAssistantsSize(size))
+    },
+    setTopicsSize(size: number) {
+      dispatch(setTopicsSize(size))
+    },
+    setShowChatSettings(show: boolean) {
+      dispatch(setShowChatSettings(show))
     }
   }
 }

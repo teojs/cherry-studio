@@ -1,14 +1,13 @@
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
-import { useShowTopics } from '@renderer/hooks/useStore'
 import { Assistant, Topic } from '@renderer/types'
-import { Flex } from 'antd'
+import { Drawer, Flex } from 'antd'
 import { FC } from 'react'
 import styled from 'styled-components'
 
 import Inputbar from './Inputbar/Inputbar'
 import Messages from './Messages/Messages'
-import Tabs from './Tabs'
+import Settings from './Tabs/SettingsTab'
 
 interface Props {
   assistant: Assistant
@@ -19,8 +18,14 @@ interface Props {
 
 const Chat: FC<Props> = (props) => {
   const { assistant } = useAssistant(props.assistant.id)
-  const { topicPosition, messageStyle } = useSettings()
-  const { showTopics } = useShowTopics()
+  const { messageStyle, showChatSettings, setShowChatSettings } = useSettings()
+
+  const drawerStyles = {
+    body: { padding: '0 8px' },
+    mask: { background: 'none' },
+    content: { background: 'var(--list-background)' },
+    header: { background: 'none' }
+  }
 
   return (
     <Container id="chat" className={messageStyle}>
@@ -33,15 +38,16 @@ const Chat: FC<Props> = (props) => {
         />
         <Inputbar assistant={assistant} setActiveTopic={props.setActiveTopic} />
       </Main>
-      {topicPosition === 'right' && showTopics && (
-        <Tabs
-          activeAssistant={assistant}
-          activeTopic={props.activeTopic}
-          setActiveAssistant={props.setActiveAssistant}
-          setActiveTopic={props.setActiveTopic}
-          position="right"
-        />
-      )}
+      <Drawer
+        width="auto"
+        styles={drawerStyles}
+        placement="right"
+        closable={false}
+        onClose={() => setShowChatSettings(false)}
+        open={showChatSettings}
+        getContainer={false}>
+        <Settings assistant={props.assistant} />
+      </Drawer>
     </Container>
   )
 }
@@ -52,10 +58,13 @@ const Container = styled.div`
   height: 100%;
   flex: 1;
   justify-content: space-between;
+  height: calc(100vh - var(--navbar-height));
+  background-color: var(--chat-background);
+  position: relative;
 `
 
 const Main = styled(Flex)`
-  height: calc(100vh - var(--navbar-height));
+  min-width: 0;
 `
 
 export default Chat

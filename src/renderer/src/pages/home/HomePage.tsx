@@ -1,15 +1,20 @@
-import { useAssistants } from '@renderer/hooks/useAssistant'
+import { CustomSplitter } from '@renderer/components/Layout'
+import AddAssistantPopup from '@renderer/components/Popups/AddAssistantPopup'
+import { useAssistants, useDefaultAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useActiveTopic } from '@renderer/hooks/useTopic'
 import NavigationService from '@renderer/services/NavigationService'
 import { Assistant } from '@renderer/types'
+import { uuid } from '@renderer/utils'
+import { Splitter } from 'antd'
 import { FC, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import Chat from './Chat'
 import Navbar from './Navbar'
-import HomeTabs from './Tabs'
+import Assistants from './Tabs/AssistantsTab'
+import Topics from './Tabs/TopicsTab'
 
 let _activeAssistant: Assistant
 
@@ -22,9 +27,35 @@ const HomePage: FC = () => {
 
   const [activeAssistant, setActiveAssistant] = useState(state?.assistant || _activeAssistant || assistants[0])
   const { activeTopic, setActiveTopic } = useActiveTopic(activeAssistant, state?.topic)
-  const { showAssistants, showTopics, topicPosition } = useSettings()
+  const { showAssistants, assistantsSize, topicsSize, setAssistantsSize, setTopicsSize } = useSettings()
+
+  const { defaultAssistant } = useDefaultAssistant()
+  const { addAssistant } = useAssistants()
+
+  const [isResizing, setIsResizing] = useState(true)
+  const [splitterSizes, setSplitterSizes] = useState([assistantsSize, topicsSize, '100%'])
 
   _activeAssistant = activeAssistant
+
+  const onCreateAssistant = async () => {
+    const assistant = await AddAssistantPopup.show()
+    assistant && setActiveAssistant(assistant)
+  }
+
+  const onCreateDefaultAssistant = () => {
+    const assistant = { ...defaultAssistant, id: uuid() }
+    addAssistant(assistant)
+    setActiveAssistant(assistant)
+  }
+
+  const onSplitterResize = (sizes: number[]) => {
+    setSplitterSizes(sizes)
+  }
+
+  const onSplitterResizeEnd = (sizes: number[]) => {
+    setAssistantsSize(sizes[0])
+    setTopicsSize(sizes[1])
+  }
 
   useEffect(() => {
     NavigationService.setNavigate(navigate)
@@ -36,50 +67,55 @@ const HomePage: FC = () => {
   }, [state])
 
   useEffect(() => {
-    const canMinimize = topicPosition == 'left' ? !showAssistants : !showAssistants && !showTopics
-    window.api.window.setMinimumSize(canMinimize ? 520 : 1080, 600)
-
-    return () => {
-      window.api.window.resetMinimumSize()
+    setIsResizing(false)
+    if (showAssistants) {
+      setSplitterSizes([assistantsSize, topicsSize, '100%'])
+    } else {
+      setSplitterSizes([0, 0, '100%'])
     }
-  }, [showAssistants, showTopics, topicPosition])
+    setTimeout(() => {
+      setIsResizing(true)
+    }, 200)
+  }, [showAssistants])
 
   return (
-    <Container id="home-page">
-      <Navbar activeAssistant={activeAssistant} activeTopic={activeTopic} setActiveTopic={setActiveTopic} />
-      <ContentContainer id="content-container">
-        {showAssistants && (
-          <HomeTabs
-            activeAssistant={activeAssistant}
-            activeTopic={activeTopic}
-            setActiveAssistant={setActiveAssistant}
-            setActiveTopic={setActiveTopic}
-            position="left"
-          />
-        )}
-        <Chat
-          assistant={activeAssistant}
-          activeTopic={activeTopic}
-          setActiveTopic={setActiveTopic}
+    <CustomSplitter
+      className="home-page"
+      style={{ minWidth: '0' }}
+      onResizeEnd={onSplitterResizeEnd}
+      onResize={onSplitterResize}
+      $isResizing={isResizing}>
+      <Splitter.Panel size={splitterSizes[0]} resizable={showAssistants}>
+        <Assistants
+          activeAssistant={activeAssistant}
           setActiveAssistant={setActiveAssistant}
+          onCreateAssistant={onCreateAssistant}
+          onCreateDefaultAssistant={onCreateDefaultAssistant}
         />
-      </ContentContainer>
-    </Container>
+      </Splitter.Panel>
+
+      <Splitter.Panel size={splitterSizes[1]} resizable={showAssistants}>
+        <Topics assistant={activeAssistant} activeTopic={activeTopic} setActiveTopic={setActiveTopic} />
+      </Splitter.Panel>
+
+      <Splitter.Panel min="50%">
+        <ChatContainer>
+          <Navbar activeAssistant={activeAssistant} />
+          <Chat
+            assistant={activeAssistant}
+            activeTopic={activeTopic}
+            setActiveTopic={setActiveTopic}
+            setActiveAssistant={setActiveAssistant}
+          />
+        </ChatContainer>
+      </Splitter.Panel>
+    </CustomSplitter>
   )
 }
 
-const Container = styled.div`
-  display: flex;
+const ChatContainer = styled.div`
   flex: 1;
-  flex-direction: column;
-  max-width: calc(100vw - var(--sidebar-width));
-`
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: row;
-  overflow: hidden;
+  min-width: 0;
 `
 
 export default HomePage
