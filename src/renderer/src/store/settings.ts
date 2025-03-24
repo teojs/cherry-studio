@@ -16,6 +16,32 @@ export const DEFAULT_SIDEBAR_ICONS: SidebarIcon[] = [
   'files'
 ]
 
+export interface CustomStyleItem {
+  primaryColor: string
+  activeBackgroundColor: string
+  activeBorderColor: string
+  backgroundImage: string
+  backgroundColor: string
+  backgroundBlur: number
+  blockBackgroundColor: string
+  blockBackgroundBlur: number
+  blockSaturation: number
+  navbarBackgroundColor: string
+  navbarBlur: number
+  navbarBorderColor: string
+  navbarRadius: number[]
+  navbarSaturation: number
+  sidebarBackgroundColor: string
+  sidebarBlur: number
+  sidebarWidth: number
+  sidebarBorderColor: string
+  sidebarRadius: number[]
+  sidebarSaturation: number
+  blockBorderColor: string
+  containerRadius: number[]
+  containerBorders: boolean[]
+}
+
 export interface SettingsState {
   showAssistants: boolean
   showTopics: boolean
@@ -92,6 +118,10 @@ export interface SettingsState {
   obsidianTages: string | null
   joplinToken: string | null
   joplinUrl: string | null
+  customStyle: {
+    light: CustomStyleItem
+    dark: CustomStyleItem
+  }
 }
 
 export type MultiModelMessageStyle = 'horizontal' | 'vertical' | 'fold' | 'grid'
@@ -167,7 +197,59 @@ const initialState: SettingsState = {
   obsidianFolder: '',
   obsidianTages: '',
   joplinToken: '',
-  joplinUrl: ''
+  joplinUrl: '',
+  customStyle: {
+    light: {
+      primaryColor: '#00b96b',
+      backgroundImage: '',
+      backgroundColor: '#ffffff',
+      backgroundBlur: 0,
+      blockBackgroundColor: '#ffffff',
+      blockBackgroundBlur: 0,
+      blockSaturation: 100,
+      navbarBackgroundColor: '#ffffff',
+      navbarBlur: 0,
+      navbarBorderColor: '',
+      navbarRadius: [0, 0, 0, 0],
+      navbarSaturation: 100,
+      activeBackgroundColor: '#f2f2f2',
+      activeBorderColor: '#00000015',
+      sidebarBackgroundColor: '#ffffff',
+      sidebarBlur: 0,
+      sidebarWidth: 50,
+      sidebarBorderColor: '',
+      sidebarRadius: [0, 0, 0, 0],
+      sidebarSaturation: 100,
+      blockBorderColor: '#00000015',
+      containerRadius: [10, 0, 0, 0],
+      containerBorders: [true, false, false, true]
+    },
+    dark: {
+      primaryColor: '#00b96b',
+      backgroundImage: '',
+      backgroundColor: '#141414',
+      backgroundBlur: 0,
+      blockBackgroundColor: '#1f1f1f',
+      blockBackgroundBlur: 0,
+      blockSaturation: 100,
+      navbarBackgroundColor: '#141414',
+      navbarBlur: 0,
+      navbarBorderColor: '',
+      navbarRadius: [0, 0, 0, 0],
+      navbarSaturation: 100,
+      activeBackgroundColor: '#222222',
+      activeBorderColor: '#ffffff15',
+      sidebarBackgroundColor: '#141414',
+      sidebarBlur: 0,
+      sidebarWidth: 50,
+      sidebarBorderColor: '',
+      sidebarRadius: [0, 0, 0, 0],
+      sidebarSaturation: 100,
+      blockBorderColor: '#ffffff15',
+      containerRadius: [10, 0, 0, 0],
+      containerBorders: [true, false, false, true]
+    }
+  }
 }
 
 const settingsSlice = createSlice({
@@ -389,6 +471,9 @@ const settingsSlice = createSlice({
     },
     setMessageNavigation: (state, action: PayloadAction<'none' | 'buttons' | 'anchor'>) => {
       state.messageNavigation = action.payload
+    },
+    setCustomStyle: (state, action: PayloadAction<{ light: CustomStyleItem; dark: CustomStyleItem }>) => {
+      state.customStyle = action.payload
     }
   }
 })
@@ -463,7 +548,8 @@ export const {
   setObsidianTages,
   setJoplinToken,
   setJoplinUrl,
-  setMessageNavigation
+  setMessageNavigation,
+  setCustomStyle
 } = settingsSlice.actions
 
 export default settingsSlice.reducer

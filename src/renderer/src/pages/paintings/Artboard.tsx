@@ -115,7 +115,7 @@ const ImagePlaceholder = styled.div`
   display: flex;
   width: 70vh;
   height: 70vh;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background);
   align-items: center;
   justify-content: center;
   cursor: pointer;

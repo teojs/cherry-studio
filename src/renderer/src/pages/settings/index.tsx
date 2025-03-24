@@ -12,7 +12,7 @@ export const SettingContainer = styled.div<{ theme?: ThemeMode }>`
   padding-top: 15px;
   overflow-y: scroll;
   font-family: Ubuntu;
-  background: ${(props) => (props.theme === 'dark' ? 'transparent' : 'var(--color-background-soft)')};
+  /* background: ${(props) => (props.theme === 'dark' ? 'transparent' : 'var(--color-background-soft)')}; */
 
   &::-webkit-scrollbar {
     display: none;
@@ -54,12 +54,14 @@ export const SettingRow = styled.div`
   justify-content: space-between;
   align-items: center;
   min-height: 24px;
+  gap: 8px;
 `
 
 export const SettingRowTitle = styled.div`
   font-size: 14px;
   line-height: 18px;
   color: var(--color-text-1);
+  flex-shrink: 0;
 `
 
 export const SettingHelpTextRow = styled.div`

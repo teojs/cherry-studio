@@ -214,7 +214,7 @@ const Container = styled.div`
   justify-content: space-between;
 `
 
-const ProviderListContainer = styled.div`
+const ProviderListContainer = styled.div.attrs({ className: 'module-card' })`
   display: flex;
   flex-direction: column;
   min-width: calc(var(--settings-width) + 10px);
@@ -242,11 +242,11 @@ const ProviderListItem = styled.div`
   transition: all 0.2s ease-in-out;
   border: 0.5px solid transparent;
   &:hover {
-    background: var(--color-background-soft);
+    background: var(--color-active-background);
   }
   &.active {
-    background: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     font-weight: bold !important;
   }
 `

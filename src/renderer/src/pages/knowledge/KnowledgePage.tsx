@@ -178,12 +178,14 @@ const MainContent = styled(Scrollbar)`
   padding-bottom: 50px;
 `
 
-const SideNav = styled.div`
+const SideNav = styled.div.attrs({ className: 'module-card' })`
   width: var(--assistants-width);
   border-right: 0.5px solid var(--color-border);
   padding: 12px 10px;
   display: flex;
   flex-direction: column;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 
   .ant-menu {
     border-inline-end: none !important;
@@ -198,11 +200,11 @@ const SideNav = styled.div`
     width: 100%;
 
     &:hover {
-      background-color: var(--color-background-soft);
+      background-color: var(--color-active-background);
     }
 
     &.ant-menu-item-selected {
-      background-color: var(--color-background-soft);
+      background-color: var(--color-active-background);
       color: var(--color-primary);
     }
   }
@@ -233,7 +235,7 @@ const AddKnowledgeItem = styled.div`
   border: 0.5px solid transparent;
   cursor: pointer;
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-active-background);
   }
 `
 

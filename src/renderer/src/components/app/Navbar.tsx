@@ -1,18 +1,11 @@
 import { isMac } from '@renderer/config/constant'
-import useNavBackgroundColor from '@renderer/hooks/useNavBackgroundColor'
 import { FC, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
 type Props = PropsWithChildren & JSX.IntrinsicElements['div']
 
 export const Navbar: FC<Props> = ({ children, ...props }) => {
-  const backgroundColor = useNavBackgroundColor()
-
-  return (
-    <NavbarContainer {...props} style={{ backgroundColor }}>
-      {children}
-    </NavbarContainer>
-  )
+  return <NavbarContainer {...props}>{children}</NavbarContainer>
 }
 
 export const NavbarLeft: FC<Props> = ({ children, ...props }) => {
@@ -33,9 +26,13 @@ const NavbarContainer = styled.div`
   flex-direction: row;
   min-height: var(--navbar-height);
   max-height: var(--navbar-height);
-  margin-left: ${isMac ? 'calc(var(--sidebar-width) * -1)' : 0};
-  padding-left: ${isMac ? 'var(--sidebar-width)' : 0};
+  /* margin-left: ${isMac ? 'calc(var(--sidebar-width) * -1)' : 0};
+  padding-left: ${isMac ? 'var(--sidebar-width)' : 0}; */
   -webkit-app-region: drag;
+  background-color: var(--custom-navbar-background-color);
+  border: var(--custom-navbar-border);
+  border-radius: var(--custom-navbar-radius);
+  backdrop-filter: blur(var(--custom-navbar-blur)) saturate(var(--custom-navbar-saturation));
 `
 
 const NavbarLeftContainer = styled.div`

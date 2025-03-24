@@ -10,7 +10,6 @@ import { AppLogo, UserAvatar } from '@renderer/config/env'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import useAvatar from '@renderer/hooks/useAvatar'
 import { useMinapps } from '@renderer/hooks/useMinapps'
-import useNavBackgroundColor from '@renderer/hooks/useNavBackgroundColor'
 import { modelGenerating, useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { isEmoji } from '@renderer/utils'
@@ -40,8 +39,6 @@ const Sidebar: FC = () => {
 
   const onEditUser = () => UserPopup.show()
 
-  const backgroundColor = useNavBackgroundColor()
-
   const showPinnedApps = pinned.length > 0 && sidebarIcons.visible.includes('minapp')
 
   const to = async (path: string) => {
@@ -59,7 +56,7 @@ const Sidebar: FC = () => {
   }
 
   return (
-    <Container id="app-sidebar" style={{ backgroundColor, zIndex: minappShow ? 10000 : 'initial' }}>
+    <Container id="app-sidebar" style={{ zIndex: minappShow ? 10000 : 'initial' }}>
       {isEmoji(avatar) ? (
         <EmojiAvatar onClick={onEditUser}>{avatar}</EmojiAvatar>
       ) : (
@@ -209,9 +206,13 @@ const Container = styled.div`
   padding-bottom: 12px;
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
-  height: ${isMac ? 'calc(100vh - var(--navbar-height))' : '100vh'};
+  height: 100vh;
   -webkit-app-region: drag !important;
-  margin-top: ${isMac ? 'var(--navbar-height)' : 0};
+  padding-top: ${isMac ? 'var(--navbar-height)' : 0};
+  background-color: var(--custom-sidebar-background-color);
+  border: var(--custom-sidebar-border);
+  border-radius: var(--custom-sidebar-radius);
+  backdrop-filter: blur(var(--custom-sidebar-blur)) saturate(var(--custom-sidebar-saturation));
 `
 
 const AvatarImg = styled(Avatar)`
@@ -274,7 +275,7 @@ const Icon = styled.div<{ theme: string }>`
     font-size: 17px;
   }
   &:hover {
-    background-color: ${({ theme }) => (theme === 'dark' ? 'var(--color-black)' : 'var(--color-white)')};
+    background-color: var(--color-active-background);
     opacity: 0.8;
     cursor: pointer;
     .iconfont,
@@ -283,8 +284,8 @@ const Icon = styled.div<{ theme: string }>`
     }
   }
   &.active {
-    background-color: ${({ theme }) => (theme === 'dark' ? 'var(--color-black)' : 'var(--color-white)')};
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     .iconfont,
     .anticon {
       color: var(--color-icon-white);

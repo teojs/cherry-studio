@@ -4,22 +4,46 @@ import styled from 'styled-components'
 interface ListItemProps {
   active?: boolean
   icon?: ReactNode
-  title: string
+  title?: string
   subtitle?: string
   titleStyle?: React.CSSProperties
+
+  children?: ReactNode
+  className?: string
+  style?: React.CSSProperties
   onClick?: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-const ListItem = ({ active, icon, title, subtitle, titleStyle, onClick }: ListItemProps) => {
+const ListItem = ({
+  active,
+  icon,
+  title,
+  subtitle,
+  titleStyle,
+  children,
+  className = '',
+  style,
+  onClick,
+  onContextMenu
+}: ListItemProps) => {
   return (
-    <ListItemContainer className={active ? 'active' : ''} onClick={onClick}>
-      <ListItemContent>
-        {icon && <IconWrapper>{icon}</IconWrapper>}
-        <TextContainer>
-          <TitleText style={titleStyle}>{title}</TitleText>
-          {subtitle && <SubtitleText>{subtitle}</SubtitleText>}
-        </TextContainer>
-      </ListItemContent>
+    <ListItemContainer
+      className={`${active ? 'active' : ''} ${className}`}
+      style={style}
+      onClick={onClick}
+      onContextMenu={onContextMenu}>
+      {!children ? (
+        <ListItemContent>
+          {icon && <IconWrapper>{icon}</IconWrapper>}
+          <TextContainer>
+            <TitleText style={titleStyle}>{title}</TitleText>
+            {subtitle && <SubtitleText>{subtitle}</SubtitleText>}
+          </TextContainer>
+        </ListItemContent>
+      ) : (
+        children
+      )}
     </ListItemContainer>
   )
 }
@@ -35,14 +59,15 @@ const ListItemContainer = styled.div`
   font-family: Ubuntu;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-active-background);
   }
 
   &.active {
-    background-color: var(--color-background-soft);
-    border: 1px solid var(--color-border-soft);
+    background-color: var(--color-active-background);
+    border: 1px solid var(--color-active-border);
   }
 `
 

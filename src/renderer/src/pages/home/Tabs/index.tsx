@@ -136,7 +136,7 @@ const HomeTabs: FC<Props> = ({ activeAssistant, activeTopic, setActiveAssistant,
   )
 }
 
-const Container = styled.div`
+const Container = styled.div.attrs({ className: 'module-card' })`
   display: flex;
   flex-direction: column;
   max-width: var(--assistants-width);
@@ -176,8 +176,8 @@ const Segmented = styled(AntSegmented)`
     box-shadow: none;
   }
   .ant-segmented-item-selected {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     transition: none !important;
   }
   .ant-segmented-item-label {
@@ -203,8 +203,8 @@ const Segmented = styled(AntSegmented)`
   }
   .ant-segmented-thumb {
     transition: none !important;
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     border-radius: var(--list-item-border-radius);
     box-shadow: none;
   }

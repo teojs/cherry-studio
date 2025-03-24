@@ -399,7 +399,7 @@ const ContentContainer = styled.div<{ $historyDrawerVisible: boolean }>`
   position: relative;
 `
 
-const InputContainer = styled.div`
+const InputContainer = styled.div.attrs({ className: 'module-card' })`
   position: relative;
   display: flex;
   flex: 1;
@@ -434,15 +434,15 @@ const Textarea = styled(TextArea)`
   }
 `
 
-const OutputContainer = styled.div`
+const OutputContainer = styled.div.attrs({ className: 'module-card' })`
   min-height: 0;
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background-soft);
   border-radius: 10px;
   padding-bottom: 5px;
   padding-right: 2px;
+  border: 1px solid var(--color-border-soft);
 `
 
 const OutputText = styled.div`
@@ -457,7 +457,7 @@ const TranslateButton = styled(Button)``
 
 const CopyButton = styled(Button)``
 
-const HistoryContainner = styled.div<{ $historyDrawerVisible: boolean }>`
+const HistoryContainner = styled.div.attrs({ className: 'module-card' })<{ $historyDrawerVisible: boolean }>`
   width: ${({ $historyDrawerVisible }) => ($historyDrawerVisible ? '300px' : '0')};
   height: calc(100vh - var(--navbar-height) - 40px);
   transition:

@@ -96,7 +96,9 @@ const AssistantSettings: FC = () => {
   }
 
   return (
-    <SettingContainer style={{ height: 'auto', background: 'transparent', padding: 0 }} theme={theme}>
+    <SettingContainer
+      style={{ height: '70vh', background: 'transparent', backdropFilter: 'none', padding: 0 }}
+      theme={theme}>
       <SettingSubtitle style={{ marginTop: 0 }}>{t('common.name')}</SettingSubtitle>
       <HStack gap={8} alignItems="center" style={{ margin: '10px 0' }}>
         <Popover content={<EmojiPicker onEmojiClick={handleEmojiSelect} />} arrow>

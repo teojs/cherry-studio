@@ -162,14 +162,14 @@ const AgentItem = styled.div`
   cursor: pointer;
   overflow: hidden;
   &.default {
-    background-color: var(--color-background-mute);
+    background-color: var(--color-active-background);
   }
   .anticon {
     font-size: 16px;
     color: var(--color-icon);
   }
   &:hover {
-    background-color: var(--color-background-mute);
+    background-color: var(--color-active-background);
   }
 `
 

@@ -234,11 +234,13 @@ const FileNameText = styled.div`
   cursor: pointer;
 `
 
-const SideNav = styled.div`
+const SideNav = styled.div.attrs({ className: 'module-card' })`
   width: var(--assistants-width);
   border-right: 0.5px solid var(--color-border);
   padding: 7px 12px;
   user-select: none;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 
   .ant-menu {
     border-inline-end: none !important;
@@ -254,13 +256,13 @@ const SideNav = styled.div`
     border: 0.5px solid transparent;
 
     &:hover {
-      background-color: var(--color-background-soft) !important;
+      background-color: var(--color-active-background) !important;
     }
 
     &.ant-menu-item-selected {
-      background-color: var(--color-background-soft);
+      background-color: var(--color-active-background);
       color: var(--color-primary);
-      border: 0.5px solid var(--color-border);
+      border: 0.5px solid var(--color-active-border);
       color: var(--color-text);
     }
   }

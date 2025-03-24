@@ -22,6 +22,8 @@ export function useSystemAgents() {
 
   useEffect(() => {
     runAsyncFunction(async () => {
+      console.log('resourcesPath', resourcesPath)
+
       if (_agents.length > 0) return
       const agents = await window.api.fs.read(resourcesPath + '/data/agents.json')
       _agents = JSON.parse(agents) as Agent[]

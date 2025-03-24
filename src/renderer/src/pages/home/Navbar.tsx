@@ -147,7 +147,7 @@ export const NavbarIcon = styled.div`
     font-size: 16px;
   }
   &:hover {
-    background-color: var(--color-background-mute);
+    background-color: var(--color-active-background);
     color: var(--color-icon-white);
   }
 `

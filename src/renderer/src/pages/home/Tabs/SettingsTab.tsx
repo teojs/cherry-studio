@@ -144,7 +144,7 @@ const SettingsTab: FC<Props> = (props) => {
 
   return (
     <Container className="settings-tab">
-      <SettingGroup style={{ marginTop: 10 }}>
+      <SettingGroup style={{ marginTop: 10, backdropFilter: 'none', background: 'none' }}>
         <SettingSubtitle style={{ marginTop: 0 }}>
           {t('settings.messages.model.title')}{' '}
           <Tooltip title={t('chat.settings.reset')}>
@@ -278,7 +278,7 @@ const SettingsTab: FC<Props> = (props) => {
           </>
         )}
       </SettingGroup>
-      <SettingGroup>
+      <SettingGroup style={{ backdropFilter: 'none', background: 'none' }}>
         <SettingSubtitle style={{ marginTop: 0 }}>{t('settings.messages.title')}</SettingSubtitle>
         <SettingDivider />
         <SettingRow>
@@ -425,7 +425,7 @@ const SettingsTab: FC<Props> = (props) => {
           </Col>
         </Row>
       </SettingGroup>
-      <SettingGroup>
+      <SettingGroup style={{ backdropFilter: 'none', background: 'none' }}>
         <SettingSubtitle style={{ marginTop: 0 }}>{t('settings.messages.input.title')}</SettingSubtitle>
         <SettingDivider />
         <SettingRow>
@@ -551,7 +551,7 @@ const SettingRowTitleSmall = styled(SettingRowTitle)`
   font-size: 13px;
 `
 
-export const SettingGroup = styled.div<{ theme?: ThemeMode }>`
+export const SettingGroup = styled.div.attrs({ className: 'module-card' })<{ theme?: ThemeMode }>`
   padding: 0 5px;
   width: 100%;
   margin-top: 0;

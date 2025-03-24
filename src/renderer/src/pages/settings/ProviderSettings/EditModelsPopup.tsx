@@ -279,12 +279,11 @@ const ListContainer = styled.div`
   padding-bottom: 20px;
 `
 
-const ListHeader = styled.div`
+const ListHeader = styled.div.attrs({ className: 'module-card' })`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--color-background-soft);
   padding: 8px 22px;
   color: var(--color-text);
   opacity: 0.4;

@@ -1,6 +1,12 @@
 #content-container {
+  // background-color: var(--color-background);
+  border-width: var(--custom-container-border-width);
+  border-color: var(--color-border);
+  border-radius: var(--custom-container-radius);
+  border-style: solid;
+}
+
+.module-card {
   background-color: var(--color-background);
-  border-top: 0.5px solid var(--color-border);
-  border-top-left-radius: 10px;
-  border-left: 0.5px solid var(--color-border);
+  backdrop-filter: blur(var(--custom-block-background-blur)) saturate(var(--custom-block-saturation));
 }

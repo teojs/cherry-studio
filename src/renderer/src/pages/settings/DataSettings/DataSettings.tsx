@@ -225,7 +225,7 @@ const StyledIcon = styled(FileSearchOutlined)`
   }
 `
 
-const MenuList = styled.div`
+const MenuList = styled.div.attrs({ className: 'module-card' })`
   display: flex;
   flex-direction: column;
   gap: 5px;

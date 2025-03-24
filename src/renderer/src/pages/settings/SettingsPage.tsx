@@ -1,4 +1,5 @@
 import {
+  BgColorsOutlined,
   CloudOutlined,
   CodeOutlined,
   GlobalOutlined,
@@ -25,6 +26,7 @@ import MCPSettings from './MCPSettings'
 import ProvidersList from './ProviderSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import ShortcutSettings from './ShortcutSettings'
+import ThemeSettings from './ThemeSettings'
 import WebSearchSettings from './WebSearchSettings'
 
 const SettingsPage: FC = () => {
@@ -80,6 +82,12 @@ const SettingsPage: FC = () => {
               {t('settings.display.title')}
             </MenuItem>
           </MenuItemLink>
+          <MenuItemLink to="/settings/theme">
+            <MenuItem className={isRoute('/settings/theme')}>
+              <BgColorsOutlined />
+              主题调整
+            </MenuItem>
+          </MenuItemLink>
           <MenuItemLink to="/settings/shortcut">
             <MenuItem className={isRoute('/settings/shortcut')}>
               <MacCommandOutlined />
@@ -117,6 +125,7 @@ const SettingsPage: FC = () => {
             <Route path="quickAssistant" element={<QuickAssistantSettings />} />
             <Route path="shortcut" element={<ShortcutSettings />} />
             <Route path="about" element={<AboutSettings />} />
+            <Route path="theme" element={<ThemeSettings />} />
           </Routes>
         </SettingContent>
       </ContentContainer>
@@ -136,13 +145,15 @@ const ContentContainer = styled.div`
   flex-direction: row;
 `
 
-const SettingMenus = styled.ul`
+const SettingMenus = styled.ul.attrs({ className: 'module-card' })`
   display: flex;
   flex-direction: column;
   min-width: var(--settings-width);
   border-right: 0.5px solid var(--color-border);
   padding: 10px;
   user-select: none;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 `
 
 const MenuItemLink = styled(Link)`
@@ -174,11 +185,11 @@ const MenuItem = styled.li`
     margin-left: -1px;
   }
   &:hover {
-    background: var(--color-background-soft);
+    background: var(--color-active-background);
   }
   &.active {
-    background: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
   }
 `
 
@@ -186,7 +197,7 @@ const SettingContent = styled.div`
   display: flex;
   height: 100%;
   flex: 1;
-  border-right: 0.5px solid var(--color-border);
+  /* border-right: 0.5px solid var(--color-border); */
 `
 
 export default SettingsPage

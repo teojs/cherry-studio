@@ -91,7 +91,7 @@ const CanvasWrapper = styled.div`
 const Canvas = styled.div`
   width: 80px;
   height: 80px;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background);
   cursor: pointer;
   transition: background-color 0.2s ease;
   border: 1px solid var(--color-background-soft);
@@ -99,11 +99,11 @@ const Canvas = styled.div`
   position: relative;
 
   &.selected {
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--color-active-border);
   }
 
   &:hover {
-    background-color: var(--color-background-mute);
+    background-color: var(--color-active-background);
   }
 `
 
@@ -124,7 +124,7 @@ const DeleteButton = styled.div.attrs({ className: 'delete-button' })`
   padding: 4px;
   cursor: pointer;
   color: var(--color-error);
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,7 +134,7 @@ const NewPaintingButton = styled.div`
   width: 80px;
   height: 80px;
   min-height: 80px;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background);
   cursor: pointer;
   transition: background-color 0.2s ease;
   border: 1px dashed var(--color-border);
@@ -144,7 +144,7 @@ const NewPaintingButton = styled.div`
   color: var(--color-text-2);
 
   &:hover {
-    background-color: var(--color-background-mute);
+    background-color: var(--color-active-background);
     border-color: var(--color-primary);
     color: var(--color-primary);
   }

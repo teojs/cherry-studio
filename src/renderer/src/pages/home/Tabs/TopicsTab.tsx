@@ -400,18 +400,18 @@ const TopicListItem = styled.div`
     color: var(--color-text-3);
   }
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-active-background);
     .name {
     }
   }
   &.active {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     .name {
     }
     .menu {
       opacity: 1;
-      background-color: var(--color-background-soft);
+      background-color: var(--color-active-background);
       &:hover {
         color: var(--color-text-2);
       }
@@ -451,6 +451,7 @@ const MenuButton = styled.div`
   align-items: center;
   min-width: 22px;
   min-height: 22px;
+  border-radius: 11px;
   position: absolute;
   right: 8px;
   top: 6px;

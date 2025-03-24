@@ -15,13 +15,14 @@ import { FC, PropsWithChildren } from 'react'
 import { useTheme } from './ThemeProvider'
 
 const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { language } = useSettings()
+  const { language, customStyle } = useSettings()
   const { theme: _theme } = useTheme()
 
   return (
     <ConfigProvider
       locale={getAntdLocale(language)}
       theme={{
+        cssVar: true,
         algorithm: [_theme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm],
         components: {
           Menu: {
@@ -33,11 +34,71 @@ const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
             boxShadowSecondary: 'none',
             defaultShadow: 'none',
             dangerShadow: 'none',
-            primaryShadow: 'none'
+            primaryShadow: 'none',
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Input: {
+            activeBg: 'rgba(255,255,255,0)',
+            hoverBg: 'rgba(255,255,255,0)',
+            colorBgBase: 'rgba(255,255,255,0)',
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Modal: {
+            contentBg: 'var(--color-background)',
+            paddingLG: 16,
+            footerBg: 'none',
+            headerBg: 'none'
+          },
+          Switch: {
+            trackMinWidth: 36,
+            trackMinWidthSM: 25
+          },
+          Checkbox: {
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Card: {
+            colorBgContainer: 'var(--color-background)',
+            colorBorderSecondary: 'var(--color-background)'
+          },
+          Tabs: {
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Radio: {
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Select: {
+            colorBgContainer: 'rgba(255,255,255,0)',
+            colorBgElevated: 'rgba(255,255,255,0)'
+          },
+          DatePicker: {
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          InputNumber: {
+            colorBgContainer: 'rgba(255,255,255,0)'
+          },
+          Slider: {
+            railSize: 10,
+            borderRadiusXS: 4,
+            dotSize: 12
+          },
+          Table: {
+            colorBgContainer: 'var(--color-background)',
+            headerBg: 'var(--color-background)',
+            colorBorder: 'var(--color-background)',
+            colorBorderSecondary: 'var(--color-background)',
+            headerSortHoverBg: 'var(--color-background)',
+            headerSortActiveBg: 'var(--color-background)'
+          },
+          Segmented: {
+            colorBgContainer: 'var(--color-background)'
+            // colorBgElevated: 'var(--color-background)',
+            // colorBgSpotlight: 'var(--color-background)',
+            // colorBgTextHover: 'var(--color-background)',
           }
         },
         token: {
-          colorPrimary: '#00b96b'
+          colorPrimary: customStyle?.[_theme]?.primaryColor || '#00b96b',
+          sizeUnit: 4
         }
       }}>
       {children}

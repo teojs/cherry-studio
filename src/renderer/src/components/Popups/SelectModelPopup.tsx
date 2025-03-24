@@ -465,7 +465,7 @@ const StyledMenu = styled(Menu)`
     line-height: 36px;
 
     &.ant-menu-item-selected {
-      background-color: var(--color-background-mute) !important;
+      background-color: var(--color-active-background) !important;
       color: var(--color-text-primary) !important;
     }
 

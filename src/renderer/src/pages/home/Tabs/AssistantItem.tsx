@@ -149,8 +149,8 @@ const Container = styled.div`
     background-color: var(--color-background-soft);
   }
   &.active {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     .name {
     }
   }

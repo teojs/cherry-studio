@@ -168,12 +168,12 @@ const StyledModal = styled(Modal)`
     }
   }
   .ant-menu-item-active {
-    background-color: var(--color-background-soft) !important;
+    background-color: var(--color-active-background) !important;
     transition: none;
   }
   .ant-menu-item-selected {
-    background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
+    background-color: var(--color-active-background);
+    border: 0.5px solid var(--color-active-border);
     .ant-menu-title-content {
       color: var(--color-text-1);
       font-weight: 500;
