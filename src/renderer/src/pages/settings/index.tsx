@@ -82,10 +82,10 @@ export const SettingHelpLink = styled(Link)`
   margin: 0 5px;
 `
 
-export const SettingGroup = styled.div<{ theme?: ThemeMode }>`
+export const SettingGroup = styled.div.attrs({ className: 'module-card' })<{ theme?: ThemeMode }>`
   margin-bottom: 20px;
   border-radius: 8px;
   border: 0.5px solid var(--color-border);
   padding: 16px;
-  background: ${(props) => (props.theme === 'dark' ? '#00000010' : 'var(--color-background)')};
+  background: var(--color-background);
 `

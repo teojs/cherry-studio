@@ -1,13 +1,16 @@
-import { useSettings } from '@renderer/hooks/useSettings'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
+import { CustomThemeConfig, resetCustomTheme, updateCustomTheme } from '@renderer/store/theme'
 import { ThemeMode } from '@renderer/types'
-import { useEffect } from 'react'
 
-export const useCustomStyle = (theme: ThemeMode) => {
-  const { customStyle } = useSettings()
+export const useCustomTheme = () => {
+  const { customTheme } = useAppSelector((state) => state.theme)
+  const dispatch = useAppDispatch()
 
-  useEffect(() => {
+  const setCustomThemeVar = (theme: ThemeMode) => {
+    if (!customTheme) return
+
     const currentTheme = theme === ThemeMode.dark ? 'dark' : 'light'
-    const style = customStyle[currentTheme]
+    const style = customTheme[currentTheme]
 
     // 更新主色调
     document.body.style.setProperty('--color-primary', style.primaryColor || '')
@@ -51,7 +54,7 @@ export const useCustomStyle = (theme: ThemeMode) => {
       document.body.style.setProperty('--custom-navbar-border', 'none')
     }
     // 更新导航条圆角
-    if (style.navbarRadius?.length > 0) {
+    if (style.navbarRadius?.length && style.navbarRadius.length > 0) {
       document.body.style.setProperty('--custom-navbar-radius', style.navbarRadius.map((r) => `${r}px`).join(' '))
     }
 
@@ -70,7 +73,7 @@ export const useCustomStyle = (theme: ThemeMode) => {
       document.body.style.setProperty('--custom-sidebar-border', 'none')
     }
     // 更新侧边栏圆角
-    if (style.sidebarRadius?.length > 0) {
+    if (style.sidebarRadius?.length && style.sidebarRadius.length > 0) {
       document.body.style.setProperty('--custom-sidebar-radius', style.sidebarRadius.map((r) => `${r}px`).join(' '))
     }
 
@@ -78,15 +81,26 @@ export const useCustomStyle = (theme: ThemeMode) => {
     document.body.style.setProperty('--color-border', style.blockBorderColor || '')
 
     // 更新内容区圆角
-    if (style.containerRadius?.length > 0) {
+    if (style.containerRadius?.length && style.containerRadius.length > 0) {
       document.body.style.setProperty('--custom-container-radius', style.containerRadius.map((r) => `${r}px`).join(' '))
     }
     // 更新内容区边框
-    if (style.containerBorders?.length > 0) {
+    if (style.containerBorders?.length && style.containerBorders.length > 0) {
       document.body.style.setProperty(
         '--custom-container-border-width',
         style.containerBorders.map((b) => (b ? '0.5px' : '0')).join(' ')
       )
     }
-  }, [customStyle, theme])
+  }
+
+  return {
+    customTheme: customTheme,
+    setCustomThemeVar,
+    updateCustomTheme(customTheme: Pick<CustomThemeConfig, 'light' | 'dark'>) {
+      dispatch(updateCustomTheme(customTheme))
+    },
+    resetCustomTheme() {
+      dispatch(resetCustomTheme())
+    }
+  }
 }

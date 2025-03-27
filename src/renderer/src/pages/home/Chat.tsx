@@ -54,7 +54,7 @@ const Container = styled.div`
   justify-content: space-between;
 `
 
-const Main = styled(Flex)`
+const Main = styled(Flex).attrs({ className: 'module-card' })`
   height: calc(100vh - var(--navbar-height));
 `
 

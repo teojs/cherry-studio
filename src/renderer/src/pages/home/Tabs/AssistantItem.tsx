@@ -146,7 +146,7 @@ const Container = styled.div`
     color: var(--color-text-3);
   }
   &:hover {
-    background-color: var(--color-background-soft);
+    background-color: var(--color-active-background);
   }
   &.active {
     background-color: var(--color-active-background);

@@ -1,21 +1,27 @@
-import { PlusOutlined } from '@ant-design/icons'
+import { DownloadOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons'
 import { useTheme } from '@renderer/context/ThemeProvider'
+import { useCustomTheme } from '@renderer/hooks/useCustomTheme'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useAppDispatch } from '@renderer/store'
-import { setCustomStyle } from '@renderer/store/settings'
-import { Checkbox, Col, ColorPicker, Image, Input, InputNumber, Row, Slider, Upload } from 'antd'
+import { setCustomCss } from '@renderer/store/settings'
+import { type CustomThemeConfig, CustomThemeConfigSchema } from '@renderer/store/theme'
+import { Button, Checkbox, Col, ColorPicker, Flex, Image, Input, InputNumber, message, Row, Slider, Upload } from 'antd'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { SettingContainer, SettingDivider, SettingGroup, SettingRow, SettingRowTitle, SettingTitle } from './index'
 
 const ThemeSettings: FC = () => {
   const { theme: themeMode } = useTheme()
-  const { customStyle } = useSettings()
+  const { customCss } = useSettings()
   const dispatch = useAppDispatch()
+  const { t } = useTranslation()
+
+  const { customTheme, updateCustomTheme, resetCustomTheme } = useCustomTheme()
 
   const currentTheme = themeMode === 'dark' ? 'dark' : 'light'
-  const currentStyle = customStyle[currentTheme]
+  const currentStyle = customTheme[currentTheme]
 
   const handleBackgroundImageChange = async (file: File) => {
     const fileType = {
@@ -32,46 +38,107 @@ const ThemeSettings: FC = () => {
 
     const uploadedFile = await window.api.file.upload(fileType)
     if (uploadedFile) {
-      dispatch(
-        setCustomStyle({
-          ...customStyle,
-          [currentTheme]: {
-            ...currentStyle,
-            backgroundImage: `file://${uploadedFile.path}`
-          }
-        })
-      )
+      updateCustomTheme({
+        ...customTheme,
+        [currentTheme]: {
+          ...currentStyle,
+          backgroundImage: `file://${uploadedFile.path}`
+        }
+      })
     }
   }
 
   const handleBackgroundImageUrlChange = (url: string) => {
-    dispatch(
-      setCustomStyle({
-        ...customStyle,
-        [currentTheme]: {
-          ...currentStyle,
-          backgroundImage: url
-        }
-      })
-    )
+    updateCustomTheme({
+      ...customTheme,
+      [currentTheme]: {
+        ...currentStyle,
+        backgroundImage: url
+      }
+    })
   }
 
   const handleStyleChange = (field: string, value: string | number | boolean | boolean[] | number[]) => {
-    dispatch(
-      setCustomStyle({
-        ...customStyle,
-        [currentTheme]: {
-          ...currentStyle,
-          [field]: value
-        }
+    updateCustomTheme({
+      ...customTheme,
+      [currentTheme]: {
+        ...currentStyle,
+        [field]: value
+      }
+    })
+  }
+
+  const handleExportTheme = () => {
+    const themeConfig: CustomThemeConfig = {
+      version: '1.0.0',
+      name: '自定义主题',
+      description: '从Cherry Studio导出的主题配置',
+      light: customTheme.light || {},
+      dark: customTheme.dark || {}
+    }
+
+    // TODO: 使用window.api.file.download
+    const blob = new Blob([JSON.stringify(themeConfig, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'cherry-theme.json'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImportTheme = async (file: File) => {
+    try {
+      const text = await file.text()
+      const themeConfig = JSON.parse(text)
+      const validatedConfig = CustomThemeConfigSchema.parse(themeConfig)
+
+      updateCustomTheme({
+        light: validatedConfig.light,
+        dark: validatedConfig.dark
       })
-    )
+
+      message.success('主题导入成功')
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(`主题导入失败: ${error.message}`)
+      } else {
+        message.error('主题导入失败: 无效的主题配置文件')
+      }
+    }
+  }
+
+  const handleResetTheme = () => {
+    window.modal.confirm({
+      title: '确认重置主题',
+      content: '确定要将主题重置为默认值吗？此操作不可恢复。',
+      onOk: () => {
+        resetCustomTheme()
+      }
+    })
   }
 
   return (
     <SettingContainer theme={themeMode}>
       <SettingGroupCard theme={themeMode}>
-        <SettingTitle>主题颜色</SettingTitle>
+        <SettingTitle>
+          主题颜色
+          <Flex gap={8}>
+            <Button color="danger" variant="solid" icon={<ReloadOutlined />} onClick={handleResetTheme}>
+              重置主题
+            </Button>
+            <Upload accept=".json" showUploadList={false} customRequest={({ file }) => handleImportTheme(file as File)}>
+              <Button color="primary" variant="outlined" icon={<UploadOutlined />}>
+                导入主题
+              </Button>
+            </Upload>
+            <Button type="primary" icon={<DownloadOutlined />} onClick={handleExportTheme}>
+              导出主题
+            </Button>
+          </Flex>
+        </SettingTitle>
         <SettingDivider />
         <SettingRow>
           <SettingRowTitle>主题颜色</SettingRowTitle>
@@ -113,7 +180,7 @@ const ThemeSettings: FC = () => {
               <InputNumber
                 min={0}
                 max={50}
-                value={currentStyle.containerRadius[0]}
+                value={currentStyle.containerRadius?.[0]}
                 onChange={(value) => {
                   const newRadius = [...(currentStyle.containerRadius || [0, 0, 0, 0])]
                   newRadius[0] = value || 0
@@ -126,7 +193,7 @@ const ThemeSettings: FC = () => {
               <InputNumber
                 min={0}
                 max={50}
-                value={currentStyle.containerRadius[1]}
+                value={currentStyle.containerRadius?.[1]}
                 onChange={(value) => {
                   const newRadius = [...(currentStyle.containerRadius || [0, 0, 0, 0])]
                   newRadius[1] = value || 0
@@ -139,7 +206,7 @@ const ThemeSettings: FC = () => {
               <InputNumber
                 min={0}
                 max={50}
-                value={currentStyle.containerRadius[3]}
+                value={currentStyle.containerRadius?.[3]}
                 onChange={(value) => {
                   const newRadius = [...(currentStyle.containerRadius || [0, 0, 0, 0])]
                   newRadius[3] = value || 0
@@ -152,7 +219,7 @@ const ThemeSettings: FC = () => {
               <InputNumber
                 min={0}
                 max={50}
-                value={currentStyle.containerRadius[2]}
+                value={currentStyle.containerRadius?.[2]}
                 onChange={(value) => {
                   const newRadius = [...(currentStyle.containerRadius || [0, 0, 0, 0])]
                   newRadius[2] = value || 0
@@ -500,6 +567,25 @@ const ThemeSettings: FC = () => {
           </Row>
         </SettingRow>
       </SettingGroupCard>
+
+      <SettingGroupCard theme={themeMode}>
+        <SettingTitle>
+          {t('settings.display.custom.css')}
+          <TitleExtra onClick={() => window.api.openWebsite('https://cherrycss.com/')}>
+            {t('settings.display.custom.css.cherrycss')}
+          </TitleExtra>
+        </SettingTitle>
+        <SettingDivider />
+        <Input.TextArea
+          value={customCss}
+          onChange={(e) => dispatch(setCustomCss(e.target.value))}
+          placeholder={t('settings.display.custom.css.placeholder')}
+          style={{
+            minHeight: 200,
+            fontFamily: 'monospace'
+          }}
+        />
+      </SettingGroupCard>
     </SettingContainer>
   )
 }
@@ -547,4 +633,11 @@ const BorderCheckbox = styled.div`
     bottom: -10px;
     transform: translateX(-50%);
   }
+`
+
+const TitleExtra = styled.div`
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.7;
 `

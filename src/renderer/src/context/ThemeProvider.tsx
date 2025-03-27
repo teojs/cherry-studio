@@ -1,5 +1,5 @@
 import { isMac } from '@renderer/config/constant'
-import { useCustomStyle } from '@renderer/hooks/useCustomStyle'
+import { useCustomTheme } from '@renderer/hooks/useCustomTheme'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { ThemeMode } from '@renderer/types'
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
@@ -21,6 +21,7 @@ interface ThemeProviderProps extends PropsWithChildren {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultTheme }) => {
   const { theme, setTheme } = useSettings()
   const [_theme, _setTheme] = useState(theme)
+  const { setCustomThemeVar } = useCustomTheme()
 
   const toggleTheme = () => {
     setTheme(theme === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark)
@@ -42,9 +43,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultT
     document.body.setAttribute('theme-mode', _theme)
     // 移除迷你窗口的条件判断，让所有窗口都能设置主题
     window.api?.setTheme(_theme === ThemeMode.dark ? 'dark' : 'light')
-  }, [_theme])
 
-  useCustomStyle(_theme)
+    // 设置主题变量
+    setCustomThemeVar(_theme)
+  }, [_theme, setCustomThemeVar])
 
   useEffect(() => {
     document.body.setAttribute('os', isMac ? 'mac' : 'windows')

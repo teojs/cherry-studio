@@ -17,6 +17,7 @@ import paintings from './paintings'
 import runtime from './runtime'
 import settings from './settings'
 import shortcuts from './shortcuts'
+import theme from './theme'
 import websearch from './websearch'
 
 const rootReducer = combineReducers({
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   paintings,
   llm,
   settings,
+  theme,
   runtime,
   shortcuts,
   knowledge,
@@ -40,7 +42,7 @@ const persistedReducer = persistReducer(
   {
     key: 'cherry-studio',
     storage,
-    version: 84,
+    version: 85,
     blacklist: ['runtime', 'messages'],
     migrate
   },

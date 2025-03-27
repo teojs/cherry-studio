@@ -1,3 +1,4 @@
+import { useCustomTheme } from '@renderer/hooks/useCustomTheme'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { LanguageVarious } from '@renderer/types'
 import { ConfigProvider, theme } from 'antd'
@@ -15,7 +16,8 @@ import { FC, PropsWithChildren } from 'react'
 import { useTheme } from './ThemeProvider'
 
 const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { language, customStyle } = useSettings()
+  const { language } = useSettings()
+  const { customTheme } = useCustomTheme()
   const { theme: _theme } = useTheme()
 
   return (
@@ -87,17 +89,19 @@ const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
             colorBorder: 'var(--color-background)',
             colorBorderSecondary: 'var(--color-background)',
             headerSortHoverBg: 'var(--color-background)',
-            headerSortActiveBg: 'var(--color-background)'
+            headerSortActiveBg: 'var(--color-background)',
+            rowHoverBg: 'var(--color-background)'
           },
           Segmented: {
-            colorBgContainer: 'var(--color-background)'
-            // colorBgElevated: 'var(--color-background)',
-            // colorBgSpotlight: 'var(--color-background)',
-            // colorBgTextHover: 'var(--color-background)',
+            colorBgContainer: 'var(--color-background)',
+            trackBg: 'var(--color-background)',
+            itemActiveBg: 'var(--color-active-background)',
+            itemHoverBg: 'var(--color-active-background)',
+            itemSelectedBg: 'var(--color-active-background)'
           }
         },
         token: {
-          colorPrimary: customStyle?.[_theme]?.primaryColor || '#00b96b',
+          colorPrimary: customTheme?.[_theme]?.primaryColor || '#00b96b',
           sizeUnit: 4
         }
       }}>

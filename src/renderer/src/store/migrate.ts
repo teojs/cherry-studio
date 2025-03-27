@@ -12,6 +12,7 @@ import { createMigrate } from 'redux-persist'
 import { RootState } from '.'
 import { INITIAL_PROVIDERS, moveProvider } from './llm'
 import { DEFAULT_SIDEBAR_ICONS } from './settings'
+import { DEFAULT_CUSTOM_THEME } from './theme'
 
 // remove logo base64 data to reduce the size of the state
 function removeMiniAppIconsFromState(state: RootState) {
@@ -796,59 +797,8 @@ const migrateConfig = {
     state.settings.trayOnClose = true
     return state
   },
-  '84': (state: RootState) => {
-    state.settings.customStyle = {
-      light: {
-        primaryColor: '#00b96b',
-        activeBackgroundColor: '#f2f2f2',
-        activeBorderColor: '#00000015',
-        backgroundImage: '',
-        backgroundColor: '#ffffff',
-        backgroundBlur: 0,
-        blockBackgroundColor: '#ffffff',
-        blockBackgroundBlur: 0,
-        blockSaturation: 100,
-        navbarBackgroundColor: '#ffffff',
-        navbarBlur: 0,
-        navbarBorderColor: '',
-        navbarRadius: [0, 0, 0, 0],
-        navbarSaturation: 100,
-        sidebarBackgroundColor: '#ffffff',
-        sidebarBlur: 0,
-        sidebarWidth: 50,
-        sidebarBorderColor: '',
-        sidebarRadius: [0, 0, 0, 0],
-        sidebarSaturation: 100,
-        blockBorderColor: '#00000015',
-        containerRadius: [10, 0, 0, 0],
-        containerBorders: [true, false, false, true]
-      },
-      dark: {
-        primaryColor: '#00b96b',
-        activeBackgroundColor: '#222222',
-        activeBorderColor: '#ffffff15',
-        backgroundImage: '',
-        backgroundColor: '#141414',
-        backgroundBlur: 0,
-        blockBackgroundColor: '#181818',
-        blockBackgroundBlur: 0,
-        blockSaturation: 100,
-        navbarBackgroundColor: '#141414',
-        navbarBlur: 0,
-        navbarBorderColor: '',
-        navbarRadius: [0, 0, 0, 0],
-        navbarSaturation: 100,
-        sidebarBackgroundColor: '#141414',
-        sidebarBlur: 0,
-        sidebarWidth: 50,
-        sidebarBorderColor: '',
-        sidebarRadius: [0, 0, 0, 0],
-        sidebarSaturation: 100,
-        blockBorderColor: '#ffffff15',
-        containerRadius: [10, 0, 0, 0],
-        containerBorders: [true, false, false, true]
-      }
-    }
+  '85': (state: RootState) => {
+    state.theme.customTheme = DEFAULT_CUSTOM_THEME
 
     addProvider(state, 'voyageai')
     return state

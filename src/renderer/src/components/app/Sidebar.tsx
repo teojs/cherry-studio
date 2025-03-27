@@ -208,7 +208,7 @@ const Container = styled.div`
   min-width: var(--sidebar-width);
   height: 100vh;
   -webkit-app-region: drag !important;
-  padding-top: ${isMac ? 'var(--navbar-height)' : 0};
+  padding-top: ${isMac ? 'var(--navbar-height)' : '10px'};
   background-color: var(--custom-sidebar-background-color);
   border: var(--custom-sidebar-border);
   border-radius: var(--custom-sidebar-radius);

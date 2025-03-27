@@ -35,7 +35,7 @@ const MessageAnchorLine: FC<MessageLineProps> = ({ messages }) => {
   const [mouseY, setMouseY] = useState<number | null>(null)
   const { topicPosition, showTopics } = useSettings()
   const showRightTopics = topicPosition === 'right' && showTopics
-  const right = showRightTopics ? 'calc(var(--topic-list-width) + 15px)' : '15px'
+  const right = '15px'
 
   const [listOffsetY, setListOffsetY] = useState(0)
   const [containerHeight, setContainerHeight] = useState<number | null>(null)

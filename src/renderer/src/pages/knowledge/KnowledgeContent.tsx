@@ -522,7 +522,7 @@ const TitleWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background);
   padding: 5px 20px;
   min-height: 45px;
   border-radius: 6px;

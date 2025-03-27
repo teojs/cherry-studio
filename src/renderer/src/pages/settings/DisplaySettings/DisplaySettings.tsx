@@ -8,12 +8,11 @@ import { useAppDispatch } from '@renderer/store'
 import {
   DEFAULT_SIDEBAR_ICONS,
   setClickAssistantToShowTopic,
-  setCustomCss,
   setShowTopicTime,
   setSidebarIcons
 } from '@renderer/store/settings'
 import { ThemeMode } from '@renderer/types'
-import { Button, Input, Segmented, Switch } from 'antd'
+import { Button, Segmented, Switch } from 'antd'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -32,7 +31,6 @@ const DisplaySettings: FC = () => {
     setTopicPosition,
     clickAssistantToShowTopic,
     showTopicTime,
-    customCss,
     sidebarIcons,
     showAssistantIcon,
     setShowAssistantIcon
@@ -127,7 +125,6 @@ const DisplaySettings: FC = () => {
           <SettingRowTitle>{t('settings.topic.position')}</SettingRowTitle>
           <Segmented
             value={topicPosition || 'right'}
-            shape="round"
             onChange={setTopicPosition}
             options={[
               { value: 'left', label: t('settings.topic.position.left') },
@@ -193,34 +190,10 @@ const DisplaySettings: FC = () => {
           setDisabledMiniApps={setDisabledMiniApps}
         />
       </SettingGroup>
-      <SettingGroup theme={theme}>
-        <SettingTitle>
-          {t('settings.display.custom.css')}
-          <TitleExtra onClick={() => window.api.openWebsite('https://cherrycss.com/')}>
-            {t('settings.display.custom.css.cherrycss')}
-          </TitleExtra>
-        </SettingTitle>
-        <SettingDivider />
-        <Input.TextArea
-          value={customCss}
-          onChange={(e) => dispatch(setCustomCss(e.target.value))}
-          placeholder={t('settings.display.custom.css.placeholder')}
-          style={{
-            minHeight: 200,
-            fontFamily: 'monospace'
-          }}
-        />
-      </SettingGroup>
     </SettingContainer>
   )
 }
 
-const TitleExtra = styled.div`
-  font-size: 12px;
-  cursor: pointer;
-  text-decoration: underline;
-  opacity: 0.7;
-`
 const ResetButtonWrapper = styled.div`
   display: flex;
   align-items: center;

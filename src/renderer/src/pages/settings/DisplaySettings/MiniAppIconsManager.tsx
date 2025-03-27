@@ -166,7 +166,6 @@ const ProgramList = styled.div`
   height: 365px;
   min-height: 365px;
   padding: 10px;
-  background: var(--color-background-soft);
   border-radius: 8px;
   border: 1px solid var(--color-border);
   overflow-y: auto;
