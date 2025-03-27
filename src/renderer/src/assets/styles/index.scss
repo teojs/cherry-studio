@@ -202,6 +202,8 @@ body,
   flex-direction: row;
   flex: 1;
   background-image: var(--custom-background-image);
+  background-size: cover;
+  background-position: center;
 
   &::before {
     content: '';
