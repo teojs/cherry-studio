@@ -4,15 +4,13 @@ import styled from 'styled-components'
 interface ListItemProps {
   active?: boolean
   icon?: ReactNode
-  title?: string
+  title: string
   subtitle?: string
   titleStyle?: React.CSSProperties
-
-  children?: ReactNode
-  className?: string
-  style?: React.CSSProperties
   onClick?: () => void
-  onContextMenu?: (e: React.MouseEvent) => void
+  rightContent?: ReactNode
+  style?: React.CSSProperties
+  children?: ReactNode
 }
 
 const ListItem = ({
@@ -21,18 +19,13 @@ const ListItem = ({
   title,
   subtitle,
   titleStyle,
-  children,
-  className = '',
-  style,
   onClick,
-  onContextMenu
+  rightContent,
+  style,
+  children
 }: ListItemProps) => {
   return (
-    <ListItemContainer
-      className={`${active ? 'active' : ''} ${className}`}
-      style={style}
-      onClick={onClick}
-      onContextMenu={onContextMenu}>
+    <ListItemContainer className={active ? 'active' : ''} onClick={onClick} style={style}>
       {!children ? (
         <ListItemContent>
           {icon && <IconWrapper>{icon}</IconWrapper>}
@@ -40,6 +33,7 @@ const ListItem = ({
             <TitleText style={titleStyle}>{title}</TitleText>
             {subtitle && <SubtitleText>{subtitle}</SubtitleText>}
           </TextContainer>
+          {rightContent && <RightContentWrapper>{rightContent}</RightContentWrapper>}
         </ListItemContent>
       ) : (
         children
@@ -59,15 +53,14 @@ const ListItemContainer = styled.div`
   font-family: Ubuntu;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: var(--color-active-background);
+    background-color: var(--color-background-soft);
   }
 
   &.active {
-    background-color: var(--color-active-background);
-    border: 1px solid var(--color-active-border);
+    background-color: var(--color-background-soft);
+    border: 1px solid var(--color-border-soft);
   }
 `
 
@@ -107,6 +100,10 @@ const SubtitleText = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   color: var(--color-text-3);
+`
+
+const RightContentWrapper = styled.div`
+  margin-left: auto;
 `
 
 export default ListItem

@@ -23,6 +23,7 @@ import DataSettings from './DataSettings/DataSettings'
 import DisplaySettings from './DisplaySettings/DisplaySettings'
 import GeneralSettings from './GeneralSettings'
 import MCPSettings from './MCPSettings'
+import { McpSettingsNavbar } from './MCPSettings/McpSettingsNavbar'
 import ProvidersList from './ProviderSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import ShortcutSettings from './ShortcutSettings'
@@ -39,6 +40,7 @@ const SettingsPage: FC = () => {
     <Container>
       <Navbar>
         <NavbarCenter style={{ borderRight: 'none' }}>{t('settings.title')}</NavbarCenter>
+        {pathname === '/settings/mcp' && <McpSettingsNavbar />}
       </Navbar>
       <ContentContainer id="content-container">
         <SettingMenus>

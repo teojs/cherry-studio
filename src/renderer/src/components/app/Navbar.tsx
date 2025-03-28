@@ -1,4 +1,4 @@
-import { isMac } from '@renderer/config/constant'
+import { isMac, isWindows } from '@renderer/config/constant'
 import type { FC, PropsWithChildren } from 'react'
 import type { HTMLAttributes } from 'react'
 import styled from 'styled-components'
@@ -60,4 +60,6 @@ const NavbarRightContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 0 12px;
+  padding-right: ${isWindows ? '140px' : 12};
+  justify-content: flex-end;
 `
