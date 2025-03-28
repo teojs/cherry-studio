@@ -213,9 +213,11 @@ const Container = styled.div`
   -webkit-app-region: drag !important;
   padding-top: ${isMac ? 'var(--navbar-height)' : '10px'};
   background-color: var(--custom-sidebar-background-color);
-  border: var(--custom-sidebar-border);
   border-radius: var(--custom-sidebar-radius);
   backdrop-filter: blur(var(--custom-sidebar-blur)) saturate(var(--custom-sidebar-saturation));
+  border-width: var(--custom-sidebar-border-width);
+  border-color: var(--custom-sidebar-border-color);
+  border-style: solid;
 `
 
 const AvatarImg = styled(Avatar)`

@@ -31,9 +31,11 @@ const NavbarContainer = styled.div`
   padding-left: ${isMac ? 'var(--sidebar-width)' : 0}; */
   -webkit-app-region: drag;
   background-color: var(--custom-navbar-background-color);
-  border: var(--custom-navbar-border);
   border-radius: var(--custom-navbar-radius);
   backdrop-filter: blur(var(--custom-navbar-blur)) saturate(var(--custom-navbar-saturation));
+  border-width: var(--custom-navbar-border-width);
+  border-color: var(--custom-navbar-border-color);
+  border-style: solid;
 `
 
 const NavbarLeftContainer = styled.div`

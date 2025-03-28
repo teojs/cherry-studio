@@ -1,5 +1,6 @@
 #content-container {
-  // background-color: var(--color-background);
+  background-color: var(--custom-container-background-color);
+  backdrop-filter: blur(var(--custom-container-background-blur)) saturate(var(--custom-container-saturation));
   border-width: var(--custom-container-border-width);
   border-color: var(--color-border);
   border-radius: var(--custom-container-radius);

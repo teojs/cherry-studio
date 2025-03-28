@@ -171,10 +171,86 @@ const ThemeSettings: FC = () => {
       </SettingGroupCard>
 
       <SettingGroupCard theme={themeMode}>
-        <SettingTitle>布局设置</SettingTitle>
+        <SettingTitle>背景设置</SettingTitle>
         <SettingDivider />
         <SettingRow>
-          <SettingRowTitle>内容区圆角</SettingRowTitle>
+          <SettingRowTitle>背景链接</SettingRowTitle>
+          <Input
+            style={{ maxWidth: '300px' }}
+            value={currentStyle.backgroundImage}
+            onChange={(e) => handleBackgroundImageUrlChange(e.target.value)}
+            placeholder="支持填入网络图片链接"
+            allowClear
+          />
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>背景图片</SettingRowTitle>
+          <Upload
+            maxCount={1}
+            name="background"
+            listType="picture-card"
+            showUploadList={false}
+            customRequest={({ file }) => handleBackgroundImageChange(file as File)}
+            accept="image/*">
+            {currentStyle.backgroundImage ? (
+              <Image preview={false} src={currentStyle.backgroundImage} />
+            ) : (
+              <PlusOutlined />
+            )}
+          </Upload>
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>背景颜色</SettingRowTitle>
+          <ColorPicker
+            size="small"
+            value={currentStyle.backgroundColor}
+            onChange={(color) => handleStyleChange('backgroundColor', color.toHexString())}
+            allowClear
+          />
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>模糊程度</SettingRowTitle>
+          <CustomSlider
+            min={0}
+            max={50}
+            value={currentStyle.backgroundBlur}
+            onChange={(value) => handleStyleChange('backgroundBlur', value)}
+          />
+        </SettingRow>
+      </SettingGroupCard>
+
+      <SettingGroupCard theme={themeMode}>
+        <SettingTitle>主容器设置</SettingTitle>
+        <SettingDivider />
+        <SettingRow>
+          <SettingRowTitle>背景颜色</SettingRowTitle>
+          <ColorPicker
+            size="small"
+            value={currentStyle.containerBackgroundColor}
+            onChange={(color) => handleStyleChange('containerBackgroundColor', color.toHexString())}
+            allowClear
+          />
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>模糊程度</SettingRowTitle>
+          <CustomSlider
+            min={0}
+            max={50}
+            value={currentStyle.containerBackgroundBlur}
+            onChange={(value) => handleStyleChange('containerBackgroundBlur', value)}
+          />
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>鲜明度</SettingRowTitle>
+          <CustomSlider
+            min={0}
+            max={200}
+            value={currentStyle.containerSaturation}
+            onChange={(value) => handleStyleChange('containerSaturation', value)}
+          />
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>圆角</SettingRowTitle>
           <Row style={{ width: '138px' }} gutter={[8, 8]}>
             <Col span={12}>
               <InputNumber
@@ -231,94 +307,21 @@ const ThemeSettings: FC = () => {
           </Row>
         </SettingRow>
         <SettingRow>
-          <SettingRowTitle>内容区边框</SettingRowTitle>
+          <SettingRowTitle>边框</SettingRowTitle>
           <BorderCheckbox>
-            <Checkbox
-              className="top"
-              checked={currentStyle.containerBorders?.[0]}
-              onChange={(e) => {
-                const newBorders = [...(currentStyle.containerBorders || [false, false, false, false])]
-                newBorders[0] = e.target.checked
-                handleStyleChange('containerBorders', newBorders)
-              }}
-            />
-            <Checkbox
-              className="right"
-              checked={currentStyle.containerBorders?.[1]}
-              onChange={(e) => {
-                const newBorders = [...(currentStyle.containerBorders || [false, false, false, false])]
-                newBorders[1] = e.target.checked
-                handleStyleChange('containerBorders', newBorders)
-              }}
-            />
-            <Checkbox
-              className="bottom"
-              checked={currentStyle.containerBorders?.[2]}
-              onChange={(e) => {
-                const newBorders = [...(currentStyle.containerBorders || [false, false, false, false])]
-                newBorders[2] = e.target.checked
-                handleStyleChange('containerBorders', newBorders)
-              }}
-            />
-            <Checkbox
-              className="left"
-              checked={currentStyle.containerBorders?.[3]}
-              onChange={(e) => {
-                const newBorders = [...(currentStyle.containerBorders || [false, false, false, false])]
-                newBorders[3] = e.target.checked
-                handleStyleChange('containerBorders', newBorders)
-              }}
-            />
+            {[0, 1, 3, 2].map((index) => (
+              <Checkbox
+                key={index}
+                className={`position-${index}`}
+                checked={currentStyle.containerBorders?.[index]}
+                onChange={(e) => {
+                  const newBorders = [...(currentStyle.containerBorders || [false, false, false, false])]
+                  newBorders[index] = e.target.checked
+                  handleStyleChange('containerBorders', newBorders)
+                }}
+              />
+            ))}
           </BorderCheckbox>
-        </SettingRow>
-      </SettingGroupCard>
-
-      <SettingGroupCard theme={themeMode}>
-        <SettingTitle>背景设置</SettingTitle>
-        <SettingDivider />
-        <SettingRow>
-          <SettingRowTitle>背景链接</SettingRowTitle>
-          <Input
-            style={{ maxWidth: '300px' }}
-            value={currentStyle.backgroundImage}
-            onChange={(e) => handleBackgroundImageUrlChange(e.target.value)}
-            placeholder="支持填入网络图片链接"
-            allowClear
-          />
-        </SettingRow>
-        <SettingRow>
-          <SettingRowTitle>背景图片</SettingRowTitle>
-          <Upload
-            maxCount={1}
-            name="background"
-            listType="picture-card"
-            showUploadList={false}
-            customRequest={({ file }) => handleBackgroundImageChange(file as File)}
-            accept="image/*">
-            {currentStyle.backgroundImage ? (
-              <Image preview={false} src={currentStyle.backgroundImage} />
-            ) : (
-              <PlusOutlined />
-            )}
-          </Upload>
-        </SettingRow>
-        <SettingRow>
-          <SettingRowTitle>背景颜色</SettingRowTitle>
-          <ColorPicker
-            size="small"
-            value={currentStyle.backgroundColor}
-            onChange={(color) => handleStyleChange('backgroundColor', color.toHexString())}
-            allowClear
-          />
-        </SettingRow>
-        <SettingRow>
-          <SettingRowTitle>模糊程度</SettingRowTitle>
-          <CustomSlider
-            min={0}
-            max={50}
-            value={currentStyle.backgroundBlur}
-            onChange={(value) => handleStyleChange('backgroundBlur', value)}
-          />
         </SettingRow>
       </SettingGroupCard>
 
@@ -394,7 +397,7 @@ const ThemeSettings: FC = () => {
           />
         </SettingRow>
         <SettingRow>
-          <SettingRowTitle>边框宽度</SettingRowTitle>
+          <SettingRowTitle>边框颜色</SettingRowTitle>
           <ColorPicker
             size="small"
             value={currentStyle.navbarBorderColor}
@@ -403,7 +406,24 @@ const ThemeSettings: FC = () => {
           />
         </SettingRow>
         <SettingRow>
-          <SettingRowTitle>导航条圆角</SettingRowTitle>
+          <SettingRowTitle>边框选择</SettingRowTitle>
+          <BorderCheckbox>
+            {[0, 1, 3, 2].map((index) => (
+              <Checkbox
+                key={index}
+                className={`position-${index}`}
+                checked={currentStyle.navbarBorders?.[index]}
+                onChange={(e) => {
+                  const newBorders = [...(currentStyle.navbarBorders || [false, false, false, false])]
+                  newBorders[index] = e.target.checked
+                  handleStyleChange('navbarBorders', newBorders)
+                }}
+              />
+            ))}
+          </BorderCheckbox>
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>圆角</SettingRowTitle>
           <Row style={{ width: '138px' }} gutter={[8, 8]}>
             <Col span={12}>
               <InputNumber
@@ -501,7 +521,7 @@ const ThemeSettings: FC = () => {
           />
         </SettingRow>
         <SettingRow>
-          <SettingRowTitle>边框</SettingRowTitle>
+          <SettingRowTitle>边框颜色</SettingRowTitle>
           <ColorPicker
             size="small"
             value={currentStyle.sidebarBorderColor}
@@ -510,7 +530,24 @@ const ThemeSettings: FC = () => {
           />
         </SettingRow>
         <SettingRow>
-          <SettingRowTitle>侧边栏圆角</SettingRowTitle>
+          <SettingRowTitle>边框选择</SettingRowTitle>
+          <BorderCheckbox>
+            {[0, 1, 3, 2].map((index) => (
+              <Checkbox
+                key={index}
+                className={`position-${index}`}
+                checked={currentStyle.sidebarBorders?.[index]}
+                onChange={(e) => {
+                  const newBorders = [...(currentStyle.sidebarBorders || [false, false, false, false])]
+                  newBorders[index] = e.target.checked
+                  handleStyleChange('sidebarBorders', newBorders)
+                }}
+              />
+            ))}
+          </BorderCheckbox>
+        </SettingRow>
+        <SettingRow>
+          <SettingRowTitle>圆角</SettingRowTitle>
           <Row style={{ width: '138px' }} gutter={[8, 8]}>
             <Col span={12}>
               <InputNumber
@@ -609,29 +646,33 @@ const BorderCheckbox = styled.div`
   border: 0.5px solid var(--color-border);
   position: relative;
   border-radius: 4px;
-  .left {
-    position: absolute;
-    left: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .right {
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .top {
+  /* 上 */
+  .position-0 {
     position: absolute;
     left: 50%;
     top: -10px;
     transform: translateX(-50%);
   }
-  .bottom {
+  /* 右 */
+  .position-1 {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  /* 下 */
+  .position-2 {
     position: absolute;
     left: 50%;
     bottom: -10px;
     transform: translateX(-50%);
+  }
+  /* 左 */
+  .position-3 {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 `
 

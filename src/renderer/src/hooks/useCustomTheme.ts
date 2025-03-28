@@ -48,14 +48,17 @@ export const useCustomTheme = () => {
     // 更新导航条鲜明度
     document.body.style.setProperty('--custom-navbar-saturation', `${style.navbarSaturation}%`)
     // 更新导航条边框颜色
-    if (style.navbarBorderColor) {
-      document.body.style.setProperty('--custom-navbar-border', `0.5px solid ${style.navbarBorderColor}`)
-    } else {
-      document.body.style.setProperty('--custom-navbar-border', 'none')
-    }
+    document.body.style.setProperty('--custom-navbar-border-color', style.navbarBorderColor || '')
     // 更新导航条圆角
     if (style.navbarRadius?.length && style.navbarRadius.length > 0) {
       document.body.style.setProperty('--custom-navbar-radius', style.navbarRadius.map((r) => `${r}px`).join(' '))
+    }
+    // 更新导航条边框
+    if (style.navbarBorders?.length && style.navbarBorders.length > 0) {
+      document.body.style.setProperty(
+        '--custom-navbar-border-width',
+        style.navbarBorders.map((b) => (b ? '0.5px' : '0')).join(' ')
+      )
     }
 
     // 更新侧边栏背景色
@@ -66,15 +69,18 @@ export const useCustomTheme = () => {
     document.body.style.setProperty('--custom-sidebar-saturation', `${style.sidebarSaturation}%`)
     // 更新侧边栏宽度
     document.body.style.setProperty('--sidebar-width', `${style.sidebarWidth}px`)
-    // 更新侧边栏边框宽度
-    if (style.sidebarBorderColor) {
-      document.body.style.setProperty('--custom-sidebar-border', `0.5px solid ${style.sidebarBorderColor}`)
-    } else {
-      document.body.style.setProperty('--custom-sidebar-border', 'none')
-    }
+    // 更新侧边栏边框颜色
+    document.body.style.setProperty('--custom-sidebar-border-color', style.sidebarBorderColor || '')
     // 更新侧边栏圆角
     if (style.sidebarRadius?.length && style.sidebarRadius.length > 0) {
       document.body.style.setProperty('--custom-sidebar-radius', style.sidebarRadius.map((r) => `${r}px`).join(' '))
+    }
+    // 更新侧边栏边框
+    if (style.sidebarBorders?.length && style.sidebarBorders.length > 0) {
+      document.body.style.setProperty(
+        '--custom-sidebar-border-width',
+        style.sidebarBorders.map((b) => (b ? '0.5px' : '0')).join(' ')
+      )
     }
 
     // 更新边框颜色
@@ -91,6 +97,12 @@ export const useCustomTheme = () => {
         style.containerBorders.map((b) => (b ? '0.5px' : '0')).join(' ')
       )
     }
+    // 更新主容器背景色
+    document.body.style.setProperty('--custom-container-background-color', style.containerBackgroundColor || '')
+    // 更新主容器模糊
+    document.body.style.setProperty('--custom-container-background-blur', `${style.containerBackgroundBlur}px`)
+    // 更新主容器鲜明度
+    document.body.style.setProperty('--custom-container-saturation', `${style.containerSaturation}%`)
   }
 
   return {

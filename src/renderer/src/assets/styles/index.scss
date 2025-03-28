@@ -201,19 +201,24 @@ body,
   display: flex;
   flex-direction: row;
   flex: 1;
-  background-image: var(--custom-background-image);
-  background-size: cover;
-  background-position: center;
 
   &::before {
     content: '';
     position: fixed;
     inset: 0px;
-    background-color: var(--custom-background-color);
-    backdrop-filter: blur(var(--custom-background-blur));
+    background-image: var(--custom-background-image);
     background-size: cover;
     background-position: center;
-    z-index: 0;
+    z-index: -1;
+  }
+
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0px;
+    background-color: var(--custom-background-color);
+    backdrop-filter: blur(var(--custom-background-blur));
+    z-index: -1;
     pointer-events: none;
   }
 }
