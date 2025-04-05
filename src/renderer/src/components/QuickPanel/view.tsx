@@ -370,7 +370,10 @@ export const QuickPanelView: React.FC<{
                 disabled: item.disabled
               })}
               key={i}
-              onClick={() => handleItemAction(item, 'click')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleItemAction(item, 'click')
+              }}
               onMouseEnter={() => setIndex(i)}>
               <QuickPanelItemLeft>
                 <QuickPanelItemIcon>{item.icon}</QuickPanelItemIcon>
