@@ -359,7 +359,10 @@ export const QuickPanelView: React.FC<{
   }, [ctx.isVisible])
 
   return (
-    <QuickPanelContainer $pageSize={ctx.pageSize} className={ctx.isVisible ? 'visible' : ''}>
+    <QuickPanelContainer
+      $pageSize={ctx.pageSize}
+      className={ctx.isVisible ? 'visible' : ''}
+      onContextMenu={(e) => e.preventDefault()}>
       <QuickPanelBody ref={bodyRef} onMouseMove={() => setIsMouseOver(true)}>
         <QuickPanelContent ref={contentRef} $pageSize={ctx.pageSize} $isMouseOver={isMouseOver}>
           {list.map((item, i) => (
