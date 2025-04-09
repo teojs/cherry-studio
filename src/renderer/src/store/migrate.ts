@@ -1192,6 +1192,14 @@ const migrateConfig = {
     } catch (error) {
       return state
     }
+  },
+  '95': (state: RootState) => {
+    try {
+      state.settings.colorPrimary = settingsInitialState.colorPrimary
+      return state
+    } catch (error) {
+      return state
+    }
   }
 }
 
