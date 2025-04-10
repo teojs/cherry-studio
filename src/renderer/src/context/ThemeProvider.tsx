@@ -64,7 +64,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultT
 
   useEffect(() => {
     initUserTheme()
-  }, [initUserTheme])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return <ThemeContext value={{ theme: _theme, settingTheme: theme, toggleTheme }}>{children}</ThemeContext>
 }
