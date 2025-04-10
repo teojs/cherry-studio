@@ -46,11 +46,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultT
   useEffect(() => {
     document.body.setAttribute('theme-mode', _theme)
 
-    initUserTheme()
-
     // 移除迷你窗口的条件判断，让所有窗口都能设置主题
     window.api?.setTheme(_theme === ThemeMode.dark ? 'dark' : 'light')
-  }, [_theme, initUserTheme])
+  }, [_theme])
 
   useEffect(() => {
     document.body.setAttribute('os', isMac ? 'mac' : 'windows')
@@ -63,6 +61,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultT
       themeChangeListenerRemover()
     }
   })
+
+  useEffect(() => {
+    initUserTheme()
+  }, [initUserTheme])
 
   return <ThemeContext value={{ theme: _theme, settingTheme: theme, toggleTheme }}>{children}</ThemeContext>
 }
