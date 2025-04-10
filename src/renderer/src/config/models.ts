@@ -186,7 +186,7 @@ export const TEXT_TO_IMAGE_REGEX = /flux|diffusion|stabilityai|sd-|dall|cogview|
 
 // Reasoning models
 export const REASONING_REGEX =
-  /^(o\d+(?:-[\w-]+)?|.*\b(?:reasoner|thinking)\b.*|.*-[rR]\d+.*|.*\bqwq(?:-[\w-]+)?\b.*|.*\bhunyuan-t1(?:-[\w-]+)?\b.*|.*\bglm-zero-preview\b.*)$/i
+  /^(o\d+(?:-[\w-]+)?|.*\b(?:reasoner|thinking)\b.*|.*-[rR]\d+.*|.*\bqwq(?:-[\w-]+)?\b.*|.*\bhunyuan-t1(?:-[\w-]+)?\b.*|.*\bglm-zero-preview\b.*|.*\bgrok-3-mini(?:-[\w-]+)?\b.*)$/i
 
 // Embedding models
 export const EMBEDDING_REGEX =
@@ -232,6 +232,10 @@ export function isFunctionCallingModel(model: Model): boolean {
 
   if (isEmbeddingModel(model)) {
     return false
+  }
+
+  if (model.provider === 'qiniu') {
+    return ['deepseek-v3-tool', 'deepseek-v3-0324', 'qwq-32b', 'qwen2.5-72b-instruct'].includes(model.id)
   }
 
   if (['deepseek', 'anthropic'].includes(model.provider)) {
@@ -493,12 +497,6 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
       provider: 'o3',
       name: 'DeepSeek V3',
       group: 'DeepSeek'
-    },
-    {
-      id: 'text-embedding-3-small',
-      provider: 'o3',
-      name: 'text-embedding-3-small',
-      group: '嵌入模型'
     },
     {
       id: 'text-embedding-3-small',
@@ -2015,7 +2013,56 @@ export const SYSTEM_MODELS: Record<string, Model[]> = {
       group: 'Voyage Rerank V2'
     }
   ],
-  qiniu: []
+  qiniu: [
+    {
+      id: 'deepseek-r1',
+      provider: 'qiniu',
+      name: 'DeepSeek R1',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'deepseek-r1-search',
+      provider: 'qiniu',
+      name: 'DeepSeek R1 Search',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'deepseek-r1-32b',
+      provider: 'qiniu',
+      name: 'DeepSeek R1 32B',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'deepseek-v3',
+      provider: 'qiniu',
+      name: 'DeepSeek V3',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'deepseek-v3-search',
+      provider: 'qiniu',
+      name: 'DeepSeek V3 Search',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'deepseek-v3-tool',
+      provider: 'qiniu',
+      name: 'DeepSeek V3 Tool',
+      group: 'DeepSeek'
+    },
+    {
+      id: 'qwq-32b',
+      provider: 'qiniu',
+      name: 'QWQ 32B',
+      group: 'Qwen'
+    },
+    {
+      id: 'qwen2.5-72b-instruct',
+      provider: 'qiniu',
+      name: 'Qwen2.5 72B Instruct',
+      group: 'Qwen'
+    }
+  ]
 }
 
 export const TEXT_TO_IMAGES_MODELS = [
@@ -2155,12 +2202,29 @@ export function isOpenAIWebSearch(model: Model): boolean {
   return model.id.includes('gpt-4o-search-preview') || model.id.includes('gpt-4o-mini-search-preview')
 }
 
-export function isSupportedResoningEffortModel(model?: Model): boolean {
+export function isSupportedReasoningEffortModel(model?: Model): boolean {
   if (!model) {
     return false
   }
 
-  if (model.id.includes('claude-3-7-sonnet') || model.id.includes('claude-3.7-sonnet') || isOpenAIoSeries(model)) {
+  if (
+    model.id.includes('claude-3-7-sonnet') ||
+    model.id.includes('claude-3.7-sonnet') ||
+    isOpenAIoSeries(model) ||
+    isGrokReasoningModel(model)
+  ) {
+    return true
+  }
+
+  return false
+}
+
+export function isGrokReasoningModel(model?: Model): boolean {
+  if (!model) {
+    return false
+  }
+
+  if (model.id.includes('grok-3-mini')) {
     return true
   }
 
