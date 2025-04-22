@@ -120,9 +120,16 @@ const DisplaySettings: FC = () => {
         <SettingRow>
           <SettingRowTitle>{t('settings.theme.color_primary')}</SettingRowTitle>
           <ColorPicker
+            className="color-picker"
             value={colorPrimary}
             onChange={(color) => handleColorPrimaryChange(color.toHexString())}
             showText
+            presets={[
+              {
+                label: 'Presets',
+                colors: ['#007BFF', '#F74F9E', '#FF5257', '#F7821B', '#FFC600', '#62BA46', '#000000']
+              }
+            ]}
           />
         </SettingRow>
         {isMac && (
