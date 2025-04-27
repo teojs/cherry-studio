@@ -22,7 +22,7 @@ import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch } from '@renderer/store'
 import { sendMessage as _sendMessage } from '@renderer/store/messages'
 import { setSearching } from '@renderer/store/runtime'
-import { Assistant, FileType, KnowledgeBase, KnowledgeItem, MCPServer, Message, Model, Topic } from '@renderer/types'
+import { Assistant, FileType, KnowledgeBase, KnowledgeItem, Message, Model, Topic } from '@renderer/types'
 import { classNames, delay, formatFileSize, getFileExtension } from '@renderer/utils'
 import { getFilesFromDropEvent } from '@renderer/utils/input'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
@@ -55,7 +55,6 @@ import styled from 'styled-components'
 import NarrowLayout from '../Messages/NarrowLayout'
 import AttachmentButton, { AttachmentButtonRef } from './AttachmentButton'
 import AttachmentPreview from './AttachmentPreview'
-import GenerateImageButton from './GenerateImageButton'
 import KnowledgeBaseButton, { KnowledgeBaseButtonRef } from './KnowledgeBaseButton'
 import KnowledgeBaseInput from './KnowledgeBaseInput'
 import MCPToolsButton, { MCPToolsButtonRef } from './MCPToolsButton'
@@ -107,7 +106,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const [isTranslating, setIsTranslating] = useState(false)
   const [selectedKnowledgeBases, setSelectedKnowledgeBases] = useState<KnowledgeBase[]>([])
   const [mentionModels, setMentionModels] = useState<Model[]>([])
-  const [enabledMCPs, setEnabledMCPs] = useState<MCPServer[]>(assistant.mcpServers || [])
   const [isDragging, setIsDragging] = useState(false)
   const [textareaHeight, setTextareaHeight] = useState<number>()
   const startDragY = useRef<number>(0)
@@ -122,7 +120,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const quickPanel = useQuickPanel()
 
   const showKnowledgeIcon = useSidebarIconShow('knowledge')
-  // const showMCPToolsIcon = isFunctionCallingModel(model)
 
   const [tokenCount, setTokenCount] = useState(0)
 
@@ -168,11 +165,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     }
   }, [textareaHeight])
 
-  // Reset to assistant knowledge mcp servers
-  useEffect(() => {
-    setEnabledMCPs(assistant.mcpServers || [])
-  }, [assistant.mcpServers])
-
   const sendMessage = useCallback(async () => {
     if (inputEmpty || loading) {
       return
@@ -202,8 +194,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         userMessage.mentions = mentionModels
       }
 
-      if (!isEmpty(enabledMCPs) && !isEmpty(activedMcpServers)) {
-        userMessage.enabledMCPs = activedMcpServers.filter((server) => enabledMCPs?.some((s) => s.id === server.id))
+      if (!isEmpty(assistant.mcpServers) && !isEmpty(activedMcpServers)) {
+        userMessage.enabledMCPs = activedMcpServers.filter((server) =>
+          assistant.mcpServers?.some((s) => s.id === server.id)
+        )
       }
 
       userMessage.usage = await estimateMessageUsage(userMessage)
@@ -225,9 +219,9 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       console.error('Failed to send message:', error)
     }
   }, [
+    activedMcpServers,
     assistant,
     dispatch,
-    enabledMCPs,
     files,
     inputEmpty,
     loading,
@@ -235,8 +229,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     resizeTextArea,
     selectedKnowledgeBases,
     text,
-    topic,
-    activedMcpServers
+    topic
   ])
 
   const translate = useCallback(async () => {
@@ -507,9 +500,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     // Reset to assistant default model
     assistant.defaultModel && setModel(assistant.defaultModel)
 
-    // Reset to assistant knowledge mcp servers
-    !isEmpty(assistant.mcpServers) && setEnabledMCPs(assistant.mcpServers || [])
-
     addTopic(topic)
     setActiveTopic(topic)
 
@@ -773,17 +763,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     setSelectedKnowledgeBases(newKnowledgeBases ?? [])
   }
 
-  const toggelEnableMCP = (mcp: MCPServer) => {
-    setEnabledMCPs((prev) => {
-      const exists = prev.some((item) => item.id === mcp.id)
-      if (exists) {
-        return prev.filter((item) => item.id !== mcp.id)
-      } else {
-        return [...prev, mcp]
-      }
-    })
-  }
-
   const showWebSearchEnableModal = () => {
     window.modal.confirm({
       title: t('chat.input.web_search.enable'),
@@ -816,16 +795,15 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     updateAssistant({ ...assistant, enableWebSearch: !assistant.enableWebSearch })
   }
 
-  const onEnableGenerateImage = () => {
-    updateAssistant({ ...assistant, enableGenerateImage: !assistant.enableGenerateImage })
-  }
-
   useEffect(() => {
     if (!isWebSearchModel(model) && !WebSearchService.isWebSearchEnabled() && assistant.enableWebSearch) {
       updateAssistant({ ...assistant, enableWebSearch: false })
     }
     if (!isGenerateImageModel(model) && assistant.enableGenerateImage) {
       updateAssistant({ ...assistant, enableGenerateImage: false })
+    }
+    if (isGenerateImageModel(model) && !assistant.enableGenerateImage) {
+      updateAssistant({ ...assistant, enableGenerateImage: true })
     }
   }, [assistant, model, updateAssistant])
 
@@ -967,18 +945,11 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
                 />
               )}
               <MCPToolsButton
+                assistant={assistant}
                 ref={mcpToolsButtonRef}
-                enabledMCPs={enabledMCPs}
-                toggelEnableMCP={toggelEnableMCP}
                 ToolbarButton={ToolbarButton}
                 setInputValue={setText}
                 resizeTextArea={resizeTextArea}
-              />
-              <GenerateImageButton
-                model={model}
-                assistant={assistant}
-                onEnableGenerateImage={onEnableGenerateImage}
-                ToolbarButton={ToolbarButton}
               />
               <MentionModelsButton
                 ref={mentionModelsButtonRef}
