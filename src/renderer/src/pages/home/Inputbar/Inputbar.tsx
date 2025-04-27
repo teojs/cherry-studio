@@ -232,6 +232,25 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     topic
   ])
 
+  const sendMessageOnly = useCallback(
+    (content: string) => {
+      if (!content || loading) {
+        return
+      }
+      if (checkRateLimit(assistant)) {
+        return
+      }
+      try {
+        const userMessage = getUserMessage({ assistant, topic, type: 'text', content: content })
+
+        dispatch(_sendMessage(userMessage, assistant, topic))
+      } catch (error) {
+        console.error('Failed to send message:', error)
+      }
+    },
+    [assistant, dispatch, loading, topic]
+  )
+
   const translate = useCallback(async () => {
     if (isTranslating) {
       return
@@ -962,6 +981,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
                 setInputValue={setText}
                 resizeTextArea={resizeTextArea}
                 ToolbarButton={ToolbarButton}
+                sendMessage={sendMessageOnly}
               />
               <Tooltip placement="top" title={t('chat.input.clear', { Command: cleanTopicShortcut })} arrow>
                 <ToolbarButton type="text" onClick={clearTopic}>
