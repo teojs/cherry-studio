@@ -1,27 +1,28 @@
 import { useAppDispatch, useAppSelector } from '@renderer/store'
-import { setColorPrimary } from '@renderer/store/settings'
+import { setUserTheme, UserTheme } from '@renderer/store/settings'
 import Color from 'color'
 
 export default function useUserTheme() {
-  const colorPrimary = Color(useAppSelector((state) => state.settings.colorPrimary) || '#00b96b')
+  const userTheme = useAppSelector((state) => state.settings.userTheme)
   const dispatch = useAppDispatch()
 
-  const initUserTheme = () => {
+  const initUserTheme = (theme: UserTheme = userTheme) => {
+    const colorPrimary = Color(theme.colorPrimary)
+
     document.body.style.setProperty('--color-primary', colorPrimary.toString())
     document.body.style.setProperty('--color-primary-soft', colorPrimary.alpha(0.6).toString())
     document.body.style.setProperty('--color-primary-mute', colorPrimary.alpha(0.3).toString())
   }
 
   return {
-    colorPrimary,
+    colorPrimary: Color(userTheme.colorPrimary),
 
     initUserTheme,
 
-    setColorPrimary(color: string) {
-      const colorPrimary = Color(color).toString()
-      dispatch(setColorPrimary(colorPrimary))
+    setUserTheme(userTheme: UserTheme) {
+      dispatch(setUserTheme(userTheme))
 
-      initUserTheme()
+      initUserTheme(userTheme)
     }
   }
 }

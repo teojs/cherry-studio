@@ -35,12 +35,12 @@ const DisplaySettings: FC = () => {
     customCss,
     sidebarIcons,
     assistantIconType,
-    colorPrimary
+    userTheme
   } = useSettings()
   const { theme: themeMode } = useTheme()
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { setColorPrimary } = useUserTheme()
+  const { setUserTheme } = useUserTheme()
 
   const [visibleIcons, setVisibleIcons] = useState(sidebarIcons?.visible || DEFAULT_SIDEBAR_ICONS)
   const [disabledIcons, setDisabledIcons] = useState(sidebarIcons?.disabled || [])
@@ -54,9 +54,12 @@ const DisplaySettings: FC = () => {
 
   const handleColorPrimaryChange = useCallback(
     (colorHex: string) => {
-      setColorPrimary(colorHex)
+      setUserTheme({
+        ...userTheme,
+        colorPrimary: colorHex
+      })
     },
-    [setColorPrimary]
+    [setUserTheme, userTheme]
   )
 
   const handleReset = useCallback(() => {
@@ -121,7 +124,7 @@ const DisplaySettings: FC = () => {
           <SettingRowTitle>{t('settings.theme.color_primary')}</SettingRowTitle>
           <ColorPicker
             className="color-picker"
-            value={colorPrimary}
+            value={userTheme.colorPrimary}
             onChange={(color) => handleColorPrimaryChange(color.toHexString())}
             showText
             presets={[

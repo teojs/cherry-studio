@@ -1243,7 +1243,7 @@ const migrateConfig = {
   },
   '98': (state: RootState) => {
     try {
-      state.settings.colorPrimary = settingsInitialState.colorPrimary
+      state.settings.userTheme = settingsInitialState.userTheme
       return state
     } catch (error) {
       return state
