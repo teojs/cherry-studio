@@ -240,22 +240,39 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   ])
 
   const sendMessageOnly = useCallback(
-    (content: string) => {
+    async (content: string) => {
       if (!content || loading) {
         return
       }
       if (checkRateLimit(assistant)) {
         return
       }
-      try {
-        const userMessage = getUserMessage({ assistant, topic, type: 'text', content: content })
 
-        dispatch(_sendMessage(userMessage, assistant, topic))
+      EventEmitter.emit(EVENT_NAMES.SEND_MESSAGE)
+
+      try {
+        const baseUserMessage: MessageInputBaseParams = { assistant, topic, content: content }
+
+        if (!isEmpty(assistant.mcpServers) && !isEmpty(activedMcpServers)) {
+          baseUserMessage.enabledMCPs = activedMcpServers.filter((server) =>
+            assistant.mcpServers?.some((s) => s.id === server.id)
+          )
+        }
+
+        baseUserMessage.usage = await estimateMessageUsage(baseUserMessage)
+
+        const { message, blocks } = getUserMessage(baseUserMessage)
+
+        currentMessageId.current = message.id
+        console.log('[DEBUG] Created message and blocks:', message, blocks)
+        console.log('[DEBUG] Dispatching _sendMessage')
+        dispatch(_sendMessage(message, blocks, assistant, topic.id))
+        console.log('[DEBUG] _sendMessage dispatched')
       } catch (error) {
         console.error('Failed to send message:', error)
       }
     },
-    [assistant, dispatch, loading, topic]
+    [loading, assistant, topic, activedMcpServers, dispatch]
   )
 
   const translate = useCallback(async () => {
