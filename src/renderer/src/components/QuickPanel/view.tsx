@@ -90,7 +90,7 @@ export const QuickPanelView: React.FC<Props> = ({ setInputText }) => {
           const regex = new RegExp(pattern, 'ig')
           return regex.test(pinyinText)
         } catch (error) {
-          return true
+          return false
         }
       } else {
         const regex = new RegExp(pattern, 'ig')
