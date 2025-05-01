@@ -441,17 +441,25 @@ const StyledMenu = styled(Menu)`
   .ant-menu-item-group-title {
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 10;
     margin: 0 -5px;
     padding: 5px 10px;
     padding-left: 18px;
     font-size: 12px;
     font-weight: 500;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--color-background);
+      backdrop-filter: blur(60px);
+      z-index: -1;
+    }
 
     /* Scroll-driven animation for sticky header */
-    animation: background-change linear both;
+    /* animation: background-change linear both;
     animation-timeline: scroll();
-    animation-range: entry 0% entry 1%;
+    animation-range: entry 0% entry 1%; */
   }
 
   /* Simple animation that changes background color when sticky */

@@ -1,5 +1,4 @@
-import { SyncOutlined } from '@ant-design/icons'
-import { isMac } from '@renderer/config/constant'
+import { PlusOutlined, SyncOutlined } from '@ant-design/icons'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
 import useUserTheme from '@renderer/hooks/useUserTheme'
@@ -14,7 +13,8 @@ import {
   setSidebarIcons
 } from '@renderer/store/settings'
 import { ThemeMode } from '@renderer/types'
-import { Button, ColorPicker, Input, Segmented, Switch } from 'antd'
+import { Button, ColorPicker, Image, Input, Segmented, Slider, Switch, Tooltip, Upload } from 'antd'
+import { Info } from 'lucide-react'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -61,6 +61,27 @@ const DisplaySettings: FC = () => {
     },
     [setUserTheme, userTheme]
   )
+  const handleBackgroundImageChange = async (file: File) => {
+    const fileType = {
+      id: file.name,
+      name: file.name,
+      path: file.path,
+      size: file.size,
+      ext: `.${file.name.split('.').pop()}`.toLowerCase(),
+      count: 1,
+      origin_name: file.name,
+      type: file.type as any,
+      created_at: new Date().toISOString()
+    }
+
+    const uploadedFile = await window.api.file.upload(fileType)
+    if (uploadedFile) {
+      setUserTheme({
+        ...userTheme,
+        backgroundImage: `file://${encodeURIComponent(uploadedFile.path)}`
+      })
+    }
+  }
 
   const handleReset = useCallback(() => {
     setVisibleIcons([...DEFAULT_SIDEBAR_ICONS])
@@ -135,13 +156,70 @@ const DisplaySettings: FC = () => {
             ]}
           />
         </SettingRow>
-        {isMac && (
+        <SettingDivider />
+        <SettingRow>
+          <SettingRowTitle>背景设置</SettingRowTitle>
+          <Segmented
+            value={userTheme.backgroundType}
+            shape="round"
+            onChange={(value) => setUserTheme({ ...userTheme, backgroundType: value as 'opacity' | 'image' | 'none' })}
+            options={[
+              { value: 'opacity', label: '透明' },
+              { value: 'image', label: '背景图' },
+              { value: 'none', label: '无' }
+            ]}
+          />
+        </SettingRow>
+        {userTheme.backgroundType === 'image' && (
           <>
             <SettingDivider />
             <SettingRow>
-              <SettingRowTitle>{t('settings.theme.window.style.transparent')}</SettingRowTitle>
-              <Switch checked={windowStyle === 'transparent'} onChange={handleWindowStyleChange} />
+              <SettingRowTitle>上传背景图</SettingRowTitle>
+              <Upload
+                maxCount={1}
+                name="background"
+                listType="picture-card"
+                showUploadList={false}
+                customRequest={({ file }) => handleBackgroundImageChange(file as File)}
+                accept="image/*">
+                {userTheme.backgroundImage ? (
+                  <Image preview={false} src={decodeURIComponent(userTheme.backgroundImage)} />
+                ) : (
+                  <PlusOutlined />
+                )}
+              </Upload>
             </SettingRow>
+            <SettingDivider />
+            <SettingRow>
+              <SettingRowTitle>背景模糊</SettingRowTitle>
+              <Slider
+                style={{ width: '200px' }}
+                min={0}
+                max={100}
+                value={userTheme.backgroundBlur}
+                onChange={(value) => setUserTheme({ ...userTheme, backgroundBlur: value })}
+              />
+            </SettingRow>
+            {theme === ThemeMode.dark && (
+              <>
+                <SettingDivider />
+                <SettingRow>
+                  <SettingRowTitle>
+                    背景亮度
+                    <Tooltip title="仅限深色主题" placement="right">
+                      <Info size={16} color="var(--color-icon)" style={{ marginLeft: 5, cursor: 'pointer' }} />
+                    </Tooltip>
+                  </SettingRowTitle>
+                  <Slider
+                    style={{ width: '200px' }}
+                    min={0}
+                    max={100}
+                    value={userTheme.backgroundBrightness}
+                    onChange={(value) => setUserTheme({ ...userTheme, backgroundBrightness: value })}
+                  />
+                </SettingRow>
+              </>
+            )}
           </>
         )}
       </SettingGroup>

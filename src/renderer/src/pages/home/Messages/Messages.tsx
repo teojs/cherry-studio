@@ -41,7 +41,7 @@ interface MessagesProps {
 
 const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic }) => {
   const { t } = useTranslation()
-  const { showTopics, topicPosition, showAssistants, messageNavigation } = useSettings()
+  const { topicPosition, messageNavigation } = useSettings()
   const { updateTopic, addTopic } = useAssistant(assistant.id)
   const dispatch = useAppDispatch()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -62,13 +62,6 @@ const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic })
     setDisplayMessages(newDisplayMessages)
     setHasMore(messages.length > displayCount)
   }, [messages, displayCount])
-
-  const maxWidth = useMemo(() => {
-    const showRightTopics = showTopics && topicPosition === 'right'
-    const minusAssistantsWidth = showAssistants ? '- var(--assistants-width)' : ''
-    const minusRightTopicsWidth = showRightTopics ? '- var(--assistants-width)' : ''
-    return `calc(100vw - var(--sidebar-width) ${minusAssistantsWidth} ${minusRightTopicsWidth} - 5px)`
-  }, [showAssistants, showTopics, topicPosition])
 
   const scrollToBottom = useCallback(() => {
     if (containerRef.current) {
@@ -221,12 +214,7 @@ const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic })
 
   const groupedMessages = useMemo(() => Object.entries(getGroupedMessages(displayMessages)), [displayMessages])
   return (
-    <Container
-      id="messages"
-      style={{ maxWidth }}
-      key={assistant.id}
-      ref={containerRef}
-      $right={topicPosition === 'left'}>
+    <Container id="messages" key={assistant.id} ref={containerRef} $right={topicPosition === 'left'}>
       <NarrowLayout style={{ display: 'flex', flexDirection: 'column-reverse' }}>
         <InfiniteScroll
           dataLength={displayMessages.length}
@@ -320,7 +308,6 @@ const Container = styled(Scrollbar)<ContainerProps>`
   flex-direction: column-reverse;
   padding: 10px 0 10px;
   overflow-x: hidden;
-  background-color: var(--color-background);
   z-index: 1;
 `
 

@@ -62,7 +62,6 @@ const MessageItem: FC<Props> = ({
   }, [messageFont])
 
   const messageBorder = showMessageDivider ? undefined : 'none'
-  const messageBackground = getMessageBackground(isBubbleStyle, isAssistantMessage)
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -144,7 +143,7 @@ const MessageItem: FC<Props> = ({
       <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
       <MessageContentContainer
         className="message-content-container"
-        style={{ fontFamily, fontSize, background: messageBackground, overflowY: 'visible' }}>
+        style={{ fontFamily, fontSize, overflowY: 'visible' }}>
         <MessageErrorBoundary>
           <MessageContent message={message} />
         </MessageErrorBoundary>
@@ -172,14 +171,6 @@ const MessageItem: FC<Props> = ({
       </MessageContentContainer>
     </MessageContainer>
   )
-}
-
-const getMessageBackground = (isBubbleStyle: boolean, isAssistantMessage: boolean) => {
-  return isBubbleStyle
-    ? isAssistantMessage
-      ? 'var(--chat-background-assistant)'
-      : 'var(--chat-background-user)'
-    : undefined
 }
 
 const getContextMenuItems = (t: (key: string) => string, selectedQuoteText: string, selectedText: string) => [
@@ -233,7 +224,7 @@ const MessageContentContainer = styled.div`
   flex: 1;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 46px;
+  padding-left: 46px;
   margin-top: 5px;
   overflow-y: auto;
 `

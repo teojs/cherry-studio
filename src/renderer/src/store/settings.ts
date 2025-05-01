@@ -25,6 +25,11 @@ export type AssistantIconType = 'model' | 'emoji' | 'none'
 
 export type UserTheme = {
   colorPrimary: string
+  backgroundType: 'opacity' | 'image' | 'none'
+  backgroundImage: string
+  backgroundImageDisplay: boolean
+  backgroundBlur: number
+  backgroundBrightness: number
 }
 
 export interface SettingsState {
@@ -45,6 +50,7 @@ export interface SettingsState {
   tray: boolean
   theme: ThemeMode
   userTheme: UserTheme
+  /** @deprecated */
   windowStyle: 'transparent' | 'opaque'
   fontSize: number
   topicPosition: 'left' | 'right'
@@ -156,7 +162,12 @@ export const initialState: SettingsState = {
   tray: true,
   theme: ThemeMode.auto,
   userTheme: {
-    colorPrimary: '#00b96b'
+    colorPrimary: '#00b96b',
+    backgroundType: 'none',
+    backgroundImage: '',
+    backgroundImageDisplay: false,
+    backgroundBlur: 0,
+    backgroundBrightness: 0.2
   },
   windowStyle: 'opaque',
   fontSize: 14,
@@ -311,6 +322,7 @@ const settingsSlice = createSlice({
     setFontSize: (state, action: PayloadAction<number>) => {
       state.fontSize = action.payload
     },
+    /** @deprecated */
     setWindowStyle: (state, action: PayloadAction<'transparent' | 'opaque'>) => {
       state.windowStyle = action.payload
     },

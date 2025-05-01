@@ -152,9 +152,6 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, className }) => {
         isCodeWrappable={codeWrappable}
         // dangerouslySetInnerHTML={{ __html: html }}
         style={{
-          border: '0.5px solid var(--color-code-background)',
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
           marginTop: 0,
           fontSize: fontSize - 1,
           maxHeight: codeCollapsible && !isExpanded ? '350px' : 'none',
@@ -272,6 +269,7 @@ const DownloadButton = ({ language, data }: { language: string; data: string }) 
 
 const CodeBlockWrapper = styled.div`
   position: relative;
+  border-radius: 10px;
 `
 
 const CodeContent = styled.div<{ isShowLineNumbers: boolean; isUnwrapped: boolean; isCodeWrappable: boolean }>`

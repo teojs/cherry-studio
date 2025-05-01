@@ -14,6 +14,7 @@ export enum IpcChannel {
   App_SetTheme = 'app:set-theme',
   App_SetCustomCss = 'app:set-custom-css',
   App_SetAutoUpdate = 'app:set-auto-update',
+  App_SetNativeThemeSource = 'app:set-native-theme-source',
 
   App_IsBinaryExist = 'app:is-binary-exist',
   App_GetBinaryPath = 'app:get-binary-path',

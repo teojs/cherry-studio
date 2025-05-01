@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import DragableList from '@renderer/components/DragableList'
+import { useTheme } from '@renderer/context/ThemeProvider'
 import FileItem from '@renderer/pages/files/FileItem'
 import QuickPhraseService from '@renderer/services/QuickPhraseService'
 import { QuickPhrase } from '@renderer/types'
@@ -14,6 +15,7 @@ const { TextArea } = Input
 
 const QuickPhraseSettings: FC = () => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [phrasesList, setPhrasesList] = useState<QuickPhrase[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingPhrase, setEditingPhrase] = useState<QuickPhrase | null>(null)
@@ -68,7 +70,7 @@ const QuickPhraseSettings: FC = () => {
   const reversedPhrases = [...phrasesList].reverse()
 
   return (
-    <SettingContainer>
+    <SettingContainer theme={theme}>
       <SettingGroup style={{ marginBottom: 0 }}>
         <SettingTitle>
           {t('settings.quickPhrase.title')}

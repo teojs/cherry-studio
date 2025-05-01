@@ -4,7 +4,6 @@ import { useTheme } from '@renderer/context/ThemeProvider'
 import useAvatar from '@renderer/hooks/useAvatar'
 import { useMinappPopup } from '@renderer/hooks/useMinappPopup'
 import { useMinapps } from '@renderer/hooks/useMinapps'
-import useNavBackgroundColor from '@renderer/hooks/useNavBackgroundColor'
 import { modelGenerating, useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { isEmoji } from '@renderer/utils'
@@ -48,8 +47,6 @@ const Sidebar: FC = () => {
 
   const onEditUser = () => UserPopup.show()
 
-  const backgroundColor = useNavBackgroundColor()
-
   const showPinnedApps = pinned.length > 0 && sidebarIcons.visible.includes('minapp')
 
   const to = async (path: string) => {
@@ -68,7 +65,7 @@ const Sidebar: FC = () => {
   }
 
   return (
-    <Container id="app-sidebar" style={{ backgroundColor, zIndex: minappShow ? 10000 : 'initial' }}>
+    <Container id="app-sidebar" style={{ zIndex: minappShow ? 10000 : 10 }}>
       {isEmoji(avatar) ? (
         <EmojiAvatar onClick={onEditUser}>{avatar}</EmojiAvatar>
       ) : (
@@ -319,6 +316,8 @@ const Container = styled.div`
   height: ${isMac ? 'calc(100vh - var(--navbar-height))' : '100vh'};
   -webkit-app-region: drag !important;
   margin-top: ${isMac ? 'var(--navbar-height)' : 0};
+  position: relative;
+  z-index: 10;
 `
 
 const AvatarImg = styled(Avatar)`
@@ -373,7 +372,7 @@ const Icon = styled.div<{ theme: string }>`
   -webkit-app-region: none;
   border: 0.5px solid transparent;
   &:hover {
-    background-color: ${({ theme }) => (theme === 'dark' ? 'var(--color-black)' : 'var(--color-white)')};
+    background-color: var(--color-background);
     opacity: 0.8;
     cursor: pointer;
     .icon {
@@ -381,7 +380,7 @@ const Icon = styled.div<{ theme: string }>`
     }
   }
   &.active {
-    background-color: ${({ theme }) => (theme === 'dark' ? 'var(--color-black)' : 'var(--color-white)')};
+    background-color: var(--color-background);
     border: 0.5px solid var(--color-border);
     .icon {
       color: var(--color-primary);
