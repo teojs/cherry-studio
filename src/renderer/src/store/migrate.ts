@@ -1377,6 +1377,14 @@ const migrateConfig = {
     } catch (error) {
       return state
     }
+  },
+  '103': (state: RootState) => {
+    try {
+      state.settings.userTheme = settingsInitialState.userTheme
+      return state
+    } catch (error) {
+      return state
+    }
   }
 }
 

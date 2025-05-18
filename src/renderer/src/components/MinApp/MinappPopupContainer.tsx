@@ -368,7 +368,7 @@ const MinappPopupContainer: React.FC = () => {
       maskClosable={false}
       closeIcon={null}
       style={{
-        marginLeft: 'var(--sidebar-width)',
+        paddingLeft: 'var(--sidebar-width)',
         backgroundColor: window.root.style.background
       }}>
       {!isReady && (

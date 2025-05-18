@@ -58,6 +58,7 @@ export function useSettings() {
 
     setTheme(theme: ThemeMode) {
       dispatch(setTheme(theme))
+      window.api.setNativeThemeSource(theme === 'auto' ? 'system' : theme)
     },
     setWindowStyle(windowStyle: 'transparent' | 'opaque') {
       dispatch(setWindowStyle(windowStyle))

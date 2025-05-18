@@ -11,9 +11,9 @@
   --color-white-soft: rgba(255, 255, 255, 0.8);
   --color-white-mute: rgba(255, 255, 255, 0.94);
 
-  --color-black: #181818;
-  --color-black-soft: #222222;
-  --color-black-mute: #333333;
+  --color-black: rgba(255, 255, 255, 0.103);
+  --color-black-soft: rgba(255, 255, 255, 0.06);
+  --color-black-mute: rgba(255, 255, 255, 0.1208);
 
   --color-gray-1: #515c67;
   --color-gray-2: #414853;
@@ -23,10 +23,10 @@
   --color-text-2: rgba(235, 235, 245, 0.6);
   --color-text-3: rgba(235, 235, 245, 0.38);
 
-  --color-background: var(--color-black);
+  --color-background: #181818;
   --color-background-soft: var(--color-black-soft);
   --color-background-mute: var(--color-black-mute);
-  --color-background-opacity: rgba(34, 34, 34, 0.7);
+  --color-background-opacity: rgba(255, 255, 255, 0.05);
   --inner-glow-opacity: 0.3; // For the glassmorphism effect in the dropdown menu
 
   --color-primary: #00b96b;
@@ -49,12 +49,13 @@
 
   --color-reference: #404040;
   --color-reference-text: #ffffff;
-  --color-reference-background: #0b0e12;
+  --color-reference-background: rgba(255, 255, 255, 0.0889);
 
   --modal-background: #1f1f1f;
 
   --navbar-background-mac: rgba(20, 20, 20, 0.55);
   --navbar-background: #1f1f1f;
+  --root-background: #242424;
 
   --navbar-height: 40px;
   --sidebar-width: 50px;
@@ -65,25 +66,22 @@
   --topic-list-width: 275px;
   --settings-width: 250px;
 
-  --chat-background: #111111;
-  --chat-background-user: #28b561;
-  --chat-background-assistant: #2c2c2c;
+  --chat-background-user: rgba(255, 255, 255, 0.1);
+  --chat-background-assistant: rgba(255, 255, 255, 0.05);
   --chat-text-user: var(--color-black);
 
   --list-item-border-radius: 16px;
-}
 
-body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  body[opacity='true'] {
+    --root-background: rgba(0, 0, 0, 0.1);
+    --color-background: rgba(0, 0, 0, 0.2);
+  }
 }
 
 body[theme-mode='light'] {
   --color-white: #ffffff;
   --color-white-soft: rgba(0, 0, 0, 0.04);
-  --color-white-mute: #eee;
+  --color-white-mute: rgba(0, 0, 0, 0.0667);
 
   --color-black: #1b1b1f;
   --color-black-soft: #262626;
@@ -97,10 +95,11 @@ body[theme-mode='light'] {
   --color-text-2: rgba(0, 0, 0, 0.6);
   --color-text-3: rgba(0, 0, 0, 0.38);
 
-  --color-background: var(--color-white);
-  --color-background-soft: var(--color-white-soft);
+  --color-background: rgba(255, 255, 255, 1);
+  --color-background-soft: rgba(0, 0, 0, 0.0357);
   --color-background-mute: var(--color-white-mute);
-  --color-background-opacity: rgba(235, 235, 235, 0.7);
+  --color-background-opacity: rgba(235, 235, 235, 0.5);
+  --color-background-mac: rgba(255, 255, 255, 0.3);
   --inner-glow-opacity: 0.1;
 
   --color-primary: #00b96b;
@@ -123,17 +122,22 @@ body[theme-mode='light'] {
 
   --color-reference: #cfe1ff;
   --color-reference-text: #000000;
-  --color-reference-background: #f1f7ff;
+  --color-reference-background: rgba(0, 0, 0, 0.0288);
 
   --modal-background: var(--color-white);
 
   --navbar-background-mac: rgba(255, 255, 255, 0.55);
-  --navbar-background: rgba(244, 244, 244);
+  --root-background: #f4f4f4;
 
   --chat-background: #f3f3f3;
-  --chat-background-user: #95ec69;
+  --chat-background-user: rgba(0, 0, 0, 0.035);
   --chat-background-assistant: #ffffff;
   --chat-text-user: var(--color-text);
+
+  &[opacity='true'] {
+    --root-background: rgba(255, 255, 255, 0.1);
+    --color-background: rgba(255, 255, 255, 0.55);
+  }
 }
 
 *,
@@ -204,6 +208,35 @@ body,
   display: flex;
   flex-direction: row;
   flex: 1;
+  background-color: var(--root-background);
+
+  &::before {
+    display: var(--background-image-display);
+    content: '';
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-image: var(--background-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+    pointer-events: none;
+  }
+  &::after {
+    display: var(--background-image-display);
+    content: '';
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background-color: var(--color-background);
+    backdrop-filter: blur(var(--background-blur)) brightness(var(--background-brightness));
+    pointer-events: none;
+    body[theme-mode='light'] & {
+      --background-brightness: 1;
+    }
+  }
 }
 
 .loader {
@@ -238,51 +271,52 @@ body,
 }
 
 .bubble {
-  background-color: var(--chat-background);
-  #chat-main {
-    background-color: var(--chat-background);
-  }
-  #messages {
-    background-color: var(--chat-background);
-  }
+  --bubble-radius: 10px;
+
   #inputbar {
-    margin: -5px 15px 15px 15px;
-    background: var(--color-background);
+    margin: 0 15px 15px 15px;
   }
-  .system-prompt {
-    background-color: var(--chat-background-assistant);
-  }
+
   .message-content-container {
-    margin: 5px 0;
-    border-radius: 8px;
-    padding: 10px 15px 0 15px;
+    // margin: 5px 0;
   }
+
   .message-thought-container {
     margin-top: 8px;
   }
-  .message-user {
-    color: var(--chat-text-user);
-    .markdown,
-    .anticon,
-    .iconfont,
-    .lucide,
-    .message-tokens {
-      color: var(--chat-text-user) !important;
-    }
-    .message-action-button:hover {
-      background-color: var(--color-white-soft);
+
+  .message-assistant {
+    .message-content-container {
+      // margin: 5px 0;
+      // padding: 10px 15px 0 15px;
+      // border: 0.5px solid var(--color-border);
+      // border-radius: 0 var(--bubble-radius) var(--bubble-radius) var(--bubble-radius);
     }
   }
+
+  .group-grid-container.horizontal,
+  .group-grid-container.grid {
+    .message-content-container {
+      border: none;
+    }
+  }
+
+  .message-user {
+    .message-content-container {
+      border-radius: var(--bubble-radius) 0 var(--bubble-radius) var(--bubble-radius);
+      background-color: var(--chat-background-user);
+      padding: 10px 15px 0 15px;
+      margin-left: 0;
+    }
+  }
+
   .group-message-wrapper {
-    background-color: var(--color-background);
     .message-content-container {
       width: 100%;
       border: 1px solid var(--color-background-mute);
     }
   }
-  .group-menu-bar {
-    background-color: var(--color-background);
-  }
+
   code {
     color: var(--color-text);
   }

@@ -15,13 +15,18 @@ import { FC, PropsWithChildren } from 'react'
 import { useTheme } from './ThemeProvider'
 
 const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { language } = useSettings()
   const { theme: _theme } = useTheme()
+  const {
+    language,
+    userTheme: { colorPrimary }
+  } = useSettings()
 
   return (
     <ConfigProvider
       locale={getAntdLocale(language)}
       theme={{
+        cssVar: true,
+        hashed: false,
         algorithm: [_theme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm],
         components: {
           Menu: {
@@ -40,7 +45,7 @@ const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
           }
         },
         token: {
-          colorPrimary: '#00b96b'
+          colorPrimary: colorPrimary
         }
       }}>
       {children}

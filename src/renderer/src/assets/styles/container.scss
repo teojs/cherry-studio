@@ -3,4 +3,6 @@
   border-top: 0.5px solid var(--color-border);
   border-top-left-radius: 10px;
   border-left: 0.5px solid var(--color-border);
+  position: relative;
+  z-index: 10;
 }

@@ -1,5 +1,4 @@
 import { SyncOutlined } from '@ant-design/icons'
-import { isMac } from '@renderer/config/constant'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useAppDispatch } from '@renderer/store'
@@ -21,13 +20,12 @@ import styled from 'styled-components'
 
 import { SettingContainer, SettingDivider, SettingGroup, SettingRow, SettingRowTitle, SettingTitle } from '..'
 import SidebarIconsManager from './SidebarIconsManager'
+import UserThemeSettings from './UserThemeSettings'
 
 const DisplaySettings: FC = () => {
   const {
     setTheme,
     theme,
-    windowStyle,
-    setWindowStyle,
     topicPosition,
     setTopicPosition,
     clickAssistantToShowTopic,
@@ -43,13 +41,6 @@ const DisplaySettings: FC = () => {
 
   const [visibleIcons, setVisibleIcons] = useState(sidebarIcons?.visible || DEFAULT_SIDEBAR_ICONS)
   const [disabledIcons, setDisabledIcons] = useState(sidebarIcons?.disabled || [])
-
-  const handleWindowStyleChange = useCallback(
-    (checked: boolean) => {
-      setWindowStyle(checked ? 'transparent' : 'opaque')
-    },
-    [setWindowStyle]
-  )
 
   const handleReset = useCallback(() => {
     setVisibleIcons([...DEFAULT_SIDEBAR_ICONS])
@@ -147,16 +138,8 @@ const DisplaySettings: FC = () => {
             />
           </ZoomButtonGroup>
         </SettingRow>
-        {isMac && (
-          <>
-            <SettingDivider />
-            <SettingRow>
-              <SettingRowTitle>{t('settings.theme.window.style.transparent')}</SettingRowTitle>
-              <Switch checked={windowStyle === 'transparent'} onChange={handleWindowStyleChange} />
-            </SettingRow>
-          </>
-        )}
       </SettingGroup>
+      <UserThemeSettings />
       <SettingGroup theme={theme}>
         <SettingTitle>{t('settings.display.topic.title')}</SettingTitle>
         <SettingDivider />

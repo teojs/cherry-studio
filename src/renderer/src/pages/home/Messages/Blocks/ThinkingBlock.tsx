@@ -83,6 +83,7 @@ const ThinkingBlock: React.FC<Props> = ({ block }) => {
 
   return (
     <CollapseContainer
+      ghost
       activeKey={activeKey}
       size="small"
       onChange={() => setActiveKey((key) => (key ? '' : 'thought'))}

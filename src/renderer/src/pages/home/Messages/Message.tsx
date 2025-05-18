@@ -179,7 +179,7 @@ const MessageContentContainer = styled.div`
   flex: 1;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 46px;
+  padding-left: 46px;
   margin-top: 5px;
   overflow-y: auto;
 `

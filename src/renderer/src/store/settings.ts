@@ -22,6 +22,15 @@ export interface NutstoreSyncRuntime extends WebDAVSyncState {}
 
 export type AssistantIconType = 'model' | 'emoji' | 'none'
 
+export type UserTheme = {
+  colorPrimary: string
+  backgroundType: 'opacity' | 'image' | 'none'
+  backgroundImage: string
+  backgroundImageDisplay: boolean
+  backgroundBlur: number
+  backgroundBrightness: number
+}
+
 export interface SettingsState {
   showAssistants: boolean
   showTopics: boolean
@@ -40,6 +49,8 @@ export interface SettingsState {
   trayOnClose: boolean
   tray: boolean
   theme: ThemeMode
+  userTheme: UserTheme
+  /** @deprecated */
   windowStyle: 'transparent' | 'opaque'
   fontSize: number
   topicPosition: 'left' | 'right'
@@ -166,6 +177,14 @@ export const initialState: SettingsState = {
   trayOnClose: true,
   tray: true,
   theme: ThemeMode.auto,
+  userTheme: {
+    colorPrimary: '#00b96b',
+    backgroundType: 'none',
+    backgroundImage: '',
+    backgroundImageDisplay: false,
+    backgroundBlur: 0,
+    backgroundBrightness: 0.2
+  },
   windowStyle: 'opaque',
   fontSize: 14,
   topicPosition: 'left',
@@ -332,6 +351,7 @@ const settingsSlice = createSlice({
     setFontSize: (state, action: PayloadAction<number>) => {
       state.fontSize = action.payload
     },
+    /** @deprecated */
     setWindowStyle: (state, action: PayloadAction<'transparent' | 'opaque'>) => {
       state.windowStyle = action.payload
     },
@@ -578,6 +598,9 @@ const settingsSlice = createSlice({
     },
     setEnableBackspaceDeleteModel: (state, action: PayloadAction<boolean>) => {
       state.enableBackspaceDeleteModel = action.payload
+    },
+    setUserTheme: (state, action: PayloadAction<UserTheme>) => {
+      state.userTheme = action.payload
     }
   }
 })
@@ -670,7 +693,8 @@ export const {
   setEnableDataCollection,
   setEnableQuickPanelTriggers,
   setExportMenuOptions,
-  setEnableBackspaceDeleteModel
+  setEnableBackspaceDeleteModel,
+  setUserTheme
 } = settingsSlice.actions
 
 export default settingsSlice.reducer
