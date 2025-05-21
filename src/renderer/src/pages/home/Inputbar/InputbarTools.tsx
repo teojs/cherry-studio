@@ -530,30 +530,29 @@ const InputbarTools = ({
             {(provided) => (
               <>
                 <Tools ref={provided.innerRef} {...provided.droppableProps} isDragging={isDragging}>
-                  {!isCollapse &&
-                    hiddenTools.map(
-                      (tool, index) =>
-                        (tool.condition ?? true) && (
-                          <Draggable key={tool.key} draggableId={tool.key} index={index}>
-                            {(provided, snapshot) => (
-                              <DraggablePortal isDragging={snapshot.isDragging}>
-                                <ToolWrapper
-                                  onContextMenu={() => setTargetTool(tool)}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  isDragging={isDragging}
-                                  isCollapse={isCollapse}
-                                  style={{
-                                    ...provided.draggableProps.style
-                                  }}>
-                                  {tool.component}
-                                </ToolWrapper>
-                              </DraggablePortal>
-                            )}
-                          </Draggable>
-                        )
-                    )}
+                  {hiddenTools.map(
+                    (tool, index) =>
+                      (tool.condition ?? true) && (
+                        <Draggable key={tool.key} draggableId={tool.key} index={index}>
+                          {(provided, snapshot) => (
+                            <DraggablePortal isDragging={snapshot.isDragging}>
+                              <ToolWrapper
+                                onContextMenu={() => setTargetTool(tool)}
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                isDragging={isDragging}
+                                isCollapse={isCollapse}
+                                style={{
+                                  ...provided.draggableProps.style
+                                }}>
+                                {tool.component}
+                              </ToolWrapper>
+                            </DraggablePortal>
+                          )}
+                        </Draggable>
+                      )
+                  )}
                   {provided.placeholder}
                 </Tools>
               </>
@@ -594,6 +593,7 @@ const Tools = styled.div<{ isDragging: boolean; isCollapse?: boolean }>`
 
 const ToolWrapper = styled.div<{ isDragging: boolean; isCollapse?: boolean }>`
   width: 30px;
+  display: ${(props) => (props.isCollapse ? 'none' : 'block')};
 `
 
 export default InputbarTools
