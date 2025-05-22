@@ -4,6 +4,7 @@ import { isGenerateImageModel, isVisionModel } from '@renderer/config/models'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setIsCollapsed, setToolOrder } from '@renderer/store/inputTools'
 import { Assistant, FileType, KnowledgeBase, Model } from '@renderer/types'
+import { classNames } from '@renderer/utils'
 import { Divider, Dropdown, Tooltip } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import {
@@ -127,8 +128,6 @@ const InputbarTools = ({
   const isCollapse = useAppSelector((state) => state.inputTools.isCollapsed)
 
   const [targetTool, setTargetTool] = useState<ToolButtonConfig | null>(null)
-
-  const [isDragging, setIsDragging] = useState(false)
 
   const toggleToolVisibility = useCallback(
     (toolKey: string, isVisible: boolean | undefined) => {
@@ -272,8 +271,6 @@ const InputbarTools = ({
     }
 
     dispatch(setToolOrder(newToolOrder))
-
-    setIsDragging(false)
   }
 
   useImperativeHandle(ref, () => ({
@@ -452,6 +449,17 @@ const InputbarTools = ({
     })) as ToolButtonConfig[]
   }, [toolButtons, toolOrder])
 
+  const showDivider = useMemo(() => {
+    return (
+      hiddenTools.filter((tool) => tool.condition ?? true).length > 0 &&
+      visibleTools.filter((tool) => tool.condition ?? true).length !== 0
+    )
+  }, [hiddenTools, visibleTools])
+
+  const showCollapseButton = useMemo(() => {
+    return hiddenTools.filter((tool) => tool.condition ?? true).length > 0
+  }, [hiddenTools])
+
   const getMenuItems = useMemo(() => {
     const baseItems: ItemType[] = [...visibleTools, ...hiddenTools].map((tool) => ({
       label: tool.label,
@@ -488,14 +496,15 @@ const InputbarTools = ({
       <ToolsContainer
         onContextMenu={(e) => {
           const target = e.target as HTMLElement
-          if (target === e.currentTarget) {
+          const isToolButton = target.closest('[data-key]')
+          if (!isToolButton) {
             setTargetTool(null)
           }
         }}>
-        <DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="inputbar-tools-visible" direction="horizontal">
             {(provided) => (
-              <Tools ref={provided.innerRef} {...provided.droppableProps} isDragging={isDragging}>
+              <VisibleTools ref={provided.innerRef} {...provided.droppableProps}>
                 {visibleTools.map(
                   (tool, index) =>
                     (tool.condition ?? true) && (
@@ -503,11 +512,11 @@ const InputbarTools = ({
                         {(provided, snapshot) => (
                           <DraggablePortal isDragging={snapshot.isDragging}>
                             <ToolWrapper
+                              data-key={tool.key}
                               onContextMenu={() => setTargetTool(tool)}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              isDragging={snapshot.isDragging}
                               style={{
                                 ...provided.draggableProps.style
                               }}>
@@ -520,47 +529,48 @@ const InputbarTools = ({
                 )}
 
                 {provided.placeholder}
-              </Tools>
+              </VisibleTools>
             )}
           </Droppable>
 
-          {(hiddenTools.length > 0 || isDragging) && <Divider type="vertical" />}
+          {showDivider && <Divider type="vertical" style={{ marginLeft: 0 }} />}
 
           <Droppable droppableId="inputbar-tools-hidden" direction="horizontal">
             {(provided) => (
-              <>
-                <Tools ref={provided.innerRef} {...provided.droppableProps} isDragging={isDragging}>
-                  {hiddenTools.map(
-                    (tool, index) =>
-                      (tool.condition ?? true) && (
-                        <Draggable key={tool.key} draggableId={tool.key} index={index}>
-                          {(provided, snapshot) => (
-                            <DraggablePortal isDragging={snapshot.isDragging}>
-                              <ToolWrapper
-                                onContextMenu={() => setTargetTool(tool)}
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                isDragging={isDragging}
-                                isCollapse={isCollapse}
-                                style={{
-                                  ...provided.draggableProps.style
-                                }}>
-                                {tool.component}
-                              </ToolWrapper>
-                            </DraggablePortal>
-                          )}
-                        </Draggable>
-                      )
-                  )}
-                  {provided.placeholder}
-                </Tools>
-              </>
+              <HiddenTools ref={provided.innerRef} {...provided.droppableProps}>
+                {hiddenTools.map(
+                  (tool, index) =>
+                    (tool.condition ?? true) && (
+                      <Draggable key={tool.key} draggableId={tool.key} index={index}>
+                        {(provided, snapshot) => (
+                          <DraggablePortal isDragging={snapshot.isDragging}>
+                            <ToolWrapper
+                              data-key={tool.key}
+                              className={classNames({
+                                'is-collapsed': isCollapse
+                              })}
+                              onContextMenu={() => setTargetTool(tool)}
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                transitionDelay: `${index * 0.02}s`
+                              }}>
+                              {tool.component}
+                            </ToolWrapper>
+                          </DraggablePortal>
+                        )}
+                      </Draggable>
+                    )
+                )}
+                {provided.placeholder}
+              </HiddenTools>
             )}
           </Droppable>
         </DragDropContext>
 
-        {hiddenTools.length > 0 && (
+        {showCollapseButton && (
           <Tooltip
             placement="top"
             title={isCollapse ? t('chat.input.tools.collapse') : t('chat.input.tools.expand')}
@@ -583,17 +593,34 @@ const InputbarTools = ({
 const ToolsContainer = styled.div`
   display: flex;
   align-items: center;
+  position: relative;
 `
 
-const Tools = styled.div<{ isDragging: boolean; isCollapse?: boolean }>`
-  min-height: 30px;
+const VisibleTools = styled.div`
+  height: 30px;
   display: flex;
   align-items: center;
 `
 
-const ToolWrapper = styled.div<{ isDragging: boolean; isCollapse?: boolean }>`
+const HiddenTools = styled.div`
+  height: 30px;
+  display: flex;
+  align-items: center;
+`
+
+const ToolWrapper = styled.div`
   width: 30px;
-  display: ${(props) => (props.isCollapse ? 'none' : 'block')};
+  margin-right: 6px;
+  transition:
+    width 0.2s,
+    margin-right 0.2s,
+    opacity 0.2s;
+  &.is-collapsed {
+    width: 0px;
+    margin-right: 0px;
+    overflow: hidden;
+    opacity: 0;
+  }
 `
 
 export default InputbarTools
