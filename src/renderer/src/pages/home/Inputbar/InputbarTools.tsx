@@ -573,7 +573,7 @@ const InputbarTools = ({
         {showCollapseButton && (
           <Tooltip
             placement="top"
-            title={isCollapse ? t('chat.input.tools.collapse') : t('chat.input.tools.expand')}
+            title={isCollapse ? t('chat.input.tools.expand') : t('chat.input.tools.collapse')}
             arrow>
             <ToolbarButton type="text" onClick={() => dispatch(setIsCollapsed(!isCollapse))}>
               <CircleChevronRight
