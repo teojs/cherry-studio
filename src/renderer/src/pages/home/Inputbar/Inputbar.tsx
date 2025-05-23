@@ -27,7 +27,7 @@ import PasteService from '@renderer/services/PasteService'
 import { estimateTextTokens as estimateTxtTokens, estimateUserPromptUsage } from '@renderer/services/TokenService'
 import { translateText } from '@renderer/services/TranslateService'
 import WebSearchService from '@renderer/services/WebSearchService'
-import { useAppDispatch } from '@renderer/store'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
 import { Assistant, FileType, KnowledgeBase, KnowledgeItem, Model, Topic } from '@renderer/types'
@@ -103,6 +103,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const supportExts = useMemo(() => [...textExts, ...documentExts, ...(isVision ? imageExts : [])], [isVision])
   const { activedMcpServers } = useMCPServers()
   const { bases: knowledgeBases } = useKnowledgeBases()
+  const isMultiSelectMode = useAppSelector((state) => state.runtime.chat.isMultiSelectMode)
 
   const quickPanel = useQuickPanel()
 
@@ -318,7 +319,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       const text = textArea.value
 
       let match = text.slice(cursorPosition + selectionLength).match(/\$\{[^}]+\}/)
-      let startIndex = -1
+      let startIndex: number
 
       if (!match) {
         match = text.match(/\$\{[^}]+\}/)
@@ -658,7 +659,12 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       if (document.activeElement?.closest('.ant-modal')) {
         return
       }
-      textareaRef.current?.focus()
+
+      const lastFocusedComponent = PasteService.getLastFocusedComponent()
+
+      if (!lastFocusedComponent || lastFocusedComponent === 'inputbar') {
+        textareaRef.current?.focus()
+      }
     }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
@@ -763,6 +769,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
 
   const isExpended = expended || !!textareaHeight
   const showThinkingButton = isSupportedThinkingTokenModel(model) || isSupportedReasoningEffortModel(model)
+
+  if (isMultiSelectMode) {
+    return null
+  }
 
   return (
     <Container

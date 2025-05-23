@@ -1440,6 +1440,15 @@ const migrateConfig = {
   },
   '106': (state: RootState) => {
     try {
+      addProvider(state, 'tokenflux')
+      state.llm.providers = moveProvider(state.llm.providers, 'tokenflux', 15)
+      return state
+    } catch (error) {
+      return state
+    }
+  },
+  '107': (state: RootState) => {
+    try {
       state.inputTools.toolOrder = DEFAULT_TOOL_ORDER
       state.inputTools.isCollapsed = false
       return state
