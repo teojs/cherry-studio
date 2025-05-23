@@ -831,31 +831,29 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
             <HolderOutlined />
           </DragHandle>
           <Toolbar>
-            <ToolbarMenu>
-              <InputbarTools
-                ref={inputbarToolsRef}
-                assistant={assistant}
-                model={model}
-                files={files}
-                setFiles={setFiles}
-                showThinkingButton={showThinkingButton}
-                showKnowledgeIcon={showKnowledgeIcon}
-                selectedKnowledgeBases={selectedKnowledgeBases}
-                handleKnowledgeBaseSelect={handleKnowledgeBaseSelect}
-                setText={setText}
-                resizeTextArea={resizeTextArea}
-                mentionModels={mentionModels}
-                onMentionModel={onMentionModel}
-                onEnableGenerateImage={onEnableGenerateImage}
-                isExpended={isExpended}
-                onToggleExpended={onToggleExpended}
-                addNewTopic={addNewTopic}
-                clearTopic={clearTopic}
-                onNewContext={onNewContext}
-                newTopicShortcut={newTopicShortcut}
-                cleanTopicShortcut={cleanTopicShortcut}
-              />
-            </ToolbarMenu>
+            <InputbarTools
+              ref={inputbarToolsRef}
+              assistant={assistant}
+              model={model}
+              files={files}
+              setFiles={setFiles}
+              showThinkingButton={showThinkingButton}
+              showKnowledgeIcon={showKnowledgeIcon}
+              selectedKnowledgeBases={selectedKnowledgeBases}
+              handleKnowledgeBaseSelect={handleKnowledgeBaseSelect}
+              setText={setText}
+              resizeTextArea={resizeTextArea}
+              mentionModels={mentionModels}
+              onMentionModel={onMentionModel}
+              onEnableGenerateImage={onEnableGenerateImage}
+              isExpended={isExpended}
+              onToggleExpended={onToggleExpended}
+              addNewTopic={addNewTopic}
+              clearTopic={clearTopic}
+              onNewContext={onNewContext}
+              newTopicShortcut={newTopicShortcut}
+              cleanTopicShortcut={cleanTopicShortcut}
+            />
             <ToolbarMenu>
               <TokenCount
                 estimateTokenCount={estimateTokenCount}
@@ -968,7 +966,8 @@ const Toolbar = styled.div`
   padding: 0 8px;
   padding-bottom: 0;
   margin-bottom: 4px;
-  height: 36px;
+  height: 30px;
+  gap: 16px;
 `
 
 const ToolbarMenu = styled.div`

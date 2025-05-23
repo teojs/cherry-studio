@@ -533,7 +533,7 @@ const InputbarTools = ({
             )}
           </Droppable>
 
-          {showDivider && <Divider type="vertical" style={{ marginLeft: 0 }} />}
+          {showDivider && <Divider type="vertical" style={{ margin: '0 4px' }} />}
 
           <Droppable droppableId="inputbar-tools-hidden" direction="horizontal">
             {(provided) => (
@@ -591,6 +591,7 @@ const InputbarTools = ({
 }
 
 const ToolsContainer = styled.div`
+  min-width: 0;
   display: flex;
   align-items: center;
   position: relative;
@@ -600,12 +601,24 @@ const VisibleTools = styled.div`
   height: 30px;
   display: flex;
   align-items: center;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `
 
 const HiddenTools = styled.div`
   height: 30px;
   display: flex;
   align-items: center;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `
 
 const ToolWrapper = styled.div`
