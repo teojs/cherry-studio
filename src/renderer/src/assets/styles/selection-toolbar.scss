@@ -6,7 +6,7 @@ html {
 
 :root {
   --color-selection-toolbar-background: rgba(20, 20, 20, 0.95);
-  --color-selection-toolbar-border: rgba(55, 55, 55, 0.5);
+  --color-selection-toolbar-border: rgba(100, 100, 100, 0.5);
   --color-selection-toolbar-shadow: rgba(50, 50, 50, 0.3);
 
   --color-selection-toolbar-text: rgba(255, 255, 245, 0.9);
@@ -14,12 +14,14 @@ html {
 
   --color-primary: #00b96b;
   --color-error: #f44336;
+
+  --border-radius: 10px;
 }
 
 [theme-mode='light'] {
   --color-selection-toolbar-background: rgba(245, 245, 245, 0.95);
   --color-selection-toolbar-border: rgba(200, 200, 200, 0.5);
-  --color-selection-toolbar-shadow: rgba(50, 50, 50, 0.3);
+  --color-selection-toolbar-shadow: rgba(149, 157, 165, 0.2);
 
   --color-selection-toolbar-text: rgba(0, 0, 0, 1);
   --color-selection-toolbar-hover-bg: rgba(0, 0, 0, 0.04);

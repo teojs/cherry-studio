@@ -259,33 +259,30 @@ const SelectionToolbar: FC<{ demo?: boolean }> = ({ demo = false }) => {
 const Container = styled.div`
   display: inline-flex;
   flex-direction: row;
-  align-items: center;
-  border-radius: 6px;
+  align-items: stretch;
+  border-radius: var(--border-radius);
   background-color: var(--color-selection-toolbar-background);
-  border-color: var(--color-selection-toolbar-border);
-  box-shadow: 0px 2px 3px var(--color-selection-toolbar-shadow);
-  padding: 2px;
-  margin: 2px 3px 5px 3px;
+  box-shadow: 0px 6px 20px var(--color-selection-toolbar-shadow);
+  margin: 2px 20px 26px 20px;
   user-select: none;
-  border-width: 1px;
-  border-style: solid;
   height: 36px;
-  padding-right: 4px;
   box-sizing: border-box;
+  overflow: hidden;
 `
 
 const LogoWrapper = styled.div<{ $draggable: boolean }>`
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 5px;
-  background-color: transparent;
+  padding: 0 10px;
+  background-color: #ff5f5f;
   ${({ $draggable }) => $draggable && ' -webkit-app-region: drag;'}
 `
 
 const Logo = styled(Avatar)`
-  height: 22px;
-  width: 22px;
+  height: 30px;
+  width: 30px;
   &.animate {
     animation: rotate 1s ease;
   }
@@ -308,23 +305,28 @@ const Logo = styled(Avatar)`
 const ActionWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  margin-left: 3px;
   background-color: transparent;
+  border-color: var(--color-selection-toolbar-border);
+  border-width: 1px 1px 1px 0;
+  border-style: solid;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
 `
 const ActionButton = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: 0 2px;
+  gap: 3px;
   background-color: transparent;
   cursor: pointer;
-  border-radius: 4px;
-  padding: 4px 6px;
+  padding: 0 8px;
   transition: all 0.1s ease-in-out;
   will-change: color, background-color;
+  &:last-child {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  }
 
   .btn-icon {
     width: 16px;
@@ -437,11 +439,11 @@ const ActionIcon = styled.div`
 `
 const ActionTitle = styled.span`
   font-size: 14px;
+  line-height: 16px;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-left: 3px;
   background-color: transparent;
 `
 

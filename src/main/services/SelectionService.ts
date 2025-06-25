@@ -89,8 +89,8 @@ export class SelectionService {
 
   private zoomFactor: number = 1
 
-  private TOOLBAR_WIDTH = 350
-  private TOOLBAR_HEIGHT = 43
+  private TOOLBAR_WIDTH = 410
+  private TOOLBAR_HEIGHT = 64
 
   private readonly ACTION_WINDOW_WIDTH = 500
   private readonly ACTION_WINDOW_HEIGHT = 400
